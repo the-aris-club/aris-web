@@ -163,6 +163,7 @@ const Calendar = ({
           'flex h-(--cell-size) w-full items-center justify-center px-(--cell-size)',
           defaultClassNames.month_caption
         ),
+        month_grid: 'w-full border-collapse',
         months: cn(
           'relative flex flex-col gap-4 md:flex-row',
           defaultClassNames.months
@@ -182,7 +183,6 @@ const Calendar = ({
           defaultClassNames.range_start
         ),
         root: cn('w-fit', defaultClassNames.root),
-        table: 'w-full border-collapse',
         today: cn(
           'bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none',
           defaultClassNames.today
