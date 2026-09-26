@@ -9,15 +9,17 @@ type IconType = 'platform' | 'agents' | 'workflow' | 'integrations' | 'pricing'
 
 interface PixelIconProps {
   type: IconType
-  size?: number // rendered px size (default 40)
+  // rendered px size (default 40)
+  size?: number
 }
 
 // ── Platform icon: rotating gear / node graph ────────────────────────────────
-function drawPlatform(ctx: CanvasRenderingContext2D, W: number, t: number) {
-  const cx = W / 2,
-    cy = W / 2
+const drawPlatform = (ctx: CanvasRenderingContext2D, W: number, t: number) => {
+  const cx = W / 2
+  const cy = W / 2
   const r = W * 0.36
-  const ps = W / 12 // pixel size
+  // pixel size
+  const ps = W / 12
 
   // Central node — pulsing
   const pulse = 0.6 + 0.4 * Math.sin(t * 0.003)
@@ -27,7 +29,7 @@ function drawPlatform(ctx: CanvasRenderingContext2D, W: number, t: number) {
 
   // 6 orbiting nodes
   const nodeCount = 6
-  for (let i = 0; i < nodeCount; i++) {
+  for (let i = 0; i < nodeCount; i += 1) {
     const angle = (i / nodeCount) * Math.PI * 2 + t * 0.0015
     const nx = cx + Math.cos(angle) * r
     const ny = cy + Math.sin(angle) * r
@@ -37,12 +39,12 @@ function drawPlatform(ctx: CanvasRenderingContext2D, W: number, t: number) {
       Math.round(nx / ps) * ps - ps / 2,
       Math.round(ny / ps) * ps - ps / 2,
       ps,
-      ps,
+      ps
     )
 
     // Connector line (pixelated)
     const steps = 5
-    for (let s = 1; s < steps; s++) {
+    for (let s = 1; s < steps; s += 1) {
       const lx = cx + (nx - cx) * (s / steps)
       const ly = cy + (ny - cy) * (s / steps)
       const lo = (0.06 + 0.1 * (s / steps)) * pulse
@@ -51,7 +53,7 @@ function drawPlatform(ctx: CanvasRenderingContext2D, W: number, t: number) {
         Math.round(lx / ps) * ps,
         Math.round(ly / ps) * ps,
         ps * 0.7,
-        ps * 0.7,
+        ps * 0.7
       )
     }
   }
@@ -106,8 +108,9 @@ const AGENT_FRAMES: number[][][] = [
   ],
 ]
 
-function drawAgents(ctx: CanvasRenderingContext2D, W: number, t: number) {
-  const fps = 6 // animation speed in "frames per second equivalent"
+const drawAgents = (ctx: CanvasRenderingContext2D, W: number, t: number) => {
+  // animation speed in "frames per second equivalent"
+  const fps = 6
   const frameIdx = Math.floor(t / (1000 / fps)) % AGENT_FRAMES.length
   const frame = AGENT_FRAMES[frameIdx]
   const rows = frame.length
@@ -119,18 +122,20 @@ function drawAgents(ctx: CanvasRenderingContext2D, W: number, t: number) {
   // Subtle walk offset
   const bobY = Math.sin(t * 0.012) * ps * 0.4
 
-  frame.forEach((row, r) => {
-    row.forEach((cell, c) => {
-      if (!cell) return
+  for (const [r, row] of frame.entries()) {
+    for (const [c, cell] of row.entries()) {
+      if (!cell) {
+        continue
+      }
       const opacity = 0.5 + 0.5 * Math.sin(t * 0.001 + r * 0.3)
       ctx.fillStyle = `rgba(0,0,0,${opacity})`
       ctx.fillRect(offX + c * ps, offY + r * ps + bobY, ps - 1, ps - 1)
-    })
-  })
+    }
+  }
 }
 
 // ── Workflow icon: hourglass shape — top half fills, drains to bottom ─────────
-function drawWorkflow(ctx: CanvasRenderingContext2D, W: number, t: number) {
+const drawWorkflow = (ctx: CanvasRenderingContext2D, W: number, t: number) => {
   const ps = Math.floor(W / 12)
   const cx = W / 2
   const cy = W / 2
@@ -153,11 +158,14 @@ function drawWorkflow(ctx: CanvasRenderingContext2D, W: number, t: number) {
 
   // Sand fill: top half empties, bottom half fills — period 2s
   const period = 2400
-  const fill = (t % period) / period // 0→1
+  // 0→1
+  const fill = (t % period) / period
 
-  shape.forEach((row, r) => {
-    row.forEach((cell, c) => {
-      if (!cell) return
+  for (const [r, row] of shape.entries()) {
+    for (const [c, cell] of row.entries()) {
+      if (!cell) {
+        continue
+      }
 
       // Determine if this pixel is "sand"
       const isTopHalf = r < rows / 2
@@ -183,14 +191,18 @@ function drawWorkflow(ctx: CanvasRenderingContext2D, W: number, t: number) {
       const alpha = Math.max(baseAlpha, sandAlpha * 0.85)
       ctx.fillStyle = `rgba(0,0,0,${alpha})`
       ctx.fillRect(offX + c * ps, offY + r * ps, ps - 1, ps - 1)
-    })
-  })
+    }
+  }
 }
 
 // ── Integrations icon: pixel grid of tiles that light up in sequence ──────────
-function drawIntegrations(ctx: CanvasRenderingContext2D, W: number, t: number) {
-  const cols = 5,
-    rows = 4
+const drawIntegrations = (
+  ctx: CanvasRenderingContext2D,
+  W: number,
+  t: number
+) => {
+  const cols = 5
+  const rows = 4
   const ps = Math.floor(W / (cols + 1))
   const gap = 2
   const offX = Math.floor((W - cols * (ps + gap)) / 2)
@@ -199,8 +211,8 @@ function drawIntegrations(ctx: CanvasRenderingContext2D, W: number, t: number) {
 
   const wave = t * 0.0008
 
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
+  for (let r = 0; r < rows; r += 1) {
+    for (let c = 0; c < cols; c += 1) {
       const idx = r * cols + c
       const phase = (idx / total) * Math.PI * 2
       const alpha = 0.1 + 0.65 * ((Math.sin(wave + phase) + 1) / 2)
@@ -213,7 +225,7 @@ function drawIntegrations(ctx: CanvasRenderingContext2D, W: number, t: number) {
 }
 
 // ── Pricing icon: stacked bar chart growing ───────────────────────────────────
-function drawPricing(ctx: CanvasRenderingContext2D, W: number, t: number) {
+const drawPricing = (ctx: CanvasRenderingContext2D, W: number, t: number) => {
   const ps = Math.floor(W / 12)
   const bars = 3
   const bw = ps * 2
@@ -225,7 +237,7 @@ function drawPricing(ctx: CanvasRenderingContext2D, W: number, t: number) {
   const heights = [0.45, 0.75, 0.55]
   const wave = Math.sin(t * 0.0015) * 0.12
 
-  heights.forEach((h, i) => {
+  for (const [i, h] of heights.entries()) {
     const animated = Math.max(0.1, h + wave * (i % 2 === 0 ? 1 : -1))
     const bh = animated * maxH
     const x = offX + i * (bw + gap)
@@ -233,24 +245,29 @@ function drawPricing(ctx: CanvasRenderingContext2D, W: number, t: number) {
 
     // Bar body (pixelated — fill row by row)
     const rowCount = Math.floor(bh / ps)
-    for (let row = 0; row < rowCount; row++) {
+    for (let row = 0; row < rowCount; row += 1) {
       const progress = 1 - row / rowCount
       const alpha = 0.15 + progress * 0.7
       ctx.fillStyle = `rgba(0,0,0,${alpha})`
       ctx.fillRect(x, y + row * ps, bw, ps - 1)
     }
-  })
+  }
 }
 
 // ── Canvas wrapper ────────────────────────────────────────────────────────────
-export function PixelIcon({ type, size = 40 }: PixelIconProps) {
+export const PixelIcon = ({ type, size = 40 }: PixelIconProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef<number>(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')!
+    if (!canvas) {
+      return
+    }
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      return
+    }
 
     const draw = (t: number) => {
       const dpr = window.devicePixelRatio || 1
@@ -263,21 +280,29 @@ export function PixelIcon({ type, size = 40 }: PixelIconProps) {
       ctx.imageSmoothingEnabled = false
 
       switch (type) {
-        case 'platform':
+        case 'platform': {
           drawPlatform(ctx, size, t)
           break
-        case 'agents':
+        }
+        case 'agents': {
           drawAgents(ctx, size, t)
           break
-        case 'workflow':
+        }
+        case 'workflow': {
           drawWorkflow(ctx, size, t)
           break
-        case 'integrations':
+        }
+        case 'integrations': {
           drawIntegrations(ctx, size, t)
           break
-        case 'pricing':
+        }
+        case 'pricing': {
           drawPricing(ctx, size, t)
           break
+        }
+        default: {
+          break
+        }
       }
 
       rafRef.current = requestAnimationFrame(draw)
@@ -291,11 +316,11 @@ export function PixelIcon({ type, size = 40 }: PixelIconProps) {
     <canvas
       ref={canvasRef}
       style={{
-        width: size,
-        height: size,
-        imageRendering: 'pixelated',
         display: 'block',
         flexShrink: 0,
+        height: size,
+        imageRendering: 'pixelated',
+        width: size,
       }}
     />
   )

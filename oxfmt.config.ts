@@ -9,6 +9,6 @@ export default defineConfig({
     '**/.next/**',
     '**/node_modules/**',
   ],
-  singleQuote: true,
   semi: false,
+  singleQuote: true,
 })

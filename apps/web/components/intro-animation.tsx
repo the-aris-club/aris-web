@@ -4,19 +4,25 @@ import { useEffect, useState } from 'react'
 
 const LETTERS = ['A', 'G', 'E', 'N', 'T', 'I', 'C']
 
-const LETTER_IN_STAGGER = 90 // ms between each letter appearing
-const LETTER_IN_DUR = 700 // duration of each letter appear transition
-const HOLD_DURATION = 300 // hold fully visible before exit
+// ms between each letter appearing
+const LETTER_IN_STAGGER = 90
+// duration of each letter appear transition
+const LETTER_IN_DUR = 700
+// hold fully visible before exit
+const HOLD_DURATION = 300
 const LETTERS_IN_TOTAL =
   LETTER_IN_STAGGER * (LETTERS.length - 1) + LETTER_IN_DUR + HOLD_DURATION
 
-const LETTER_OUT_STAGGER = 55 // ms between each letter disappearing
-const LETTER_OUT_DUR = 450 // duration of each letter fade out
+// ms between each letter disappearing
+const LETTER_OUT_STAGGER = 55
+// duration of each letter fade out
+const LETTER_OUT_DUR = 450
 const LETTERS_OUT_TOTAL =
   LETTER_OUT_STAGGER * (LETTERS.length - 1) + LETTER_OUT_DUR
 
 const CURTAIN_DELAY = LETTERS_IN_TOTAL + 100
-const CURTAIN_DURATION = 1300 // matches the CSS transition on the curtain div
+// matches the CSS transition on the curtain div
+const CURTAIN_DURATION = 1300
 const ANIM_TOTAL = CURTAIN_DELAY + LETTERS_OUT_TOTAL + 1400
 
 // Exported: moment the curtain finishes retracting — when the bg is fully visible
@@ -26,7 +32,20 @@ export const HERO_REVEAL_MS = CURTAIN_DELAY + CURTAIN_DURATION - 150
 
 type Phase = 'idle' | 'in' | 'out' | 'done'
 
-export function IntroAnimation({ onDone }: { onDone: () => void }) {
+interface LetterVisual {
+  blur: number
+  opacity: number
+  translateY: number
+}
+
+// Resting look of a letter, per phase. 'done' never renders.
+const LETTER_VISUALS: Record<Exclude<Phase, 'done'>, LetterVisual> = {
+  idle: { blur: 36, opacity: 0, translateY: 48 },
+  in: { blur: 0, opacity: 1, translateY: 0 },
+  out: { blur: 24, opacity: 0, translateY: -20 },
+}
+
+export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
   const [phase, setPhase] = useState<Phase>('idle')
   const [curtainUp, setCurtainUp] = useState(false)
 
@@ -47,22 +66,24 @@ export function IntroAnimation({ onDone }: { onDone: () => void }) {
     }
   }, [onDone])
 
-  if (phase === 'done') return null
+  if (phase === 'done') {
+    return null
+  }
 
   return (
     <div
-      className="fixed inset-0 z-[100] pointer-events-none"
+      className="pointer-events-none fixed inset-0 z-[100]"
       aria-hidden="true"
     >
       {/* Gradient curtain — retracts upward, revealing mountains from bottom */}
       <div
         className="absolute inset-x-0 top-0"
         style={{
+          background: '#f5f4f1',
           bottom: curtainUp ? '100%' : '0%',
           transition: curtainUp
             ? 'bottom 1.3s cubic-bezier(0.76, 0, 0.24, 1)'
             : 'none',
-          background: '#f5f4f1',
         }}
       />
 
@@ -73,34 +94,30 @@ export function IntroAnimation({ onDone }: { onDone: () => void }) {
             const inDelay = i * LETTER_IN_STAGGER
             const outDelay = i * LETTER_OUT_STAGGER
 
-            // idle → invisible starting position
-            const isIdle = phase === 'idle'
             const isIn = phase === 'in'
             const isOut = phase === 'out'
+            const { blur, opacity, translateY } = LETTER_VISUALS[phase]
 
-            const opacity = isIdle ? 0 : isIn ? 1 : 0
-            const blur = isIdle ? 36 : isIn ? 0 : 24
-            const translateY = isIdle ? 48 : isIn ? 0 : -20
-
-            const transition = isOut
-              ? `opacity ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
+            let transition = 'none'
+            if (isOut) {
+              transition = `opacity ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
                  filter  ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
                  transform ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms`
-              : isIn
-                ? `opacity ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
+            } else if (isIn) {
+              transition = `opacity ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
                  filter  ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
                  transform ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms`
-                : 'none'
+            }
 
             return (
               <span
                 key={i}
-                className="font-sans font-bold text-[#111] leading-none select-none"
+                className="font-sans leading-none font-bold text-[#111] select-none"
                 style={{
+                  filter: `blur(${blur}px)`,
                   fontSize: `calc((100vw - 64px) / ${LETTERS.length})`,
                   letterSpacing: '0.05em',
                   opacity,
-                  filter: `blur(${blur}px)`,
                   transform: `translateY(${translateY}px)`,
                   transition,
                   willChange: 'opacity, filter, transform',

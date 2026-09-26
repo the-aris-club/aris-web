@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
 import {
   GitPullRequest,
   GitMerge,
@@ -13,86 +12,87 @@ import {
   Eye,
   Terminal,
 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
 const ALL_PRS = [
   {
-    id: 145,
-    title: 'feat: multi-agent orchestration v2',
-    agent: 'orchestrator',
-    status: 'review',
-    comments: 2,
     additions: 57,
-    deletions: 4,
+    agent: 'orchestrator',
     branch: 'feat/orchestration-v2',
+    comments: 2,
+    deletions: 4,
+    id: 145,
+    status: 'review',
     time: 'Just now',
+    title: 'feat: multi-agent orchestration v2',
   },
   {
-    id: 144,
-    title: 'fix: memory context window overflow',
-    agent: 'analyst-agent',
-    status: 'review',
-    comments: 1,
     additions: 18,
-    deletions: 3,
-    branch: 'fix/ctx-overflow',
-    time: '1m ago',
-  },
-  {
-    id: 143,
-    title: 'feat: streaming tool response',
-    agent: 'monitor-agent',
-    status: 'merged',
-    comments: 4,
-    additions: 93,
-    deletions: 11,
-    branch: 'feat/stream-tools',
-    time: '1m ago',
-  },
-  {
-    id: 142,
-    title: 'feat: add memory context to executor',
-    agent: 'executor-agent',
-    status: 'merged',
-    comments: 3,
-    additions: 84,
-    deletions: 12,
-    branch: 'feat/memory-ctx',
-    time: '2m ago',
-  },
-  {
-    id: 141,
-    title: 'fix: rate limit backoff strategy',
-    agent: 'monitor-agent',
-    status: 'approved',
-    comments: 1,
-    additions: 31,
-    deletions: 8,
-    branch: 'fix/rate-backoff',
-    time: '8m ago',
-  },
-  {
-    id: 140,
-    title: 'feat: parallel tool execution',
-    agent: 'researcher-agent',
-    status: 'review',
-    comments: 5,
-    additions: 142,
-    deletions: 27,
-    branch: 'feat/parallel-tools',
-    time: '22m ago',
-  },
-  {
-    id: 139,
-    title: 'refactor: orchestrator pipeline',
     agent: 'analyst-agent',
+    branch: 'fix/ctx-overflow',
+    comments: 1,
+    deletions: 3,
+    id: 144,
+    status: 'review',
+    time: '1m ago',
+    title: 'fix: memory context window overflow',
+  },
+  {
+    additions: 93,
+    agent: 'monitor-agent',
+    branch: 'feat/stream-tools',
+    comments: 4,
+    deletions: 11,
+    id: 143,
     status: 'merged',
-    comments: 7,
+    time: '1m ago',
+    title: 'feat: streaming tool response',
+  },
+  {
+    additions: 84,
+    agent: 'executor-agent',
+    branch: 'feat/memory-ctx',
+    comments: 3,
+    deletions: 12,
+    id: 142,
+    status: 'merged',
+    time: '2m ago',
+    title: 'feat: add memory context to executor',
+  },
+  {
+    additions: 31,
+    agent: 'monitor-agent',
+    branch: 'fix/rate-backoff',
+    comments: 1,
+    deletions: 8,
+    id: 141,
+    status: 'approved',
+    time: '8m ago',
+    title: 'fix: rate limit backoff strategy',
+  },
+  {
+    additions: 142,
+    agent: 'researcher-agent',
+    branch: 'feat/parallel-tools',
+    comments: 5,
+    deletions: 27,
+    id: 140,
+    status: 'review',
+    time: '22m ago',
+    title: 'feat: parallel tool execution',
+  },
+  {
     additions: 209,
-    deletions: 88,
+    agent: 'analyst-agent',
     branch: 'refactor/pipeline',
+    comments: 7,
+    deletions: 88,
+    id: 139,
+    status: 'merged',
     time: '1h ago',
+    title: 'refactor: orchestrator pipeline',
   },
 ]
 
@@ -109,30 +109,30 @@ const ALL_REVIEW_LINES: {
   text: string
   author?: string
 }[] = [
-  { type: 'code', text: 'const ctx = await memory.load(task.id)' },
+  { text: 'const ctx = await memory.load(task.id)', type: 'code' },
   {
-    type: 'comment',
-    text: 'Should we cache this per agent run?',
     author: 'analyst-agent',
+    text: 'Should we cache this per agent run?',
+    type: 'comment',
   },
-  { type: 'code', text: 'return researcher.execute(task, ctx)' },
+  { text: 'return researcher.execute(task, ctx)', type: 'code' },
   {
-    type: 'approve',
-    text: 'LGTM — memory scope looks correct',
     author: 'monitor-agent',
+    text: 'LGTM — memory scope looks correct',
+    type: 'approve',
   },
-  { type: 'code', text: 'export const run = async (task) => {' },
+  { text: 'export const run = async (task) => {', type: 'code' },
   {
-    type: 'change',
-    text: 'Consider adding retry logic here',
     author: 'executor-agent',
+    text: 'Consider adding retry logic here',
+    type: 'change',
   },
-  { type: 'code', text: '  const plan = await planner.run(goal)' },
-  { type: 'approve', text: 'Approved — ship it', author: 'orchestrator' },
-  { type: 'code', text: '  await ctx.memory.save(result)' },
-  { type: 'comment', text: 'Add error boundary here', author: 'monitor-agent' },
-  { type: 'code', text: 'return { status: "done", result }' },
-  { type: 'approve', text: 'All checks pass', author: 'analyst-agent' },
+  { text: '  const plan = await planner.run(goal)', type: 'code' },
+  { author: 'orchestrator', text: 'Approved — ship it', type: 'approve' },
+  { text: '  await ctx.memory.save(result)', type: 'code' },
+  { author: 'monitor-agent', text: 'Add error boundary here', type: 'comment' },
+  { text: 'return { status: "done", result }', type: 'code' },
+  { author: 'analyst-agent', text: 'All checks pass', type: 'approve' },
 ]
 
 const COMMITS = [
@@ -171,7 +171,7 @@ const ACTIVITY_SEED = Array.from({ length: 35 }, () => ({
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 // Smooth 60fps bar chart — canvas fills full container width
-function MiniBarGraph({ seed }: { seed: number }) {
+const MiniBarGraph = ({ seed }: { seed: number }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef<number>(0)
   const barsRef = useRef<number[]>([])
@@ -181,12 +181,17 @@ function MiniBarGraph({ seed }: { seed: number }) {
     // Initialise bars with a seeded pattern
     barsRef.current = Array.from(
       { length: N },
-      (_, i) => 0.2 + 0.8 * Math.abs(Math.sin((i + seed) * 1.3)),
+      (_, i) => 0.2 + 0.8 * Math.abs(Math.sin((i + seed) * 1.3))
     )
 
     const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')!
+    if (!canvas) {
+      return
+    }
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      return
+    }
 
     const draw = () => {
       const W = canvas.offsetWidth
@@ -201,14 +206,15 @@ function MiniBarGraph({ seed }: { seed: number }) {
       barsRef.current = barsRef.current.map((v, i) => {
         const target =
           0.15 + 0.85 * Math.abs(Math.sin(Date.now() / 3000 + i * 0.8 + seed))
-        return v + (target - v) * 0.012 // lerp — very smooth
+        // lerp — very smooth
+        return v + (target - v) * 0.012
       })
 
       const bars = barsRef.current
       const gap = 2
       const bw = (W - gap * (N - 1)) / N
 
-      bars.forEach((v, i) => {
+      for (const [i, v] of bars.entries()) {
         const bh = v * H
         const x = i * (bw + gap)
         const y = H - bh
@@ -216,7 +222,7 @@ function MiniBarGraph({ seed }: { seed: number }) {
         ctx.roundRect(x, y, bw, bh, 2)
         ctx.fillStyle = `rgba(17,17,17,${0.12 + v * 0.65})`
         ctx.fill()
-      })
+      }
 
       rafRef.current = requestAnimationFrame(draw)
     }
@@ -228,13 +234,13 @@ function MiniBarGraph({ seed }: { seed: number }) {
   return (
     <canvas
       ref={canvasRef}
-      style={{ width: '100%', height: 28, display: 'block' }}
+      style={{ display: 'block', height: 28, width: '100%' }}
     />
   )
 }
 
 // Smooth 60fps area sparkline — fills full width
-function LiveSparkline({ seed }: { seed?: number }) {
+const LiveSparkline = ({ seed }: { seed?: number }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef<number>(0)
   const ptsRef = useRef<number[]>([])
@@ -243,12 +249,17 @@ function LiveSparkline({ seed }: { seed?: number }) {
     const N = 24
     ptsRef.current = Array.from(
       { length: N },
-      (_, i) => 0.1 + 0.7 * Math.abs(Math.sin(i * 0.6 + (seed ?? 0))),
+      (_, i) => 0.1 + 0.7 * Math.abs(Math.sin(i * 0.6 + (seed ?? 0)))
     )
 
     const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')!
+    if (!canvas) {
+      return
+    }
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      return
+    }
 
     const draw = () => {
       const W = canvas.offsetWidth
@@ -259,7 +270,7 @@ function LiveSparkline({ seed }: { seed?: number }) {
       ctx.clearRect(0, 0, W, H)
 
       // Scroll left: drop first point, lerp last toward new target
-      const last = ptsRef.current[ptsRef.current.length - 1]
+      const last = ptsRef.current.at(-1) ?? 0
       const target =
         0.1 + 0.85 * (0.5 + 0.5 * Math.sin(Date.now() / 2200 + (seed ?? 0)))
       ptsRef.current = [
@@ -276,7 +287,9 @@ function LiveSparkline({ seed }: { seed?: number }) {
       grad.addColorStop(1, 'rgba(17,17,17,0)')
       ctx.beginPath()
       ctx.moveTo(0, H)
-      pts.forEach((v, i) => ctx.lineTo(i * step, H - v * H * 0.9))
+      for (const [i, v] of pts.entries()) {
+        ctx.lineTo(i * step, H - v * H * 0.9)
+      }
       ctx.lineTo(W, H)
       ctx.closePath()
       ctx.fillStyle = grad
@@ -284,11 +297,15 @@ function LiveSparkline({ seed }: { seed?: number }) {
 
       // Line
       ctx.beginPath()
-      pts.forEach((v, i) => {
-        const x = i * step,
-          y = H - v * H * 0.9
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
-      })
+      for (const [i, v] of pts.entries()) {
+        const x = i * step
+        const y = H - v * H * 0.9
+        if (i === 0) {
+          ctx.moveTo(x, y)
+        } else {
+          ctx.lineTo(x, y)
+        }
+      }
       ctx.strokeStyle = 'rgba(17,17,17,0.75)'
       ctx.lineWidth = 1.5
       ctx.lineJoin = 'round'
@@ -297,7 +314,7 @@ function LiveSparkline({ seed }: { seed?: number }) {
 
       // Dot at end
       const ex = W
-      const ey = H - pts[pts.length - 1] * H * 0.9
+      const ey = H - (pts.at(-1) ?? 0) * H * 0.9
       ctx.beginPath()
       ctx.arc(ex, ey, 2.5, 0, Math.PI * 2)
       ctx.fillStyle = 'rgba(17,17,17,0.85)'
@@ -313,13 +330,13 @@ function LiveSparkline({ seed }: { seed?: number }) {
   return (
     <canvas
       ref={canvasRef}
-      style={{ width: '100%', height: 28, display: 'block' }}
+      style={{ display: 'block', height: 28, width: '100%' }}
     />
   )
 }
 
 // Smooth 60fps dot/line graph — fills full width
-function MiniDotGraph({ seed }: { seed?: number }) {
+const MiniDotGraph = ({ seed }: { seed?: number }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef<number>(0)
   const ptsRef = useRef<number[]>([])
@@ -328,12 +345,17 @@ function MiniDotGraph({ seed }: { seed?: number }) {
     const N = 18
     ptsRef.current = Array.from(
       { length: N },
-      (_, i) => 0.1 + 0.8 * Math.abs(Math.sin(i * 0.9 + (seed ?? 2))),
+      (_, i) => 0.1 + 0.8 * Math.abs(Math.sin(i * 0.9 + (seed ?? 2)))
     )
 
     const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')!
+    if (!canvas) {
+      return
+    }
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      return
+    }
 
     const draw = () => {
       const W = canvas.offsetWidth
@@ -343,7 +365,7 @@ function MiniDotGraph({ seed }: { seed?: number }) {
       ctx.scale(devicePixelRatio, devicePixelRatio)
       ctx.clearRect(0, 0, W, H)
 
-      const last = ptsRef.current[ptsRef.current.length - 1]
+      const last = ptsRef.current.at(-1) ?? 0
       const target =
         0.1 +
         0.85 * (0.5 + 0.5 * Math.sin(Date.now() / 2800 + (seed ?? 2) * 1.5))
@@ -357,11 +379,15 @@ function MiniDotGraph({ seed }: { seed?: number }) {
 
       // Dashed connector line
       ctx.beginPath()
-      pts.forEach((v, i) => {
-        const x = i * step,
-          y = H - v * H * 0.88
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
-      })
+      for (const [i, v] of pts.entries()) {
+        const x = i * step
+        const y = H - v * H * 0.88
+        if (i === 0) {
+          ctx.moveTo(x, y)
+        } else {
+          ctx.lineTo(x, y)
+        }
+      }
       ctx.strokeStyle = 'rgba(17,17,17,0.15)'
       ctx.lineWidth = 1
       ctx.setLineDash([3, 3])
@@ -369,14 +395,14 @@ function MiniDotGraph({ seed }: { seed?: number }) {
       ctx.setLineDash([])
 
       // Dots
-      pts.forEach((v, i) => {
-        const x = i * step,
-          y = H - v * H * 0.88
+      for (const [i, v] of pts.entries()) {
+        const x = i * step
+        const y = H - v * H * 0.88
         ctx.beginPath()
         ctx.arc(x, y, 2.2, 0, Math.PI * 2)
         ctx.fillStyle = `rgba(17,17,17,${0.2 + v * 0.65})`
         ctx.fill()
-      })
+      }
 
       rafRef.current = requestAnimationFrame(draw)
     }
@@ -388,29 +414,29 @@ function MiniDotGraph({ seed }: { seed?: number }) {
   return (
     <canvas
       ref={canvasRef}
-      style={{ width: '100%', height: 28, display: 'block' }}
+      style={{ display: 'block', height: 28, width: '100%' }}
     />
   )
 }
 
-function StatusBadge({ status }: { status: string }) {
+const StatusBadge = ({ status }: { status: string }) => {
   const cfg = {
-    merged: {
-      bg: 'rgba(130,80,255,0.1)',
-      color: '#8250df',
-      icon: <GitMerge style={{ width: 9, height: 9 }} />,
-      label: 'Merged',
-    },
     approved: {
       bg: 'rgba(40,167,69,0.1)',
       color: '#28a745',
-      icon: <CheckCircle2 style={{ width: 9, height: 9 }} />,
+      icon: <CheckCircle2 style={{ height: 9, width: 9 }} />,
       label: 'Approved',
+    },
+    merged: {
+      bg: 'rgba(130,80,255,0.1)',
+      color: '#8250df',
+      icon: <GitMerge style={{ height: 9, width: 9 }} />,
+      label: 'Merged',
     },
     review: {
       bg: 'rgba(201,169,110,0.12)',
       color: '#b07d30',
-      icon: <Eye style={{ width: 9, height: 9 }} />,
+      icon: <Eye style={{ height: 9, width: 9 }} />,
       label: 'In Review',
     },
   }[status] ?? { bg: '#eee', color: '#666', icon: null, label: status }
@@ -418,18 +444,18 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span
       style={{
-        display: 'inline-flex',
         alignItems: 'center',
-        gap: 4,
-        fontSize: 8,
-        padding: '2px 7px',
-        borderRadius: 99,
         background: cfg.bg,
+        borderRadius: 99,
         color: cfg.color,
+        display: 'inline-flex',
         fontFamily: 'monospace',
-        letterSpacing: '0.08em',
-        textTransform: 'uppercase',
+        fontSize: 8,
         fontWeight: 600,
+        gap: 4,
+        letterSpacing: '0.08em',
+        padding: '2px 7px',
+        textTransform: 'uppercase',
       }}
     >
       {cfg.icon}
@@ -438,13 +464,13 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-function Bar({
+const Bar = ({
   pct,
   color = 'rgba(0,0,0,0.75)',
 }: {
   pct: number
   color?: string
-}) {
+}) => {
   const [w, setW] = useState(0)
   useEffect(() => {
     const t = setTimeout(() => setW(pct), 600)
@@ -453,35 +479,39 @@ function Bar({
   return (
     <div
       style={{
-        height: 2,
         background: 'rgba(0,0,0,0.07)',
         borderRadius: 99,
-        width: '100%',
+        height: 2,
         overflow: 'hidden',
+        width: '100%',
       }}
     >
       <div
         style={{
-          height: '100%',
-          width: `${w}%`,
           background: color,
           borderRadius: 99,
+          height: '100%',
           transition: 'width 1.4s cubic-bezier(0.16,1,0.3,1)',
+          width: `${w}%`,
         }}
       />
     </div>
   )
 }
 
-function Counter({ to, suffix = '' }: { to: number; suffix?: string }) {
+const Counter = ({ to, suffix = '' }: { to: number; suffix?: string }) => {
   const [val, setVal] = useState(0)
   useEffect(() => {
     let s: number | null = null
     const f = (ts: number) => {
-      if (!s) s = ts
+      if (!s) {
+        s = ts
+      }
       const p = Math.min((ts - s) / 1100, 1)
-      setVal(Math.round((1 - Math.pow(1 - p, 3)) * to))
-      if (p < 1) requestAnimationFrame(f)
+      setVal(Math.round((1 - (1 - p) ** 3) * to))
+      if (p < 1) {
+        requestAnimationFrame(f)
+      }
     }
     requestAnimationFrame(f)
   }, [to])
@@ -493,41 +523,45 @@ function Counter({ to, suffix = '' }: { to: number; suffix?: string }) {
   )
 }
 
-function LiveDot() {
-  return (
+const LiveDot = () => (
+  <span
+    style={{
+      display: 'inline-flex',
+      flexShrink: 0,
+      height: 7,
+      position: 'relative',
+      width: 7,
+    }}
+  >
     <span
       style={{
-        position: 'relative',
-        display: 'inline-flex',
-        width: 7,
-        height: 7,
-        flexShrink: 0,
+        animation: 'ping 1.8s cubic-bezier(0,0,0.2,1) infinite',
+        background: '#28a745',
+        borderRadius: '50%',
+        inset: 0,
+        opacity: 0.4,
+        position: 'absolute',
       }}
-    >
-      <span
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: '50%',
-          background: '#28a745',
-          opacity: 0.4,
-          animation: 'ping 1.8s cubic-bezier(0,0,0.2,1) infinite',
-        }}
-      />
-      <span
-        style={{
-          borderRadius: '50%',
-          width: '100%',
-          height: '100%',
-          background: '#28a745',
-        }}
-      />
-    </span>
-  )
-}
+    />
+    <span
+      style={{
+        background: '#28a745',
+        borderRadius: '50%',
+        height: '100%',
+        width: '100%',
+      }}
+    />
+  </span>
+)
 
 // Activity heatmap cell
-function HeatCell({ level, animDelay }: { level: number; animDelay: number }) {
+const HeatCell = ({
+  level,
+  animDelay,
+}: {
+  level: number
+  animDelay: number
+}) => {
   const [visible, setVisible] = useState(false)
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), animDelay)
@@ -543,50 +577,52 @@ function HeatCell({ level, animDelay }: { level: number; animDelay: number }) {
   return (
     <div
       style={{
-        width: 9,
-        height: 9,
-        borderRadius: 2,
         background: colors[level],
+        borderRadius: 2,
+        height: 9,
         opacity: visible ? 1 : 0,
         transition: `opacity 0.4s ease`,
+        width: 9,
       }}
     />
   )
 }
 
 // Animated typing cursor in review
-function ReviewLine({
+const ReviewLine = ({
   item,
   delay,
 }: {
   item: (typeof ALL_REVIEW_LINES)[0]
   delay: number
-}) {
+}) => {
   const [visible, setVisible] = useState(false)
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), delay)
     return () => clearTimeout(t)
   }, [delay])
 
-  if (!visible) return null
+  if (!visible) {
+    return null
+  }
 
   if (item.type === 'code') {
     return (
       <div
         style={{
-          padding: '3px 10px',
+          animation: 'logIn 0.2s ease forwards',
           background: 'rgba(0,0,0,0.04)',
           borderLeft: '2px solid rgba(0,0,0,0.08)',
           margin: '2px 0',
-          animation: 'logIn 0.2s ease forwards',
           opacity: 0,
+          padding: '3px 10px',
         }}
       >
         <code
           style={{
-            fontSize: 9,
-            fontFamily: 'monospace',
             color: 'rgba(0,0,0,0.55)',
+            fontFamily: 'monospace',
+            fontSize: 9,
           }}
         >
           {item.text}
@@ -596,61 +632,61 @@ function ReviewLine({
   }
   const iconCfg = {
     approve: {
+      color: '#28a745',
       icon: (
         <CheckCircle2
-          style={{ width: 9, height: 9, color: '#28a745', flexShrink: 0 }}
+          style={{ color: '#28a745', flexShrink: 0, height: 9, width: 9 }}
         />
       ),
-      color: '#28a745',
     },
     change: {
+      color: '#b07d30',
       icon: (
         <AlertCircle
-          style={{ width: 9, height: 9, color: '#b07d30', flexShrink: 0 }}
+          style={{ color: '#b07d30', flexShrink: 0, height: 9, width: 9 }}
         />
       ),
-      color: '#b07d30',
     },
     comment: {
+      color: 'rgba(0,0,0,0.5)',
       icon: (
         <MessageSquare
           style={{
-            width: 9,
-            height: 9,
             color: 'rgba(0,0,0,0.35)',
             flexShrink: 0,
+            height: 9,
+            width: 9,
           }}
         />
       ),
-      color: 'rgba(0,0,0,0.5)',
     },
-  }[item.type] ?? { icon: null, color: 'rgba(0,0,0,0.5)' }
+  }[item.type] ?? { color: 'rgba(0,0,0,0.5)', icon: null }
 
   return (
     <div
       style={{
+        alignItems: 'flex-start',
+        animation: 'logIn 0.2s ease forwards',
         display: 'flex',
         gap: 6,
-        alignItems: 'flex-start',
-        padding: '4px 0',
-        animation: 'logIn 0.2s ease forwards',
         opacity: 0,
+        padding: '4px 0',
       }}
     >
       {iconCfg.icon}
       <div>
         <span
-          style={{ fontSize: 9, color: iconCfg.color, fontFamily: 'monospace' }}
+          style={{ color: iconCfg.color, fontFamily: 'monospace', fontSize: 9 }}
         >
           {item.text}
         </span>
         {item.author && (
           <span
             style={{
-              fontSize: 8,
               color: 'rgba(0,0,0,0.3)',
-              marginLeft: 5,
               fontFamily: 'monospace',
+              fontSize: 8,
+              marginLeft: 5,
             }}
           >
             — {item.author}
@@ -663,7 +699,11 @@ function ReviewLine({
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
-export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
+export const AgentInterface = ({
+  revealDelay = 0,
+}: {
+  revealDelay?: number
+}) => {
   const [revealed, setRevealed] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [reqCount, setReqCount] = useState(1847)
@@ -696,17 +736,21 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
 
   // PR list auto-scroll: new PR arrives every 5s, list shifts
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted) {
+      return
+    }
     const t = setInterval(
       () => setPrOffset((v) => (v + 1) % (ALL_PRS.length - 3)),
-      4000,
+      4000
     )
     return () => clearInterval(t)
   }, [mounted])
 
   // Code review: cycle through files and advance progress bars
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted) {
+      return
+    }
     const t = setInterval(() => {
       setReviewFilePcts((p) =>
         p.map((v, i) => {
@@ -715,10 +759,10 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
             10,
             Math.min(
               99,
-              v + (i === reviewFileIdx ? Math.abs(delta) + 1 : delta * 0.3),
-            ),
+              v + (i === reviewFileIdx ? Math.abs(delta) + 1 : delta * 0.3)
+            )
           )
-        }),
+        })
       )
     }, 800)
     return () => clearInterval(t)
@@ -726,20 +770,26 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
 
   // Cycle active file highlight every 3s
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted) {
+      return
+    }
     const t = setInterval(
       () => setReviewFileIdx((v) => (v + 1) % ALL_REVIEW_FILES.length),
-      2800,
+      2800
     )
     return () => clearInterval(t)
   }, [mounted])
 
   // Review lines appear one by one, then reset and loop
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted) {
+      return
+    }
     const t = setInterval(() => {
       setReviewLineIdx((p) => {
-        if (p >= ALL_REVIEW_LINES.length) return 0
+        if (p >= ALL_REVIEW_LINES.length) {
+          return 0
+        }
         return p + 1
       })
     }, 650)
@@ -748,7 +798,9 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
 
   // Heatmap: occasional cell lights up
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted) {
+      return
+    }
     const t = setInterval(() => {
       setActivity((prev) => {
         const next = [...prev]
@@ -782,35 +834,35 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
 
   return (
     <div
-      className="relative z-10 flex items-center justify-center pointer-events-none select-none px-3 md:px-8 w-full md:absolute md:inset-0 md:pt-[220px] md:pb-[8%]"
-      style={{ paddingTop: '16px', paddingBottom: '16px' }}
+      className="pointer-events-none relative z-10 flex w-full items-center justify-center px-3 select-none md:absolute md:inset-0 md:px-8 md:pt-[220px] md:pb-[8%]"
+      style={{ paddingBottom: '16px', paddingTop: '16px' }}
     >
       <div
         style={{
-          width: '100%',
-          maxWidth: 900,
+          backdropFilter: 'blur(32px)',
           background: 'rgba(246,245,242,0.96)',
           border: '1px solid rgba(0,0,0,0.1)',
-          backdropFilter: 'blur(32px)',
           borderRadius: 18,
-          overflow: 'hidden',
           boxShadow:
             '0 28px 70px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.95) inset',
+          maxWidth: 900,
           // Slide up from bottom when revealed
           opacity: revealed ? 1 : 0,
+          overflow: 'hidden',
           transform: revealed ? 'translateY(0)' : 'translateY(72px)',
           transition:
             'opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1)',
+          width: '100%',
         }}
       >
         {/* Titlebar */}
         <div
           style={{
-            display: 'flex',
             alignItems: 'center',
-            padding: '9px 14px',
-            borderBottom: '1px solid rgba(0,0,0,0.07)',
             background: 'rgba(255,255,255,0.65)',
+            borderBottom: '1px solid rgba(0,0,0,0.07)',
+            display: 'flex',
+            padding: '9px 14px',
             position: 'relative',
           }}
         >
@@ -819,43 +871,43 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
               <span
                 key={c}
                 style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: '50%',
                   background: c,
+                  borderRadius: '50%',
                   display: 'inline-block',
+                  height: 10,
+                  width: 10,
                 }}
               />
             ))}
           </div>
           <span
             style={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              fontSize: 10,
-              letterSpacing: '0.18em',
               color: 'rgba(0,0,0,0.28)',
               fontFamily: 'monospace',
+              fontSize: 10,
+              left: '50%',
+              letterSpacing: '0.18em',
+              position: 'absolute',
+              transform: 'translateX(-50%)',
             }}
           >
             agentic / platform — main
           </span>
           <div
             style={{
-              marginLeft: 'auto',
-              display: 'flex',
               alignItems: 'center',
+              display: 'flex',
               gap: 8,
+              marginLeft: 'auto',
             }}
           >
             <LiveDot />
             <span
               style={{
-                fontSize: 8,
                 color: 'rgba(40,167,69,0.8)',
-                letterSpacing: '0.16em',
                 fontFamily: 'monospace',
+                fontSize: 8,
+                letterSpacing: '0.16em',
               }}
             >
               ALL SYSTEMS OPERATIONAL
@@ -866,52 +918,52 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
         {/* Metrics strip — fixed height */}
         <div
           style={{
+            background: 'rgba(251,250,247,0.9)',
+            borderBottom: '1px solid rgba(0,0,0,0.06)',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr 1fr 1fr',
-            borderBottom: '1px solid rgba(0,0,0,0.06)',
-            background: 'rgba(251,250,247,0.9)',
           }}
         >
           {[
             {
+              graph: <MiniBarGraph seed={0} />,
+              icon: <GitMerge style={{ height: 11, width: 11 }} />,
               label: 'PRs Merged today',
               val: 18,
-              icon: <GitMerge style={{ width: 11, height: 11 }} />,
-              graph: <MiniBarGraph seed={0} />,
             },
             {
+              graph: <MiniBarGraph seed={5} />,
+              icon: <Eye style={{ height: 11, width: 11 }} />,
               label: 'Reviews completed',
               val: 34,
-              icon: <Eye style={{ width: 11, height: 11 }} />,
-              graph: <MiniBarGraph seed={5} />,
             },
             {
+              graph: <MiniDotGraph seed={2} />,
+              icon: <GitCommit style={{ height: 11, width: 11 }} />,
               label: 'Agent commits',
               val: 127,
-              icon: <GitCommit style={{ width: 11, height: 11 }} />,
-              graph: <MiniDotGraph seed={2} />,
             },
             {
+              graph: <LiveSparkline seed={7} />,
+              icon: <Zap style={{ height: 11, width: 11 }} />,
               label: 'Tasks / min',
               val: reqCount,
-              icon: <Zap style={{ width: 11, height: 11 }} />,
-              graph: <LiveSparkline seed={7} />,
             },
           ].map((m, i) => (
             <div
               key={i}
               style={{
-                padding: '9px 12px',
+                borderRight: i < 3 ? '1px solid rgba(0,0,0,0.06)' : 'none',
                 height: 82,
                 overflow: 'hidden',
-                borderRight: i < 3 ? '1px solid rgba(0,0,0,0.06)' : 'none',
+                padding: '9px 12px',
                 ...anim(60 + i * 45),
               }}
             >
               <div
                 style={{
-                  display: 'flex',
                   alignItems: 'center',
+                  display: 'flex',
                   gap: 5,
                   marginBottom: 4,
                 }}
@@ -919,11 +971,11 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                 <span style={{ color: 'rgba(0,0,0,0.32)' }}>{m.icon}</span>
                 <span
                   style={{
+                    color: 'rgba(0,0,0,0.32)',
+                    fontFamily: 'monospace',
                     fontSize: 7.5,
                     letterSpacing: '0.14em',
                     textTransform: 'uppercase',
-                    color: 'rgba(0,0,0,0.32)',
-                    fontFamily: 'monospace',
                   }}
                 >
                   {m.label}
@@ -931,12 +983,12 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
               </div>
               <div
                 style={{
+                  color: '#111',
+                  fontFamily: 'monospace',
                   fontSize: 20,
                   fontWeight: 700,
-                  color: '#111',
                   lineHeight: 1,
                   marginBottom: 5,
-                  fontFamily: 'monospace',
                 }}
               >
                 {mounted ? <Counter to={m.val} /> : '—'}
@@ -950,11 +1002,11 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1.1fr 1fr 0.85fr',
             gap: 8,
-            padding: 8,
+            gridTemplateColumns: '1.1fr 1fr 0.85fr',
             height: 340,
             overflow: 'hidden',
+            padding: 8,
           }}
         >
           {/* Col 1 — PR list */}
@@ -970,24 +1022,24 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
           >
             <div
               style={{
-                display: 'flex',
                 alignItems: 'center',
+                display: 'flex',
+                flexShrink: 0,
                 justifyContent: 'space-between',
                 padding: '0 2px',
-                flexShrink: 0,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <div style={{ alignItems: 'center', display: 'flex', gap: 5 }}>
                 <GitPullRequest
-                  style={{ width: 10, height: 10, color: 'rgba(0,0,0,0.38)' }}
+                  style={{ color: 'rgba(0,0,0,0.38)', height: 10, width: 10 }}
                 />
                 <span
                   style={{
+                    color: 'rgba(0,0,0,0.38)',
+                    fontFamily: 'monospace',
                     fontSize: 8.5,
                     letterSpacing: '0.13em',
                     textTransform: 'uppercase',
-                    color: 'rgba(0,0,0,0.38)',
-                    fontFamily: 'monospace',
                   }}
                 >
                   Pull Requests
@@ -995,9 +1047,9 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
               </div>
               <span
                 style={{
-                  fontSize: 7.5,
                   color: 'rgba(0,0,0,0.25)',
                   fontFamily: 'monospace',
+                  fontSize: 7.5,
                 }}
               >
                 {ALL_PRS.filter((p) => p.status === 'review').length} OPEN
@@ -1005,35 +1057,35 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
             </div>
 
             {/* Fixed-height PR container — clips overflow, no layout shift */}
-            <div style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
+            <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
               {visiblePRs.map((pr, i) => (
                 <div
                   key={`${pr.id}-${prOffset}`}
                   style={{
                     ...panel,
-                    padding: '8px 10px',
-                    marginBottom: 5,
                     animation:
                       i === 0
                         ? 'prSlideIn 0.4s cubic-bezier(0.16,1,0.3,1) both'
                         : 'none',
+                    marginBottom: 5,
+                    padding: '8px 10px',
                   }}
                 >
                   <div
                     style={{
-                      display: 'flex',
                       alignItems: 'flex-start',
-                      justifyContent: 'space-between',
+                      display: 'flex',
                       gap: 5,
+                      justifyContent: 'space-between',
                       marginBottom: 5,
                     }}
                   >
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div
                         style={{
+                          color: '#111',
                           fontSize: 9.5,
                           fontWeight: 600,
-                          color: '#111',
                           lineHeight: 1.3,
                           marginBottom: 2,
                         }}
@@ -1042,9 +1094,9 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                       </div>
                       <div
                         style={{
-                          fontSize: 7.5,
-                          fontFamily: 'monospace',
                           color: 'rgba(0,0,0,0.32)',
+                          fontFamily: 'monospace',
+                          fontSize: 7.5,
                         }}
                       >
                         {pr.branch} · {pr.agent}
@@ -1054,66 +1106,66 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                   </div>
                   <div
                     style={{
-                      display: 'flex',
                       alignItems: 'center',
+                      display: 'flex',
                       justifyContent: 'space-between',
                     }}
                   >
                     <div style={{ display: 'flex', gap: 7 }}>
                       <span
                         style={{
-                          fontSize: 7.5,
                           color: '#28a745',
                           fontFamily: 'monospace',
+                          fontSize: 7.5,
                         }}
                       >
                         +{pr.additions}
                       </span>
                       <span
                         style={{
-                          fontSize: 7.5,
                           color: '#d73a49',
                           fontFamily: 'monospace',
+                          fontSize: 7.5,
                         }}
                       >
                         -{pr.deletions}
                       </span>
                       <div
                         style={{
-                          display: 'flex',
                           alignItems: 'center',
+                          display: 'flex',
                           gap: 2,
                         }}
                       >
                         <MessageSquare
                           style={{
-                            width: 7,
-                            height: 7,
                             color: 'rgba(0,0,0,0.28)',
+                            height: 7,
+                            width: 7,
                           }}
                         />
                         <span
-                          style={{ fontSize: 7.5, color: 'rgba(0,0,0,0.28)' }}
+                          style={{ color: 'rgba(0,0,0,0.28)', fontSize: 7.5 }}
                         >
                           {pr.comments}
                         </span>
                       </div>
                     </div>
                     <div
-                      style={{ display: 'flex', alignItems: 'center', gap: 3 }}
+                      style={{ alignItems: 'center', display: 'flex', gap: 3 }}
                     >
                       <Clock
                         style={{
-                          width: 7,
-                          height: 7,
                           color: 'rgba(0,0,0,0.22)',
+                          height: 7,
+                          width: 7,
                         }}
                       />
                       <span
                         style={{
-                          fontSize: 7.5,
                           color: 'rgba(0,0,0,0.28)',
                           fontFamily: 'monospace',
+                          fontSize: 7.5,
                         }}
                       >
                         {pr.time}
@@ -1128,30 +1180,30 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
             <div
               style={{
                 ...panel,
-                padding: '8px 10px',
                 flexShrink: 0,
                 height: 76,
                 overflow: 'hidden',
+                padding: '8px 10px',
               }}
             >
               <div
                 style={{
-                  display: 'flex',
                   alignItems: 'center',
+                  display: 'flex',
                   gap: 5,
                   marginBottom: 6,
                 }}
               >
                 <Terminal
-                  style={{ width: 9, height: 9, color: 'rgba(0,0,0,0.33)' }}
+                  style={{ color: 'rgba(0,0,0,0.33)', height: 9, width: 9 }}
                 />
                 <span
                   style={{
+                    color: 'rgba(0,0,0,0.33)',
+                    fontFamily: 'monospace',
                     fontSize: 7.5,
                     letterSpacing: '0.13em',
                     textTransform: 'uppercase',
-                    color: 'rgba(0,0,0,0.33)',
-                    fontFamily: 'monospace',
                   }}
                 >
                   Commit Activity
@@ -1160,10 +1212,10 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
               <div
                 style={{
                   display: 'flex',
-                  gap: 2,
                   flexWrap: 'wrap',
-                  maxWidth: 210,
+                  gap: 2,
                   height: 30,
+                  maxWidth: 210,
                   overflow: 'hidden',
                 }}
               >
@@ -1173,17 +1225,17 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
               </div>
               <div
                 style={{
-                  display: 'flex',
                   alignItems: 'center',
+                  display: 'flex',
                   gap: 3,
                   marginTop: 4,
                 }}
               >
                 <span
                   style={{
-                    fontSize: 7,
                     color: 'rgba(0,0,0,0.26)',
                     fontFamily: 'monospace',
+                    fontSize: 7,
                   }}
                 >
                   Less
@@ -1192,9 +1244,6 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                   <div
                     key={l}
                     style={{
-                      width: 7,
-                      height: 7,
-                      borderRadius: 1.5,
                       background: [
                         'rgba(0,0,0,0.05)',
                         'rgba(0,0,0,0.15)',
@@ -1202,14 +1251,17 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                         'rgba(0,0,0,0.55)',
                         'rgba(0,0,0,0.8)',
                       ][l],
+                      borderRadius: 1.5,
+                      height: 7,
+                      width: 7,
                     }}
                   />
                 ))}
                 <span
                   style={{
-                    fontSize: 7,
                     color: 'rgba(0,0,0,0.26)',
                     fontFamily: 'monospace',
+                    fontSize: 7,
                   }}
                 >
                   More
@@ -1231,23 +1283,23 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
           >
             <div
               style={{
-                display: 'flex',
                 alignItems: 'center',
+                display: 'flex',
+                flexShrink: 0,
                 gap: 5,
                 padding: '0 2px',
-                flexShrink: 0,
               }}
             >
               <Eye
-                style={{ width: 10, height: 10, color: 'rgba(0,0,0,0.38)' }}
+                style={{ color: 'rgba(0,0,0,0.38)', height: 10, width: 10 }}
               />
               <span
                 style={{
+                  color: 'rgba(0,0,0,0.38)',
+                  fontFamily: 'monospace',
                   fontSize: 8.5,
                   letterSpacing: '0.13em',
                   textTransform: 'uppercase',
-                  color: 'rgba(0,0,0,0.38)',
-                  fontFamily: 'monospace',
                 }}
               >
                 Code Review — #{ALL_PRS[reviewFileIdx % ALL_PRS.length].id}
@@ -1256,27 +1308,27 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
             <div
               style={{
                 ...panel,
-                flex: 1,
-                padding: '9px 10px',
-                overflow: 'hidden',
                 display: 'flex',
+                flex: 1,
                 flexDirection: 'column',
+                overflow: 'hidden',
+                padding: '9px 10px',
               }}
             >
               {/* Header — fixed */}
               <div
                 style={{
-                  marginBottom: 7,
-                  paddingBottom: 7,
                   borderBottom: '1px solid rgba(0,0,0,0.05)',
                   flexShrink: 0,
+                  marginBottom: 7,
+                  paddingBottom: 7,
                 }}
               >
                 <div
                   style={{
+                    color: '#111',
                     fontSize: 9.5,
                     fontWeight: 600,
-                    color: '#111',
                     marginBottom: 2,
                   }}
                 >
@@ -1285,23 +1337,23 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                 <div style={{ display: 'flex', gap: 5 }}>
                   <span
                     style={{
-                      fontSize: 7.5,
                       color: '#28a745',
                       fontFamily: 'monospace',
+                      fontSize: 7.5,
                     }}
                   >
                     +142
                   </span>
                   <span
                     style={{
-                      fontSize: 7.5,
                       color: '#d73a49',
                       fontFamily: 'monospace',
+                      fontSize: 7.5,
                     }}
                   >
                     -27
                   </span>
-                  <span style={{ fontSize: 7.5, color: 'rgba(0,0,0,0.28)' }}>
+                  <span style={{ color: 'rgba(0,0,0,0.28)', fontSize: 7.5 }}>
                     5 files
                   </span>
                 </div>
@@ -1312,9 +1364,9 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
+                  flexShrink: 0,
                   gap: 6,
                   marginBottom: 9,
-                  flexShrink: 0,
                 }}
               >
                 {ALL_REVIEW_FILES.map((f, i) => (
@@ -1334,10 +1386,10 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                     >
                       <span
                         style={{
-                          fontSize: 7.5,
-                          fontFamily: 'monospace',
                           color:
                             i === reviewFileIdx ? '#111' : 'rgba(0,0,0,0.42)',
+                          fontFamily: 'monospace',
+                          fontSize: 7.5,
                           transition: 'color 0.4s ease',
                         }}
                       >
@@ -1345,11 +1397,11 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                       </span>
                       <span
                         style={{
-                          fontSize: 7.5,
-                          fontFamily: 'monospace',
                           color: reviewFilePcts[i] > 70 ? '#28a745' : '#d73a49',
-                          transition: 'color 0.4s ease',
+                          fontFamily: 'monospace',
+                          fontSize: 7.5,
                           fontWeight: i === reviewFileIdx ? 700 : 400,
+                          transition: 'color 0.4s ease',
                         }}
                       >
                         {Math.round(reviewFilePcts[i])}%
@@ -1367,9 +1419,9 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
               <div
                 style={{
                   borderTop: '1px solid rgba(0,0,0,0.05)',
-                  paddingTop: 7,
                   flex: 1,
                   overflow: 'hidden',
+                  paddingTop: 7,
                 }}
               >
                 {ALL_REVIEW_LINES.slice(0, reviewLineIdx)
@@ -1383,22 +1435,22 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                   ))}
                 <div
                   style={{
-                    display: 'flex',
                     alignItems: 'center',
+                    display: 'flex',
                     gap: 3,
                     marginTop: 2,
                   }}
                 >
                   <Terminal
-                    style={{ width: 7, height: 7, color: 'rgba(0,0,0,0.18)' }}
+                    style={{ color: 'rgba(0,0,0,0.18)', height: 7, width: 7 }}
                   />
                   <span
                     style={{
-                      display: 'inline-block',
-                      width: 4,
-                      height: 9,
                       background: cursor ? 'rgba(0,0,0,0.38)' : 'transparent',
+                      display: 'inline-block',
+                      height: 9,
                       transition: 'background 0.08s',
+                      width: 4,
                     }}
                   />
                 </div>
@@ -1419,23 +1471,23 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
           >
             <div
               style={{
-                display: 'flex',
                 alignItems: 'center',
+                display: 'flex',
+                flexShrink: 0,
                 gap: 5,
                 padding: '0 2px',
-                flexShrink: 0,
               }}
             >
               <GitCommit
-                style={{ width: 10, height: 10, color: 'rgba(0,0,0,0.38)' }}
+                style={{ color: 'rgba(0,0,0,0.38)', height: 10, width: 10 }}
               />
               <span
                 style={{
+                  color: 'rgba(0,0,0,0.38)',
+                  fontFamily: 'monospace',
                   fontSize: 8.5,
                   letterSpacing: '0.13em',
                   textTransform: 'uppercase',
-                  color: 'rgba(0,0,0,0.38)',
-                  fontFamily: 'monospace',
                 }}
               >
                 Recent Commits
@@ -1446,18 +1498,18 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                 <div
                   key={c.hash}
                   style={{
-                    padding: '7px 10px',
-                    borderBottom: i < 3 ? '1px solid rgba(0,0,0,0.04)' : 'none',
                     animation: mounted
                       ? `fadeSlide 0.3s ease ${280 + i * 55}ms both`
                       : 'none',
+                    borderBottom: i < 3 ? '1px solid rgba(0,0,0,0.04)' : 'none',
+                    padding: '7px 10px',
                   }}
                 >
                   <div
                     style={{
+                      color: '#111',
                       fontSize: 8.5,
                       fontWeight: 500,
-                      color: '#111',
                       lineHeight: 1.35,
                       marginBottom: 2,
                     }}
@@ -1469,18 +1521,18 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                   >
                     <span
                       style={{
-                        fontSize: 7.5,
-                        fontFamily: 'monospace',
                         color: '#8250df',
+                        fontFamily: 'monospace',
+                        fontSize: 7.5,
                       }}
                     >
                       {c.hash}
                     </span>
                     <span
                       style={{
-                        fontSize: 7.5,
                         color: 'rgba(0,0,0,0.28)',
                         fontFamily: 'monospace',
+                        fontSize: 7.5,
                       }}
                     >
                       {c.time}
@@ -1492,23 +1544,23 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
 
             <div
               style={{
-                display: 'flex',
                 alignItems: 'center',
+                display: 'flex',
+                flexShrink: 0,
                 gap: 5,
                 padding: '2px 2px 0',
-                flexShrink: 0,
               }}
             >
               <Zap
-                style={{ width: 10, height: 10, color: 'rgba(0,0,0,0.38)' }}
+                style={{ color: 'rgba(0,0,0,0.38)', height: 10, width: 10 }}
               />
               <span
                 style={{
+                  color: 'rgba(0,0,0,0.38)',
+                  fontFamily: 'monospace',
                   fontSize: 8.5,
                   letterSpacing: '0.13em',
                   textTransform: 'uppercase',
-                  color: 'rgba(0,0,0,0.38)',
-                  fontFamily: 'monospace',
                 }}
               >
                 CI / Agents
@@ -1517,66 +1569,66 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
             <div style={{ ...panel, flexShrink: 0, overflow: 'hidden' }}>
               {[
                 {
+                  duration: '1m 32s',
                   name: 'researcher-agent',
                   status: 'passing',
-                  duration: '1m 32s',
                 },
                 {
+                  duration: '0m 48s',
                   name: 'analyst-agent',
                   status: 'running',
-                  duration: '0m 48s',
                 },
                 {
+                  duration: '2m 11s',
                   name: 'executor-agent',
                   status: 'passing',
-                  duration: '2m 11s',
                 },
                 {
+                  duration: '0m 54s',
                   name: 'monitor-agent',
                   status: 'running',
-                  duration: '0m 54s',
                 },
               ].map((a, i) => (
                 <div
                   key={a.name}
                   style={{
-                    display: 'flex',
                     alignItems: 'center',
+                    borderBottom: i < 3 ? '1px solid rgba(0,0,0,0.04)' : 'none',
+                    display: 'flex',
                     justifyContent: 'space-between',
                     padding: '6px 10px',
-                    borderBottom: i < 3 ? '1px solid rgba(0,0,0,0.04)' : 'none',
                   }}
                 >
                   <div
-                    style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                    style={{ alignItems: 'center', display: 'flex', gap: 6 }}
                   >
                     {a.status === 'running' ? (
                       <div
                         style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          border: '1.5px solid rgba(0,0,0,0.5)',
-                          borderTopColor: 'transparent',
                           animation: 'spin 0.9s linear infinite',
+                          border: '1.5px solid rgba(0,0,0,0.5)',
+                          borderRadius: '50%',
+                          borderTopColor: 'transparent',
                           flexShrink: 0,
+                          height: 8,
+                          width: 8,
                         }}
                       />
                     ) : (
                       <CheckCircle2
                         style={{
-                          width: 8,
-                          height: 8,
                           color: '#28a745',
                           flexShrink: 0,
+                          height: 8,
+                          width: 8,
                         }}
                       />
                     )}
                     <span
                       style={{
-                        fontSize: 8.5,
-                        fontFamily: 'monospace',
                         color: '#111',
+                        fontFamily: 'monospace',
+                        fontSize: 8.5,
                       }}
                     >
                       {a.name}
@@ -1584,9 +1636,9 @@ export function AgentInterface({ revealDelay = 0 }: { revealDelay?: number }) {
                   </div>
                   <span
                     style={{
-                      fontSize: 7.5,
                       color: 'rgba(0,0,0,0.28)',
                       fontFamily: 'monospace',
+                      fontSize: 7.5,
                     }}
                   >
                     {a.duration}

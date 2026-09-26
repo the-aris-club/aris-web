@@ -1,2 +1,0 @@
-# Lockfiles are machine-owned; reformatting them corrupts installs.
-pnpm-lock.yaml

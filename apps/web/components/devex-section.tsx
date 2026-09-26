@@ -4,138 +4,146 @@ import { useState, useEffect } from 'react'
 
 const STEPS = [
   {
-    num: '01',
-    title: 'Install SDK',
+    code: [
+      { text: '# Install the Agentic SDK', type: 'comment' },
+      { text: 'npm install @agentic/sdk', type: 'command' },
+      { type: 'gap' },
+      { text: '# Initialize your project', type: 'comment' },
+      { text: 'npx agentic init', type: 'command' },
+      { type: 'gap' },
+      { text: '✓ Project initialized', type: 'output' },
+      { text: '✓ Config file created', type: 'output' },
+      { text: '✓ Ready to build', type: 'output' },
+    ],
     desc: 'One command to get started',
     file: 'terminal',
     lang: 'bash',
-    code: [
-      { type: 'comment', text: '# Install the Agentic SDK' },
-      { type: 'command', text: 'npm install @agentic/sdk' },
-      { type: 'gap' },
-      { type: 'comment', text: '# Initialize your project' },
-      { type: 'command', text: 'npx agentic init' },
-      { type: 'gap' },
-      { type: 'output', text: '✓ Project initialized' },
-      { type: 'output', text: '✓ Config file created' },
-      { type: 'output', text: '✓ Ready to build' },
-    ],
+    num: '01',
+    title: 'Install SDK',
   },
   {
-    num: '02',
-    title: 'Define Agent',
-    desc: 'TypeScript-first agent class',
-    file: 'agents/researcher.ts',
-    lang: 'typescript',
     code: [
-      { type: 'comment', text: '// agents/researcher.ts' },
+      { text: '// agents/researcher.ts', type: 'comment' },
       {
-        type: 'keyword',
-        text: 'import',
         after: ' { Agent, Tool } ',
         keyword2: 'from',
         string: " '@agentic/sdk'",
+        text: 'import',
+        type: 'keyword',
       },
       { type: 'gap' },
       {
-        type: 'keyword',
-        text: 'const',
         after: ' webSearch ',
+        args: "('web-search', async (q) => { ... })",
+        fn: 'Tool',
         keyword2: '=',
         keyword3: ' new ',
-        fn: 'Tool',
-        args: "('web-search', async (q) => { ... })",
+        text: 'const',
+        type: 'keyword',
       },
       { type: 'gap' },
       {
-        type: 'keyword',
-        text: 'export const',
         after: ' researcher ',
+        args: '({',
+        fn: 'Agent',
         keyword2: '=',
         keyword3: ' new ',
-        fn: 'Agent',
-        args: '({',
+        text: 'export const',
+        type: 'keyword',
       },
-      { type: 'prop', key: '  name', val: "'researcher'" },
-      { type: 'prop', key: '  model', val: "'claude-opus'" },
-      { type: 'prop', key: '  tools', val: '[webSearch]' },
-      { type: 'prop', key: '  memory', val: 'true' },
-      { type: 'plain', text: '});' },
+      { key: '  name', type: 'prop', val: "'researcher'" },
+      { key: '  model', type: 'prop', val: "'claude-opus'" },
+      { key: '  tools', type: 'prop', val: '[webSearch]' },
+      { key: '  memory', type: 'prop', val: 'true' },
+      { text: '});', type: 'plain' },
     ],
+    desc: 'TypeScript-first agent class',
+    file: 'agents/researcher.ts',
+    lang: 'typescript',
+    num: '02',
+    title: 'Define Agent',
   },
   {
-    num: '03',
-    title: 'Add Memory',
-    desc: 'Persistent conversation context',
-    file: 'agents/memory.ts',
-    lang: 'typescript',
     code: [
-      { type: 'comment', text: '// Add long-term memory to any agent' },
+      { text: '// Add long-term memory to any agent', type: 'comment' },
       {
-        type: 'keyword',
-        text: 'import',
         after: ' { VectorMemory } ',
         keyword2: 'from',
         string: " '@agentic/memory'",
+        text: 'import',
+        type: 'keyword',
       },
       { type: 'gap' },
       {
-        type: 'keyword',
-        text: 'const',
         after: ' memory ',
+        args: '({',
+        fn: 'VectorMemory',
         keyword2: '=',
         keyword3: ' new ',
-        fn: 'VectorMemory',
-        args: '({',
+        text: 'const',
+        type: 'keyword',
       },
-      { type: 'prop', key: '  provider', val: "'pgvector'" },
-      { type: 'prop', key: '  namespace', val: "'researcher'" },
-      { type: 'plain', text: '})' },
+      { key: '  provider', type: 'prop', val: "'pgvector'" },
+      { key: '  namespace', type: 'prop', val: "'researcher'" },
+      { text: '})', type: 'plain' },
       { type: 'gap' },
-      { type: 'comment', text: '// Attach to agent' },
-      { type: 'plain', text: 'researcher.use(memory)' },
+      { text: '// Attach to agent', type: 'comment' },
+      { text: 'researcher.use(memory)', type: 'plain' },
     ],
+    desc: 'Persistent conversation context',
+    file: 'agents/memory.ts',
+    lang: 'typescript',
+    num: '03',
+    title: 'Add Memory',
   },
   {
-    num: '04',
-    title: 'Deploy',
+    code: [
+      { text: '# Deploy to Agentic Cloud', type: 'comment' },
+      { text: 'agentic deploy --prod', type: 'command' },
+      { type: 'gap' },
+      { text: '  Building agent...', type: 'output' },
+      { text: '  Running tests...', type: 'output' },
+      { text: '  Deploying to edge...', type: 'output' },
+      { type: 'gap' },
+      { text: '✓ researcher deployed', type: 'success' },
+      { text: '  → https://agents.agentic.dev/researcher', type: 'url' },
+    ],
     desc: 'One command to production',
     file: 'terminal',
     lang: 'bash',
-    code: [
-      { type: 'comment', text: '# Deploy to Agentic Cloud' },
-      { type: 'command', text: 'agentic deploy --prod' },
-      { type: 'gap' },
-      { type: 'output', text: '  Building agent...' },
-      { type: 'output', text: '  Running tests...' },
-      { type: 'output', text: '  Deploying to edge...' },
-      { type: 'gap' },
-      { type: 'success', text: '✓ researcher deployed' },
-      { type: 'url', text: '  → https://agents.agentic.dev/researcher' },
-    ],
+    num: '04',
+    title: 'Deploy',
   },
 ]
 
-function CodeLine({ line }: { line: (typeof STEPS)[0]['code'][0] }) {
-  if (line.type === 'gap') return <div className="h-3" />
-  if (line.type === 'comment')
+const CodeLine = ({ line }: { line: (typeof STEPS)[0]['code'][0] }) => {
+  if (line.type === 'gap') {
+    return <div className="h-3" />
+  }
+  if (line.type === 'comment') {
     return <div className="text-[#9ca3af]">{line.text}</div>
-  if (line.type === 'output')
+  }
+  if (line.type === 'output') {
     return <div className="text-[#6b7280]">{line.text}</div>
-  if (line.type === 'success')
+  }
+  if (line.type === 'success') {
     return <div className="text-[#16a34a]">{line.text}</div>
-  if (line.type === 'url')
+  }
+  if (line.type === 'url') {
     return <div className="text-[#2563eb] underline">{line.text}</div>
-  if (line.type === 'command')
+  }
+  if (line.type === 'command') {
     return (
       <div>
         <span className="text-[#16a34a]">$ </span>
         <span className="text-[#111]">{line.text}</span>
       </div>
     )
-  if (line.type === 'plain')
+  }
+  if (line.type === 'plain') {
     return <div className="text-[#111]">{line.text}</div>
-  if (line.type === 'prop')
+  }
+  if (line.type === 'prop') {
     return (
       <div>
         <span className="text-[#2563eb]">{line.key}</span>
@@ -144,7 +152,8 @@ function CodeLine({ line }: { line: (typeof STEPS)[0]['code'][0] }) {
         <span className="text-[#111]">,</span>
       </div>
     )
-  if (line.type === 'keyword')
+  }
+  if (line.type === 'keyword') {
     return (
       <div>
         <span className="text-[#7c3aed]">{line.text}</span>
@@ -158,15 +167,18 @@ function CodeLine({ line }: { line: (typeof STEPS)[0]['code'][0] }) {
         {line.string && <span className="text-[#16a34a]">{line.string}</span>}
       </div>
     )
+  }
   return null
 }
 
-export function DevExSection() {
+export const DevExSection = () => {
   const [active, setActive] = useState(0)
   const [visible, setVisible] = useState(true)
 
-  function selectStep(i: number) {
-    if (i === active) return
+  const selectStep = (i: number) => {
+    if (i === active) {
+      return
+    }
     setVisible(false)
     setTimeout(() => {
       setActive(i)
@@ -191,28 +203,30 @@ export function DevExSection() {
   return (
     <section
       id="devex"
-      className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06]"
+      className="border-t border-black/[0.06] px-6 py-32 md:px-12 lg:px-20"
     >
-      <div className="max-w-6xl mx-auto">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-16">
-          <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/[0.05] border border-black/[0.06] text-[10px] tracking-widest text-black/40 uppercase">
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-black/[0.06] bg-black/[0.05] px-3 py-1.5 text-[10px] tracking-widest text-black/40 uppercase">
             Developer Experience
           </div>
-          <h2 className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
+          <h2 className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
             Built for developers.
             <br />
             Loved by teams.
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-stretch">
+        <div className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-3">
           {/* Left — 4 clickable step cards, equal height, no flex stretch */}
           <div className="flex flex-col gap-3">
             {STEPS.map((s, i) => (
               <button
                 key={s.num}
+                type="button"
+                aria-label={`${s.title} — ${s.desc}`}
                 onClick={() => selectStep(i)}
-                className="flex-1 text-left rounded-2xl border transition-all duration-200 p-6 group"
+                className="group flex-1 rounded-2xl border p-6 text-left transition-all duration-200"
                 style={{
                   background:
                     active === i ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.7)',
@@ -224,9 +238,9 @@ export function DevExSection() {
                       : '0 1px 2px rgba(0,0,0,0.03)',
                 }}
               >
-                <div className="flex gap-4 items-start">
+                <div className="flex items-start gap-4">
                   <div
-                    className="flex items-center justify-center w-8 h-8 rounded-lg text-xs font-light shrink-0 transition-colors duration-200"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-light transition-colors duration-200"
                     style={{
                       background:
                         active === i ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.04)',
@@ -247,7 +261,7 @@ export function DevExSection() {
                       {s.title}
                     </p>
                     <p
-                      className="text-xs mt-0.5"
+                      className="mt-0.5 text-xs"
                       style={{ color: 'rgba(0,0,0,0.28)' }}
                     >
                       {s.desc}
@@ -260,7 +274,7 @@ export function DevExSection() {
 
           {/* Right — fixed-size code panel */}
           <div
-            className="lg:col-span-2 rounded-2xl border border-black/[0.06] p-8 flex flex-col"
+            className="flex flex-col rounded-2xl border border-black/[0.06] p-8 lg:col-span-2"
             style={{
               background: 'rgba(255,255,255,0.7)',
               boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
@@ -268,14 +282,14 @@ export function DevExSection() {
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-5 shrink-0">
+            <div className="mb-5 flex shrink-0 items-center justify-between">
               <div
                 className="text-[10px] tracking-widest uppercase transition-all duration-200"
                 style={{
-                  opacity: visible ? 1 : 0,
-                  filter: visible ? 'blur(0px)' : 'blur(4px)',
-                  transition: 'opacity 200ms ease, filter 200ms ease',
                   color: 'rgba(0,0,0,0.3)',
+                  filter: visible ? 'blur(0px)' : 'blur(4px)',
+                  opacity: visible ? 1 : 0,
+                  transition: 'opacity 200ms ease, filter 200ms ease',
                 }}
               >
                 {step.file}
@@ -284,7 +298,7 @@ export function DevExSection() {
                 {[0, 1, 2].map((d) => (
                   <div
                     key={d}
-                    className="w-2 h-2 rounded-full transition-all duration-300"
+                    className="h-2 w-2 rounded-full transition-all duration-300"
                     style={{
                       background:
                         d === active % 3
@@ -298,7 +312,7 @@ export function DevExSection() {
 
             {/* Code block — fixed height, content doesn't affect layout */}
             <div
-              className="flex-1 rounded-xl p-6 overflow-hidden"
+              className="flex-1 overflow-hidden rounded-xl p-6"
               style={{
                 background: 'rgba(0,0,0,0.03)',
                 border: '1px solid rgba(0,0,0,0.06)',
@@ -307,8 +321,8 @@ export function DevExSection() {
               <div
                 className="font-mono text-[12px] leading-6"
                 style={{
-                  opacity: visible ? 1 : 0,
                   filter: visible ? 'blur(0px)' : 'blur(6px)',
+                  opacity: visible ? 1 : 0,
                   transform: visible ? 'translateY(0)' : 'translateY(6px)',
                   transition:
                     'opacity 220ms cubic-bezier(0.16,1,0.3,1), filter 220ms cubic-bezier(0.16,1,0.3,1), transform 220ms cubic-bezier(0.16,1,0.3,1)',

@@ -2,18 +2,16 @@ import * as React from 'react'
 
 const MOBILE_BREAKPOINT = 768
 
-export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
-
-  React.useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    const onChange = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    }
-    mql.addEventListener('change', onChange)
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    return () => mql.removeEventListener('change', onChange)
-  }, [])
-
-  return !!isMobile
+const subscribe = (onChange: () => void) => {
+  const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+  mql.addEventListener('change', onChange)
+  return () => mql.removeEventListener('change', onChange)
 }
+
+const getSnapshot = () => window.innerWidth < MOBILE_BREAKPOINT
+
+// No viewport on the server, so the first render (and hydration) is "desktop".
+const getServerSnapshot = () => false
+
+export const useIsMobile = () =>
+  React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)

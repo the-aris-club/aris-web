@@ -121,9 +121,6 @@ importers:
       oxlint:
         specifier: 1.85.0
         version: 1.85.0
-      prettier:
-        specifier: ^3.9.9
-        version: 3.9.9
       turbo:
         specifier: ^2.11.4
         version: 2.11.4
@@ -4882,7 +4879,8 @@ snapshots:
 
   potpack@1.0.2: {}
 
-  prettier@3.9.9: {}
+  prettier@3.9.9:
+    optional: true
 
   pretty-ms@9.3.1:
     dependencies:

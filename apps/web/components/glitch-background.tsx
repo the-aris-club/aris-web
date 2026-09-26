@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
 import { Canvas, useThree, useLoader, useFrame } from '@react-three/fiber'
+import { useRef, useEffect } from 'react'
 import * as THREE from 'three'
 
 // Vertex shader — passes UV coordinates
@@ -87,65 +87,73 @@ interface GlitchSceneProps {
   isHovered: boolean
 }
 
-function GlitchScene({ isHovered }: GlitchSceneProps) {
-  const { gl, scene, camera, size } = useThree()
+const GlitchScene = ({ isHovered }: GlitchSceneProps) => {
+  const { scene, size } = useThree()
+  // The camera is a mutable three.js object owned by the R3F store, not React
+  // state — read it imperatively so configuring it is not treated as mutating
+  // a value returned from a hook.
+  const getState = useThree((state) => state.get)
   const meshRef = useRef<THREE.Mesh | null>(null)
   const materialRef = useRef<THREE.ShaderMaterial | null>(null)
 
-  // Wave animation state
+  // Wave animation state:
+  //   cooldown    — seconds until the next wave starts
+  //   nextCooldown — placeholder; the frame loop draws the real value on the
+  //                  first tick, before anything reads it
+  //   speed       — units per second across the 0-1 UV range
+  //   waveY       — wave front position, starts at the top (UV y = 1)
   const waveState = useRef({
     active: false,
-    waveY: 1.0, // starts at top (UV y = 1)
-    speed: 0.55, // units per second across the 0-1 UV range
-    cooldown: 0.0, // seconds until next wave
-    nextCooldown: 2.0 + Math.random() * 2.0,
+    cooldown: 0,
+    nextCooldown: 2,
+    speed: 0.55,
+    waveY: 1,
   })
 
   const defaultTexture = useLoader(
     THREE.TextureLoader,
-    'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bg-nature-RN8PX1dGhZlLMsI4flnWQM6uInZYY1.png',
+    'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bg-nature-RN8PX1dGhZlLMsI4flnWQM6uInZYY1.png'
   )
   const hoverTexture = useLoader(
     THREE.TextureLoader,
-    'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/fr-nature-lWxWsWzCM2kVPeHafi3LHqb0fM4DPL.png',
+    'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/fr-nature-lWxWsWzCM2kVPeHafi3LHqb0fM4DPL.png'
   )
-
-  const texture = isHovered ? hoverTexture : defaultTexture
 
   // Build scene geometry once
   useEffect(() => {
+    const camera = getState().camera as THREE.OrthographicCamera
     const imageAspect = defaultTexture.image.width / defaultTexture.image.height
     const screenAspect = size.width / size.height
     const frustumSize = 1
 
-    ;(camera as THREE.OrthographicCamera).left = -frustumSize * screenAspect
-    ;(camera as THREE.OrthographicCamera).right = frustumSize * screenAspect
-    ;(camera as THREE.OrthographicCamera).top = frustumSize
-    ;(camera as THREE.OrthographicCamera).bottom = -frustumSize
-    ;(camera as THREE.OrthographicCamera).near = 0.1
-    ;(camera as THREE.OrthographicCamera).far = 1000
-    ;(camera as THREE.OrthographicCamera).updateProjectionMatrix()
+    camera.left = -frustumSize * screenAspect
+    camera.right = frustumSize * screenAspect
+    camera.top = frustumSize
+    camera.bottom = -frustumSize
+    camera.near = 0.1
+    camera.far = 1000
+    camera.updateProjectionMatrix()
     camera.position.z = 1
 
     const scale = Math.max(
       (2 * frustumSize * screenAspect) / (imageAspect * 2 * frustumSize),
-      1,
+      1
     )
     const planeWidth = imageAspect * 2 * frustumSize * scale
     const planeHeight = 2 * frustumSize * scale
 
     const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight)
     const material = new THREE.ShaderMaterial({
+      fragmentShader,
       uniforms: {
         uBgTexture: { value: defaultTexture },
         uFrTexture: { value: hoverTexture },
+        uIntensity: { value: 0 },
         uTime: { value: 0 },
-        uWaveY: { value: 1.0 },
         uWaveWidth: { value: 0.07 },
-        uIntensity: { value: 0.0 },
+        uWaveY: { value: 1 },
       },
       vertexShader,
-      fragmentShader,
     })
 
     materialRef.current = material
@@ -158,8 +166,7 @@ function GlitchScene({ isHovered }: GlitchSceneProps) {
       geometry.dispose()
       material.dispose()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [size.width, size.height])
+  }, [defaultTexture, getState, hoverTexture, scene, size.height, size.width])
 
   // Keep textures in sync
   useEffect(() => {
@@ -172,38 +179,40 @@ function GlitchScene({ isHovered }: GlitchSceneProps) {
   // Disable glitch when hovered
   useEffect(() => {
     if (isHovered && materialRef.current) {
-      materialRef.current.uniforms.uIntensity.value = 0.0
+      materialRef.current.uniforms.uIntensity.value = 0
       waveState.current.active = false
     }
   }, [isHovered])
 
   useFrame((state, delta) => {
-    if (!materialRef.current || isHovered) return
+    if (!materialRef.current || isHovered) {
+      return
+    }
     const mat = materialRef.current
     const ws = waveState.current
 
     mat.uniforms.uTime.value = state.clock.elapsedTime
 
-    if (!ws.active) {
-      ws.cooldown -= delta
-      if (ws.cooldown <= 0) {
-        // Trigger new wave from the top
-        ws.active = true
-        ws.waveY = 1.0
-        ws.nextCooldown = 1.5 + Math.random() * 2.5
-      }
-    } else {
+    if (ws.active) {
       // Advance the wave downward
       ws.waveY -= ws.speed * delta
 
       mat.uniforms.uWaveY.value = ws.waveY
-      mat.uniforms.uIntensity.value = 1.0
+      mat.uniforms.uIntensity.value = 1
 
       if (ws.waveY < -0.15) {
         // Wave has exited the bottom — reset
         ws.active = false
         ws.cooldown = ws.nextCooldown
-        mat.uniforms.uIntensity.value = 0.0
+        mat.uniforms.uIntensity.value = 0
+      }
+    } else {
+      ws.cooldown -= delta
+      if (ws.cooldown <= 0) {
+        // Trigger new wave from the top
+        ws.active = true
+        ws.waveY = 1
+        ws.nextCooldown = 1.5 + Math.random() * 2.5
       }
     }
   })
@@ -215,25 +224,23 @@ interface GlitchBackgroundProps {
   isHovered: boolean
 }
 
-export function GlitchBackground({ isHovered }: GlitchBackgroundProps) {
-  return (
-    <div className="absolute inset-0">
-      <Canvas
-        orthographic
-        camera={{ position: [0, 0, 1], zoom: 1 }}
-        gl={{ alpha: false, antialias: true }}
-        style={{ width: '100%', height: '100%' }}
-      >
-        <GlitchScene isHovered={isHovered} />
-      </Canvas>
-      {/* Gradient noir du bas vers le haut */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'linear-gradient(to top, black 0%, black 15%, transparent 60%)',
-        }}
-      />
-    </div>
-  )
-}
+export const GlitchBackground = ({ isHovered }: GlitchBackgroundProps) => (
+  <div className="absolute inset-0">
+    <Canvas
+      orthographic
+      camera={{ position: [0, 0, 1], zoom: 1 }}
+      gl={{ alpha: false, antialias: true }}
+      style={{ height: '100%', width: '100%' }}
+    >
+      <GlitchScene isHovered={isHovered} />
+    </Canvas>
+    {/* Gradient noir du bas vers le haut */}
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{
+        background:
+          'linear-gradient(to top, black 0%, black 15%, transparent 60%)',
+      }}
+    />
+  </div>
+)
