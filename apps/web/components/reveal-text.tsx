@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type Ref } from 'react'
 
 // Splits text into words and reveals each with staggered opacity+blur+translateY
 // matching the AGENTIC intro animation style.
@@ -64,7 +64,7 @@ export function RevealText({
   return (
     // @ts-ignore — dynamic tag
     <Tag
-      ref={ref}
+      ref={ref as Ref<HTMLHeadingElement>}
       className={className}
       style={{ display: 'block', overflow: 'hidden' }}
     >

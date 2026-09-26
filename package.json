@@ -13,7 +13,10 @@
   "devDependencies": {
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
+    "oxfmt": "0.70.0",
+    "oxlint": "1.85.0",
     "prettier": "^3.9.9",
-    "turbo": "^2.11.4"
+    "turbo": "^2.11.4",
+    "ultracite": "7.12.0"
   }
 }

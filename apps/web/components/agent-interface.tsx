@@ -559,7 +559,7 @@ function ReviewLine({
   item,
   delay,
 }: {
-  item: (typeof REVIEW_LINES)[0]
+  item: (typeof ALL_REVIEW_LINES)[0]
   delay: number
 }) {
   const [visible, setVisible] = useState(false)
