@@ -7,23 +7,18 @@ by hand, not as part of the app build:
         ~/Downloads/aris-logo.png apps/web/public/brand \\
         apps/web/app ~/Downloads/aris-banner.png
 
-The source PNG has a noisy near-white background (253-255, compression
-artefacts) rather than a flat #fff, so this keys on the *minimum* channel with
-a tolerance ramp instead of an exact colour match. The logo's two ink colours
-are navy #003070 and blue #00A0F0, both far from white, so no solid pixel is
-lost; only anti-aliased edge pixels land in the ramp band, which is exactly
-where partial alpha belongs.
+Two source shapes are handled, because the artwork has been delivered both ways:
 
-Edge pixels are decontaminated (colour un-blended from the white backdrop) so
-the mark does not grow a white halo when placed on a dark surface.
+- Already transparent (RGBA with a transparent border). Used as-is. This is the
+  current source.
+- Opaque on a noisy near-white backdrop, 253-255 with compression artefacts
+  rather than a flat #fff. Keyed out on the *minimum* channel with a tolerance
+  ramp, and the edge pixels un-blended from the white so the mark does not grow
+  a halo on dark surfaces.
 
-Three output shapes, deliberately kept separate because they are not
-interchangeable:
-
-- lockup: full A + orbit + wordmark, aspect preserved, transparent.
-- square: mark only, centred on a transparent square. Favicons and PWA tiles.
-- plated: mark only, centred on a solid plate. Apple touch icons, which iOS
-  composites on a black or white field and would otherwise render invisible.
+The mark and the wordmark are separated by measuring rows of ink, so the script
+survives a resize or a re-crop of the source instead of silently slicing the
+wrong rows out of a new logo.
 """
 
 from __future__ import annotations
@@ -37,38 +32,51 @@ from PIL import Image, ImageOps
 WHITE_CUT = 246  # at or above this the pixel counts as background
 INK_CUT = 214  # at or below this the pixel is solid ink
 PAD_RATIO = 0.1  # breathing room around the mark in square variants
-
-# Ink row bands measured from the source canvas.
-MARK_BAND = (274, 714)
-LOCKUP_BAND = (274, 973)
-# Those bands are absolute pixel offsets, so a differently sized source would
-# crop the wrong rows and still produce a plausible-looking image. Fail loudly
-# instead, and re-measure with the row-profile snippet in the commit message.
-CANVAS = (1254, 1254)
+MIN_BAND = 3  # rows; ignores 1-2px speckle when finding gaps
 
 NAVY = "#003070"
 BLUE = "#00A0F0"
 
 
+def already_transparent(image: Image.Image) -> bool:
+    alpha = np.asarray(image.convert("RGBA"))[..., 3]
+    return bool(alpha.min() == 0)
+
+
 def key_out_background(image: Image.Image) -> Image.Image:
-    """Turn the noisy near-white backdrop into a soft alpha ramp."""
-    rgba = np.asarray(image.convert("RGB")).astype(np.float64)
-    minimum = rgba.min(axis=2)
+    """Turn a noisy near-white backdrop into a soft alpha ramp."""
+    rgb = np.asarray(image.convert("RGB")).astype(np.float64)
+    minimum = rgb.min(axis=2)
 
     alpha = np.clip((WHITE_CUT - minimum) / (WHITE_CUT - INK_CUT), 0.0, 1.0)
     a = alpha[..., None]
 
-    # Un-blend the white backdrop out of edge pixels, otherwise every
-    # antialiased border keeps a white fringe.
-    ink = np.where(a > 0.0, (rgba - (1.0 - a) * 255.0) / np.maximum(a, 1e-6), 0.0)
-    ink = np.clip(ink, 0, 255)
-
-    out = np.concatenate([ink, alpha[..., None] * 255.0], axis=2)
+    ink = np.where(a > 0.0, (rgb - (1.0 - a) * 255.0) / np.maximum(a, 1e-6), 0.0)
+    out = np.concatenate([np.clip(ink, 0, 255), alpha[..., None] * 255.0], axis=2)
     return Image.fromarray(out.astype(np.uint8), "RGBA")
 
 
-def band(image: Image.Image, y0: int, y1: int) -> Image.Image:
-    return image.crop((0, y0, image.width, y1 + 1))
+def ink_bands(image: Image.Image) -> list[tuple[int, int]]:
+    """Contiguous vertical runs of ink, measured on the alpha channel."""
+    alpha = np.asarray(image.convert("RGBA"))[..., 3]
+    rows = (alpha > 32).sum(axis=1)
+
+    bands: list[tuple[int, int]] = []
+    start: int | None = None
+    for y, count in enumerate(rows):
+        if count > 0 and start is None:
+            start = y
+        elif count == 0 and start is not None:
+            if y - start >= MIN_BAND:
+                bands.append((start, y - 1))
+            start = None
+    if start is not None and len(rows) - start >= MIN_BAND:
+        bands.append((start, len(rows) - 1))
+    return bands
+
+
+def crop_band(image: Image.Image, band: tuple[int, int]) -> Image.Image:
+    return image.crop((0, band[0], image.width, band[1] + 1))
 
 
 def trim(image: Image.Image) -> Image.Image:
@@ -120,6 +128,23 @@ def build_og_image(source: Path) -> Image.Image:
     )
 
 
+def build_hero(source: Path) -> Image.Image:
+    """Take the banner's right-hand lab scene, with no text and no lockup.
+
+    The banner is a finished marketing piece: it carries its own logo and its
+    own headline, so using it whole as a hero background puts the club's wordmark
+    underneath the page headline. Cropping to the lab scene gives a background
+    with room for text and no competing typography. The hero is already faded and
+    blurred by the page, so the upscale is not visible.
+    """
+    banner = Image.open(source).convert("RGB")
+    box = (1400, 0, banner.width, banner.height)
+    return banner.crop(box)
+
+
+OUT: Path
+
+
 def main() -> None:
     global OUT  # noqa: PLW0603
     OUT = Path(sys.argv[2])
@@ -128,32 +153,42 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
 
     source = Image.open(sys.argv[1])
-    if source.size != CANVAS:
+    keyed = source.convert("RGBA")
+    if already_transparent(source):
+        print("source already transparent, used as-is")
+    else:
+        print("source is opaque, keying out the near-white backdrop")
+        keyed = key_out_background(source)
+
+    bands = ink_bands(keyed)
+    if len(bands) < 2:
         raise SystemExit(
-            f"source is {source.width}x{source.height}, expected {CANVAS[0]}x{CANVAS[1]}.\n"
-            "MARK_BAND and LOCKUP_BAND are absolute pixel offsets and would crop "
-            "the wrong rows. Re-measure them before regenerating."
+            f"expected a mark band and a wordmark band, measured {bands}. "
+            "The lockup layout probably changed; split the artwork by hand."
         )
+    mark_band, wordmark_band = bands[0], bands[-1]
+    print(f"ink bands {bands}")
 
-    keyed = key_out_background(source)
-    lockup = trim(band(keyed, *LOCKUP_BAND))
-    mark = trim(band(keyed, *MARK_BAND))
-
-    print(f"ink navy {NAVY} blue {BLUE}")
-    print(f"lockup {lockup.width}x{lockup.height}, mark {mark.width}x{mark.height}")
+    lockup = trim(keyed)
+    mark = trim(crop_band(keyed, mark_band))
+    print(
+        f"ink navy {NAVY} blue {BLUE}\n"
+        f"mark band {mark_band}, wordmark band {wordmark_band}\n"
+        f"lockup {lockup.width}x{lockup.height}, mark {mark.width}x{mark.height}"
+    )
 
     print("lockup, aspect preserved, transparent")
     write(lockup, "aris-logo.webp", quality=92, method=6)
     write(lockup, "aris-logo.png", optimize=True)
 
-    wide = lockup.resize(
-        (1024, round(lockup.height * 1024 / lockup.width)), Image.LANCZOS
-    )
-    write(wide, "aris-logo-1024.png", optimize=True)
-    write(wide, "aris-logo-1024.webp", quality=92, method=6)
+    # No upscaled variant. The current source is a 500px canvas, so the artwork
+    # is only ~370px wide and a 1024px copy would be soft and 380 KB of it.
+    # Structured data only needs something comfortably above 112px.
+    if lockup.width < 512:
+        print(f"  (skipping upscale, source artwork is only {lockup.width}px)")
 
-    # The lockup is 4:3, which is too tall for a nav bar. The mark alone is
-    # roughly 16:9 and is what belongs in a header, an avatar or a favicon.
+    # The lockup is roughly 4:3 and too tall for a nav bar, so the mark alone
+    # ships separately at about 16:9.
     print("mark only, for the nav bar")
     write(mark, "aris-mark.webp", quality=92, method=6)
     write(mark, "aris-mark.png", optimize=True)
@@ -169,11 +204,13 @@ def main() -> None:
     if banner is not None:
         print("open graph image, 1200x630 cropped from the banner")
         write(build_og_image(banner), "opengraph-image.jpg", app, quality=88)
+        # Full-bleed copy for the mid-page image block.
+        write(Image.open(banner).convert("RGB"), "aris-banner.webp", quality=88)
+        # Text-free lab scene for the hero, which carries the page headline.
+        write(build_hero(banner), "aris-hero.webp", quality=88)
 
     print(f"-> {OUT}\n-> {app}")
 
-
-OUT: Path
 
 if __name__ == "__main__":
     main()

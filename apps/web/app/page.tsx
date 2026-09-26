@@ -1,11 +1,11 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import React, { useRef, useEffect, useState, useCallback } from 'react'
 
 import { DevExSection } from '@/components/devex-section'
 import { IntroAnimation, HERO_REVEAL_MS } from '@/components/intro-animation'
-import { LiveAgentFeed, LiveAgentCounter } from '@/components/live-agent-feed'
 import { MobileNav } from '@/components/mobile-nav'
 import { PixelIcon } from '@/components/pixel-icon'
 import { RevealText } from '@/components/reveal-text'
@@ -84,16 +84,14 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
 )
 
 // ─── Main page ────────────────────────────────────────────────────────────────
-const AgenticPage = () => {
-  const [email, setEmail] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+const ArisPage = () => {
   const [heroReady, setHeroReady] = useState(false)
   const [videoReady, setVideoReady] = useState(false)
   const handleIntroDone = useCallback(() => {
     setHeroReady(true)
   }, [])
 
-  // Start video zoom slightly before hero content reveals, for seamless overlap
+  // Start the hero zoom slightly before hero content reveals, for seamless overlap
   useEffect(() => {
     const t = setTimeout(() => setVideoReady(true), HERO_REVEAL_MS)
     return () => clearTimeout(t)
@@ -109,15 +107,19 @@ const AgenticPage = () => {
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
       <section className="relative h-screen overflow-hidden">
-        {/* Video background — zooms in once intro is done */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
+        {/* Hero artwork — the club's own lab scene, cropped free of text and
+            lockup so the page headline has room. The stock video that was here
+            showed unrelated footage. The scale-in on reveal is unchanged. */}
+        <Image
+          alt=""
+          aria-hidden="true"
           className="absolute inset-0 z-0 h-full w-full object-cover"
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/agentic-hero-9yW3wnTNMfn2U6lsVhTTZSJFEvAoSj.mp4"
+          fill
+          priority
+          sizes="100vw"
+          src="/brand/aris-hero.webp"
           style={{
+            objectPosition: 'center 40%',
             transform: videoReady ? 'scale(1.05)' : 'scale(0.85)',
             transition: 'transform 2s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
@@ -184,21 +186,21 @@ const AgenticPage = () => {
                 'opacity 1s cubic-bezier(0.16,1,0.3,1) 0ms, filter 1s cubic-bezier(0.16,1,0.3,1) 0ms, transform 1s cubic-bezier(0.16,1,0.3,1) 0ms',
             }}
           >
-            Build &amp;
+            We build
             <br />
-            orchestrate AI
+            systems that
             <br />
-            agents while
+            turn complexity
             <br />
-            you sleep.
+            into capability.
           </h1>
 
           {/* 3 metrics — staggered after title */}
           <div className="flex gap-8 sm:gap-12">
             {[
-              { label: 'Tasks', value: '50M+' },
-              { label: 'Uptime', value: '99.9%' },
-              { label: 'Countries', value: '180+' },
+              { label: 'Departments', value: '4' },
+              { label: 'Rounds', value: '3' },
+              { label: 'Window', value: '4 wks' },
             ].map((stat, i) => (
               <div
                 key={i}
@@ -233,10 +235,10 @@ const AgenticPage = () => {
           <div className="mb-16">
             <PixelIcon type="platform" size={40} />
             <div className="mt-4">
-              <Tag>PLATFORM</Tag>
+              <Tag>DEPARTMENTS</Tag>
             </div>
             <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl lg:text-6xl">
-              {'Everything you need\nto ship agents.'}
+              {'Four technical\ndepartments.'}
             </RevealText>
           </div>
 
@@ -297,12 +299,11 @@ const AgenticPage = () => {
                     <path d="m4.93 4.93 2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12" />
                   </svg>
                 </div>
-                <h3 className="mb-3 text-xl font-light">
-                  Visual Agent Builder
-                </h3>
+                <h3 className="mb-3 text-xl font-light">Autonomous Systems</h3>
                 <p className="max-w-sm text-sm leading-relaxed text-black/45">
-                  Drag, connect, and configure agents through an intuitive graph
-                  editor. No boilerplate. Ship in minutes, not days.
+                  Modelling, control, sensing and autonomous systems. A
+                  department counts as operating with a lead and at least three
+                  active members.
                 </p>
               </div>
             </BentoCard>
@@ -324,10 +325,10 @@ const AgenticPage = () => {
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                 </svg>
               </div>
-              <h3 className="mb-2 text-lg font-light">Real-time Monitoring</h3>
+              <h3 className="mb-2 text-lg font-light">Robotics</h3>
               <p className="text-sm leading-relaxed text-black/45">
-                Trace every decision. Debug with full execution history and live
-                logs.
+                Robots, control, simulation and hardware. Mechanisms, motors and
+                completed machines.
               </p>
             </BentoCard>
 
@@ -348,10 +349,10 @@ const AgenticPage = () => {
                   <path d="M8 10h8M8 14h5" />
                 </svg>
               </div>
-              <h3 className="mb-2 text-lg font-light">Memory & Context</h3>
+              <h3 className="mb-2 text-lg font-light">IoT</h3>
               <p className="text-sm leading-relaxed text-black/45">
-                Persistent long-term memory across sessions. Agents learn from
-                every interaction.
+                Sensing, networking, edge devices and the data they produce.
+                Microcontrollers and connected hardware.
               </p>
             </BentoCard>
 
@@ -371,12 +372,10 @@ const AgenticPage = () => {
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
               </div>
-              <h3 className="mb-2 text-lg font-light">
-                Guardrails & Permissions
-              </h3>
+              <h3 className="mb-2 text-lg font-light">Software</h3>
               <p className="text-sm leading-relaxed text-black/45">
-                Define what agents can and cannot do. Fine-grained access
-                control per tool.
+                Software, data, APIs, testing and operations. Bots, internal
+                tools, the website and automation.
               </p>
             </BentoCard>
           </div>
@@ -393,15 +392,15 @@ const AgenticPage = () => {
             <div>
               <PixelIcon type="agents" size={40} />
               <div className="mt-4">
-                <Tag>AGENT TYPES</Tag>
+                <Tag>SELECTION</Tag>
               </div>
               <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-                {'Plug-and-play agents\nready to deploy.'}
+                {'Three rounds,\ntold after each.'}
               </RevealText>
             </div>
             <p className="max-w-xs text-sm leading-relaxed text-black/45">
-              Start with a pre-built agent or compose your own from primitives.
-              Every agent is versioned, testable, and observable.
+              We recruit on evidence of how you learn and work, not on what you
+              already know. No prior technical background is required.
             </p>
           </div>
 
@@ -418,10 +417,10 @@ const AgenticPage = () => {
           <div className="mb-16">
             <PixelIcon type="workflow" size={40} />
             <div className="mt-4">
-              <Tag>WORKFLOW</Tag>
+              <Tag>WINDOW</Tag>
             </div>
             <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-              {'From idea to running agent\nin four steps.'}
+              {'Once a year,\nin four weeks.'}
             </RevealText>
           </div>
 
@@ -432,31 +431,31 @@ const AgenticPage = () => {
             {[
               {
                 delay: 0,
-                desc: 'Describe your agent in plain language. Set objectives, tools, and boundaries.',
-                img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/define-5aafAmGBrxZpOqJ3XLHY3n3qzC2I5K.png',
+                desc: 'The recruitment Form opens. Answer only the section for the group you pick.',
+                img: '/brand/aris-hero.webp',
                 n: '01',
-                title: 'Define',
+                title: 'Apply',
               },
               {
                 delay: 80,
-                desc: 'Chain agents together in the visual editor. Wire triggers, conditions, and outputs.',
-                img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/compose-5RT5VR4f1Y3GoFmovqTKLTG4UXp3g2.png',
+                desc: 'Eligibility and application review. Pass, hold or reject, with a reason recorded.',
+                img: '/brand/aris-hero.webp',
                 n: '02',
-                title: 'Compose',
+                title: 'Screening',
               },
               {
                 delay: 140,
-                desc: 'Run sandboxed simulations. Inspect every decision in the execution trace.',
-                img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/test-zm8guZwxJHtwWsJ7XO4B0CF7GzlNK8.png',
+                desc: 'Interview and skills test. A common part, plus a part for your department.',
+                img: '/brand/aris-hero.webp',
                 n: '03',
-                title: 'Test',
+                title: 'Interview',
               },
               {
                 delay: 200,
-                desc: 'Push globally in one click. Agents auto-scale, self-heal, and report back.',
-                img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/deploy-an8fgHSLzniojkcmRyGGIFQUJF9T5J.png',
+                desc: 'Panel review, Board decision and notification. Criteria are published before the test.',
+                img: '/brand/aris-hero.webp',
                 n: '04',
-                title: 'Deploy',
+                title: 'Decision',
               },
             ].map((step) => (
               <BentoCard
@@ -508,15 +507,16 @@ const AgenticPage = () => {
             <div>
               <PixelIcon type="integrations" size={40} />
               <div className="mt-4">
-                <Tag>INTEGRATIONS</Tag>
+                <Tag>TOOLS</Tag>
               </div>
               <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-                {'Connect any tool.\nControl any system.'}
+                {'The services\nwe actually run.'}
               </RevealText>
             </div>
             <p className="max-w-xs text-sm leading-relaxed text-black/45">
-              200+ native connectors. Everything from Slack to your internal
-              database. Build custom tools with our SDK in minutes.
+              Discord for coordination, GitHub for records, Google Forms and
+              Sheets for the operating ledger, Apps Script for the pipeline
+              behind it.
             </p>
           </div>
 
@@ -529,9 +529,10 @@ const AgenticPage = () => {
             {/* Image */}
             <div className="relative h-[280px] w-full shrink-0 md:h-[480px]">
               <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Org%20Arc%20-%20Upscaled-Sk90jShfu7nltLnhoQbaMJC1YaQKuU.png"
-                alt="Agent orchestration architecture"
+                alt="Autonomous Systems, Robotics, IoT and Software"
                 fill
+                sizes="100vw"
+                src="/brand/aris-banner.webp"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
             </div>
@@ -546,36 +547,35 @@ const AgenticPage = () => {
                   background: 'rgba(255,255,255,0.60)',
                 }}
               >
-                <Tag>SDK</Tag>
+                <Tag>STRUCTURED DATA</Tag>
                 <h3 className="mt-3 mb-2 text-lg font-light">
-                  Build custom tools
+                  How this page describes itself
                 </h3>
                 <p className="mb-4 text-xs leading-relaxed text-black/45">
-                  Define any function as a tool your agents can call. TypeScript
-                  and Python.
+                  The same object search and generative engines read. Only
+                  claims the club has actually made are encoded.
                 </p>
                 <div className="rounded-lg border border-black/[0.07] bg-black/[0.05] p-3 font-mono text-[11px] leading-relaxed text-black/50">
-                  <span className="text-black/25">
-                    &#47;&#47; tool definition
-                  </span>
+                  <span className="text-black/25">declared in layout.tsx</span>
                   <br />
-                  <span className="text-blue-600/70">defineTool</span>
-                  {'({'}
-                  <br />
-                  {'  '}
-                  <span className="text-amber-700/70">name</span>:{' '}
+                  <span className="text-blue-600/70">
+                    &apos;@type&apos;
+                  </span>:{' '}
                   <span className="text-green-700/70">
-                    &apos;fetchPrice&apos;
+                    &apos;Organization&apos;
                   </span>
                   ,<br />
                   {'  '}
-                  <span className="text-amber-700/70">run</span>:{' '}
-                  <span className="text-black/35">async (q) </span>={'>'}
+                  <span className="text-amber-700/70">slogan</span>:{' '}
+                  <span className="text-black/35">
+                    &apos;We build systems&hellip;&apos;
+                  </span>
                   <br />
-                  {'    '}
-                  <span className="text-blue-600/70">api</span>.get(q)
+                  {'  '}
+                  <span className="text-amber-700/70">logo</span>:{' '}
+                  <span className="text-black/35">/brand/&hellip;.png</span>
                   <br />
-                  {'})'}
+                  {'}'}
                 </div>
               </div>
 
@@ -588,14 +588,14 @@ const AgenticPage = () => {
                 }}
               >
                 <div className="mb-2 flex items-center gap-2">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-500/80" />
+                  <div className="bg-aris-navy/60 h-2 w-2 rounded-full" />
                   <span className="text-xs tracking-widest text-black/40">
-                    LIVE API
+                    ONE OPENING
                   </span>
                 </div>
                 <p className="text-sm text-black/45">
-                  Full REST + WebSocket API. Stream agent outputs directly into
-                  your product.
+                  Recruitment opens once a year, in a four-week window.
+                  Applicants apply through a form, not through Discord.
                 </p>
               </div>
             </div>
@@ -612,10 +612,10 @@ const AgenticPage = () => {
           <div className="mb-16">
             <PixelIcon type="platform" size={40} />
             <div className="mt-4">
-              <Tag>SECURITY</Tag>
+              <Tag>PRIVACY</Tag>
             </div>
             <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-              {'Enterprise-grade\nfrom day one.'}
+              {'What we never\nask you for.'}
             </RevealText>
           </div>
 
@@ -624,23 +624,28 @@ const AgenticPage = () => {
             {/* Left side — descriptions */}
             <div className="space-y-6">
               <p className="text-sm leading-relaxed text-black/45">
-                Every action is logged, every decision is traceable. Built for
-                teams that need compliance without compromise.
+                The club collects the minimum data needed for the stated
+                purpose. These are never submitted to a public form, a shared
+                sheet, Git or Discord.
               </p>
 
               <div className="space-y-4">
                 {[
                   {
-                    desc: 'Independently audited security controls',
-                    label: 'SOC 2 Type II',
+                    desc: 'An identity document is never requested at intake',
+                    label: 'CCCD',
                   },
                   {
-                    desc: 'Every decision logged with full traceability',
-                    label: 'Full Audit Trail',
+                    desc: 'Only through the restricted verification flow, never in a public form',
+                    label: 'Student ID',
                   },
                   {
-                    desc: 'Monitor, debug, and replay any execution',
-                    label: 'Real-time Observability',
+                    desc: 'Not a full CV unless the restricted flow explicitly asks',
+                    label: 'Full CV',
+                  },
+                  {
+                    desc: 'Passwords, tokens, private keys, MFA codes and API keys',
+                    label: 'Secrets',
                   },
                 ].map((item) => (
                   <div key={item.label} className="flex gap-4">
@@ -653,12 +658,16 @@ const AgenticPage = () => {
                 ))}
               </div>
 
-              {/* Compliance badges — vertical stack */}
+              {/* The charter's hard prohibitions, quoted rather than badged */}
               <div className="flex flex-col gap-2 pt-4">
-                {['SOC 2', 'GDPR', 'HIPAA Ready', 'ISO 27001'].map((badge) => (
+                {[
+                  'No medical, legal or educational authority',
+                  'No outcome promised without evidence',
+                  'No HCMIU logo, name or claim of recognition',
+                ].map((badge) => (
                   <div
                     key={badge}
-                    className="flex items-center gap-2 text-xs text-black/25"
+                    className="flex items-center gap-2 text-xs text-black/35"
                   >
                     <span className="h-1 w-1 rounded-full bg-black/25" />
                     {badge}
@@ -667,53 +676,33 @@ const AgenticPage = () => {
               </div>
             </div>
 
-            {/* Right side — live audit log visualization */}
+            {/* Right side — the never-collect list, static and labelled as such */}
             <BentoCard className="p-6 lg:row-span-1" delay={0}>
               <div className="mb-4 text-xs tracking-widest text-black/30 uppercase">
-                Live Audit Trail
+                Never collected here
               </div>
               <div className="space-y-2">
                 {[
-                  {
-                    action: 'agent_executed',
-                    status: 'success',
-                    time: '12:34:21',
-                  },
-                  {
-                    action: 'decision_logged',
-                    status: 'success',
-                    time: '12:34:18',
-                  },
-                  {
-                    action: 'tool_called',
-                    status: 'success',
-                    time: '12:34:15',
-                  },
-                  {
-                    action: 'memory_updated',
-                    status: 'success',
-                    time: '12:34:12',
-                  },
-                  {
-                    action: 'output_generated',
-                    status: 'success',
-                    time: '12:34:09',
-                  },
-                ].map((log, i) => (
+                  'Identity document',
+                  'Date of birth',
+                  'Home address',
+                  'Phone number',
+                  'Health or student data',
+                  'Unnecessary personal data',
+                ].map((item, i) => (
                   <div
-                    key={i}
-                    className="group flex cursor-pointer items-center gap-3 rounded-lg border border-black/[0.04] bg-black/[0.02] px-3 py-2.5 transition-colors hover:bg-black/[0.04]"
+                    key={item}
+                    className="flex items-center gap-3 rounded-lg border border-black/[0.04] bg-black/[0.02] px-3 py-2.5"
                     style={{
                       animation: `fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) ${i * 80}ms both`,
                     }}
                   >
-                    <span className="min-w-[60px] font-mono text-[10px] text-black/25">
-                      {log.time}
-                    </span>
                     <span className="flex-1 text-[11px] font-light text-black/50">
-                      {log.action}
+                      {item}
                     </span>
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500/60 transition-colors group-hover:bg-green-500" />
+                    <span className="font-mono text-[10px] text-black/25">
+                      excluded
+                    </span>
                   </div>
                 ))}
               </div>
@@ -740,16 +729,16 @@ const AgenticPage = () => {
           {Array.from({ length: 3 }).map((_, rep) => (
             <div key={rep} className="flex shrink-0">
               {[
-                'Web Research',
-                'Code Generation',
-                'Email Drafting',
-                'Data Analysis',
-                'PR Reviews',
-                'Scheduling',
-                'SQL Queries',
-                'API Calls',
-                'File Processing',
-                'Monitoring',
+                'Autonomous Systems',
+                'Robotics',
+                'IoT',
+                'Software',
+                'Operations and Development',
+                'Modelling and control',
+                'Simulation',
+                'Sensing and networking',
+                'APIs and testing',
+                'Bots and automation',
               ].map((cap) => (
                 <div
                   key={cap}
@@ -771,16 +760,16 @@ const AgenticPage = () => {
           {Array.from({ length: 3 }).map((_, rep) => (
             <div key={rep} className="flex shrink-0">
               {[
-                'Report Writing',
-                'Slack Summaries',
-                'Lead Scoring',
-                'Image Tagging',
-                'Test Running',
-                'Deployment',
-                'Log Parsing',
-                'Invoice Processing',
-                'Meeting Notes',
-                'Sentiment Analysis',
+                'Community moderation',
+                'Membership operations',
+                'Finance and records',
+                'Project administration',
+                'University liaison',
+                'Communications',
+                'Events',
+                'Editing and media',
+                'Research and testing',
+                'Workshops and labs',
               ].map((cap) => (
                 <div
                   key={cap}
@@ -794,151 +783,6 @@ const AgenticPage = () => {
               ))}
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* ── LIVE AGENTS ��──────────────────────────────────────────────────── */}
-      <section
-        id="live"
-        className="border-t border-black/[0.06] px-6 py-32 md:px-12 lg:px-20"
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 items-center gap-20 lg:grid-cols-2">
-            <div>
-              <PixelIcon type="agents" size={40} />
-              <div className="mt-4">
-                <Tag>LIVE RIGHT NOW</Tag>
-              </div>
-              <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl lg:text-6xl">
-                {'Agents working\n24 / 7, autonomously.'}
-              </RevealText>
-              <p className="mt-6 max-w-sm text-base leading-relaxed text-black/40">
-                At any moment, thousands of agents are running tasks on behalf
-                of teams around the world — no human in the loop.
-              </p>
-              <div className="mt-10 flex items-end gap-2">
-                <LiveAgentCounter />
-                <span className="mb-1 text-sm tracking-wide text-black/30">
-                  agents active globally
-                </span>
-              </div>
-            </div>
-            <div className="relative">
-              <LiveAgentFeed />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── PRICING ───────────────────────────────────���────������─────────────── */}
-      <section
-        id="pricing"
-        className="border-t border-black/[0.06] px-6 py-32 md:px-12 lg:px-20"
-      >
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-16 flex flex-col items-center text-center">
-            <PixelIcon type="pricing" size={40} />
-            <div className="mt-4">
-              <Tag>PRICING</Tag>
-            </div>
-            <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-              Pay as your agents grow.
-            </RevealText>
-          </div>
-
-          <div
-            className="grid grid-cols-1 gap-3 md:grid-cols-3"
-            onMouseMove={handleMouse}
-          >
-            {[
-              {
-                delay: 0,
-                features: [
-                  '5 agents',
-                  '1,000 tasks/mo',
-                  'Community support',
-                  'Basic traces',
-                ],
-                name: 'Sandbox',
-                price: 'Free',
-                sub: 'Start experimenting',
-              },
-              {
-                delay: 80,
-                features: [
-                  '50 agents',
-                  '100K tasks/mo',
-                  'Priority support',
-                  'Full traces + replay',
-                  'Custom tools',
-                  'REST API',
-                ],
-                highlight: true,
-                name: 'Builder',
-                period: '/mo',
-                price: '$49',
-                sub: 'For teams shipping fast',
-              },
-              {
-                delay: 140,
-                features: [
-                  'Unlimited agents',
-                  'Unlimited tasks',
-                  'Dedicated infra',
-                  'SOC 2 / HIPAA',
-                  'SLA guarantees',
-                  'Custom contracts',
-                ],
-                name: 'Enterprise',
-                price: 'Custom',
-                sub: 'For orgs at scale',
-              },
-            ].map((plan) => (
-              <BentoCard
-                key={plan.name}
-                className={`flex flex-col p-8 ${plan.highlight ? 'border-black/20 bg-[#F0EEE8]' : ''}`}
-                delay={plan.delay}
-              >
-                <div className="mb-8">
-                  <div className="font-pixel mb-4 text-[11px] tracking-widest text-black/40">
-                    {plan.name}
-                  </div>
-                  <div className="mb-1 flex items-baseline gap-1">
-                    <span className="text-4xl font-light">{plan.price}</span>
-                    {plan.period && (
-                      <span className="text-sm text-black/40">
-                        {plan.period}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs tracking-wide text-black/35">
-                    {plan.sub}
-                  </p>
-                </div>
-                <ul className="mb-8 flex-1 space-y-3">
-                  {plan.features.map((f) => (
-                    <li
-                      key={f}
-                      className="flex items-center gap-3 text-sm text-black/55"
-                    >
-                      <div className="h-1 w-1 shrink-0 rounded-full bg-black/25" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  type="button"
-                  className={`w-full rounded-xl py-3 text-sm tracking-widest transition-all duration-200 ${
-                    plan.highlight
-                      ? 'bg-[#111] text-white hover:bg-[#333]'
-                      : 'border border-black/10 text-black/60 hover:border-black/25 hover:bg-black/[0.04] hover:text-black'
-                  }`}
-                >
-                  {plan.name === 'Enterprise' ? 'CONTACT SALES' : 'GET STARTED'}
-                </button>
-              </BentoCard>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -975,64 +819,44 @@ const AgenticPage = () => {
         />
         <div className="relative z-10 mx-auto max-w-2xl text-center">
           <h2 className="mb-6 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl lg:text-6xl">
-            Start building your
+            No prior technical
             <br />
-            agent workforce.
+            background is required.
           </h2>
           <p className="mb-10 text-sm leading-relaxed text-black/45">
-            Join thousands of teams deploying AI agents that work around the
-            clock, across every timezone.
+            Recruitment opens once a year, in a four-week window. The form takes
+            about 10 minutes. Answer only the section for the group you pick.
           </p>
-          {submitted ? (
-            <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-600/20 bg-emerald-50 px-6 py-3 text-sm text-emerald-700">
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              You&apos;re on the list. We&apos;ll be in touch.
-            </div>
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                if (email) {
-                  setSubmitted(true)
-                }
-              }}
-              className="mx-auto flex max-w-md flex-col gap-2 sm:flex-row"
-            >
-              <input
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="flex-1 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm text-[#111] transition-colors placeholder:text-black/25 focus:border-black/25 focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="rounded-xl bg-[#111] px-8 py-3 text-sm font-medium tracking-widest text-white transition-colors hover:bg-[#333]"
-              >
-                JOIN
-              </button>
-            </form>
-          )}
+          <a
+            className="mx-auto flex max-w-md items-center justify-center gap-2 rounded-xl border border-black/10 px-8 py-3 text-sm font-medium tracking-widest text-black/70 transition-colors hover:border-black/25 hover:bg-black/[0.04] hover:text-black"
+            href="https://forms.gle/RnSVePAY9JWeZsKn9"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            APPLY
+          </a>
         </div>
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
       <footer className="border-t border-black/[0.06] px-6 py-10 md:px-12 lg:px-20">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row md:items-center">
-          <span className="font-pixel text-xs tracking-[0.25em] text-black/50">
-            AGENTIC
-          </span>
+          <Image
+            alt="The Aris Club"
+            height={100}
+            src="/brand/aris-mark.webp"
+            style={{ height: 40, width: 'auto' }}
+            width={72}
+          />
 
           {/* Nav sections */}
           <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
             {[
-              { href: '#platform', label: 'Platform' },
-              { href: '#agents', label: 'Agents' },
-              { href: '#workflow', label: 'Workflow' },
-              { href: '#integrations', label: 'Integrations' },
-              { href: '#live', label: 'Live' },
-              { href: '#pricing', label: 'Pricing' },
+              { href: '#platform', label: 'Departments' },
+              { href: '#agents', label: 'Selection' },
+              { href: '#workflow', label: 'Window' },
+              { href: '#integrations', label: 'Tools' },
+              { href: '#security', label: 'Privacy' },
             ].map((l) => (
               <a
                 key={l.label}
@@ -1046,25 +870,24 @@ const AgenticPage = () => {
 
           {/* Legal links */}
           <div className="flex items-center gap-6">
-            {[
-              { href: '#', label: 'Privacy' },
-              { href: '#', label: 'Terms' },
-              { href: '#', label: 'Docs' },
-              { href: '#', label: 'GitHub' },
-            ].map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                className="text-xs tracking-widest text-black/25 transition-colors hover:text-black/55"
-              >
-                {l.label}
-              </a>
-            ))}
+            <Link
+              className="text-xs tracking-widest text-black/25 transition-colors hover:text-black/55"
+              href="/legal/community-terms"
+            >
+              Terms
+            </Link>
+            <a
+              className="text-xs tracking-widest text-black/25 transition-colors hover:text-black/55"
+              href="mailto:thearisclub.hcmiu@gmail.com"
+            >
+              Contact
+            </a>
           </div>
         </div>
         <div className="mx-auto mt-8 max-w-6xl border-t border-black/[0.04] pt-6">
           <span className="text-xs text-black/20">
-            © 2026 Agentic. All rights reserved.
+            © 2026 The Aris Club. Autonomous Systems, Robotics, IoT &amp;
+            Software.
           </span>
         </div>
       </footer>
@@ -1072,4 +895,4 @@ const AgenticPage = () => {
   )
 }
 
-export default AgenticPage
+export default ArisPage

@@ -75,9 +75,22 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
-  --font-pixel: 'Courier Prime', monospace;
+  --font-sans:
+    var(--font-be-vietnam-pro), ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Menlo', 'Consolas', monospace;
+  /* Kept because the page still uses font-pixel for step numbers and small
+     labels. It resolves to the system mono stack, which is what it was already
+     falling back to, so no font is downloaded. */
+  --font-pixel: ui-monospace, 'SF Mono', 'Menlo', 'Consolas', monospace;
+
+  /* Sampled from the logo artwork, see tools/build-brand-assets.py. */
+  --color-aris-navy: #003070;
+  --color-aris-blue: #00a0f0;
+  /* The page surface and ink, kept exactly as the existing design had them. */
+  --color-aris-canvas: #f5f4f0;
+  --color-aris-ink: #111111;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

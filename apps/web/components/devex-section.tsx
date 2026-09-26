@@ -2,120 +2,73 @@
 
 import { useState, useEffect } from 'react'
 
+// Quoted from the club's own English job descriptions. The panel, the step
+// cards and the auto-advance timing are unchanged; only the content moved.
 const STEPS = [
   {
     code: [
-      { text: '# Install the Agentic SDK', type: 'comment' },
-      { text: 'npm install @agentic/sdk', type: 'command' },
+      { text: '// job-description/member.md', type: 'comment' },
       { type: 'gap' },
-      { text: '# Initialize your project', type: 'comment' },
-      { text: 'npx agentic init', type: 'command' },
-      { type: 'gap' },
-      { text: '✓ Project initialized', type: 'output' },
-      { text: '✓ Config file created', type: 'output' },
-      { text: '✓ Ready to build', type: 'output' },
+      { text: 'Membership does not require', type: 'plain' },
+      { text: 'a technical background or a', type: 'plain' },
+      { text: 'fixed number of hours.', type: 'plain' },
     ],
-    desc: 'One command to get started',
-    file: 'terminal',
-    lang: 'bash',
+    desc: 'No background, no hour quota',
+    file: 'membership',
+    lang: 'text',
     num: '01',
-    title: 'Install SDK',
+    title: 'No required background',
   },
   {
     code: [
-      { text: '// agents/researcher.ts', type: 'comment' },
-      {
-        after: ' { Agent, Tool } ',
-        keyword2: 'from',
-        string: " '@agentic/sdk'",
-        text: 'import',
-        type: 'keyword',
-      },
+      { text: '// job-description/member.md', type: 'comment' },
       { type: 'gap' },
-      {
-        after: ' webSearch ',
-        args: "('web-search', async (q) => { ... })",
-        fn: 'Tool',
-        keyword2: '=',
-        keyword3: ' new ',
-        text: 'const',
-        type: 'keyword',
-      },
-      { type: 'gap' },
-      {
-        after: ' researcher ',
-        args: '({',
-        fn: 'Agent',
-        keyword2: '=',
-        keyword3: ' new ',
-        text: 'export const',
-        type: 'keyword',
-      },
-      { key: '  name', type: 'prop', val: "'researcher'" },
-      { key: '  model', type: 'prop', val: "'claude-opus'" },
-      { key: '  tools', type: 'prop', val: '[webSearch]' },
-      { key: '  memory', type: 'prop', val: 'true' },
-      { text: '});', type: 'plain' },
+      { text: 'Technical and operational', type: 'plain' },
+      { text: 'skills are learned through', type: 'plain' },
+      { text: 'the department framework,', type: 'plain' },
+      { text: 'tasks, reviews, workshops', type: 'plain' },
+      { text: 'and mentorship.', type: 'plain' },
     ],
-    desc: 'TypeScript-first agent class',
-    file: 'agents/researcher.ts',
-    lang: 'typescript',
+    desc: 'Learned inside the club, not before it',
+    file: 'learning',
+    lang: 'text',
     num: '02',
-    title: 'Define Agent',
+    title: 'Skills are learned',
   },
   {
     code: [
-      { text: '// Add long-term memory to any agent', type: 'comment' },
-      {
-        after: ' { VectorMemory } ',
-        keyword2: 'from',
-        string: " '@agentic/memory'",
-        text: 'import',
-        type: 'keyword',
-      },
+      { text: '// software-department-member.md', type: 'comment' },
       { type: 'gap' },
-      {
-        after: ' memory ',
-        args: '({',
-        fn: 'VectorMemory',
-        keyword2: '=',
-        keyword3: ' new ',
-        text: 'const',
-        type: 'keyword',
-      },
-      { key: '  provider', type: 'prop', val: "'pgvector'" },
-      { key: '  namespace', type: 'prop', val: "'researcher'" },
-      { text: '})', type: 'plain' },
-      { type: 'gap' },
-      { text: '// Attach to agent', type: 'comment' },
-      { text: 'researcher.use(memory)', type: 'plain' },
+      { text: 'Prior experience is evidence', type: 'plain' },
+      { text: 'and can shorten the path,', type: 'plain' },
+      { text: 'not exclude an applicant.', type: 'plain' },
     ],
-    desc: 'Persistent conversation context',
-    file: 'agents/memory.ts',
-    lang: 'typescript',
+    desc: 'Evidence, never a precondition',
+    file: 'evidence',
+    lang: 'text',
     num: '03',
-    title: 'Add Memory',
+    title: 'Experience never excludes',
   },
   {
     code: [
-      { text: '# Deploy to Agentic Cloud', type: 'comment' },
-      { text: 'agentic deploy --prod', type: 'command' },
+      { text: '// recruitment-flow.md', type: 'comment' },
       { type: 'gap' },
-      { text: '  Building agent...', type: 'output' },
-      { text: '  Running tests...', type: 'output' },
-      { text: '  Deploying to edge...', type: 'output' },
+      { text: 'Recruitment opens once a year,', type: 'plain' },
+      { text: 'in a four-week window.', type: 'plain' },
       { type: 'gap' },
-      { text: '✓ researcher deployed', type: 'success' },
-      { text: '  → https://agents.agentic.dev/researcher', type: 'url' },
+      { text: '\u2192 forms.gle/RnSVePAY9JWeZsKn9', type: 'url' },
     ],
-    desc: 'One command to production',
-    file: 'terminal',
-    lang: 'bash',
+    desc: 'One form, about ten minutes',
+    file: 'apply',
+    lang: 'text',
     num: '04',
-    title: 'Deploy',
+    title: 'Apply once a year',
   },
 ]
 
+// Only the line types the club's own quotations need. The output, success,
+// command, prop and keyword branches that used to render the @agentic/sdk
+// samples went with that data.
 const CodeLine = ({ line }: { line: (typeof STEPS)[0]['code'][0] }) => {
   if (line.type === 'gap') {
     return <div className="h-3" />
@@ -123,50 +76,11 @@ const CodeLine = ({ line }: { line: (typeof STEPS)[0]['code'][0] }) => {
   if (line.type === 'comment') {
     return <div className="text-[#9ca3af]">{line.text}</div>
   }
-  if (line.type === 'output') {
-    return <div className="text-[#6b7280]">{line.text}</div>
-  }
-  if (line.type === 'success') {
-    return <div className="text-[#16a34a]">{line.text}</div>
-  }
   if (line.type === 'url') {
     return <div className="text-[#2563eb] underline">{line.text}</div>
   }
-  if (line.type === 'command') {
-    return (
-      <div>
-        <span className="text-[#16a34a]">$ </span>
-        <span className="text-[#111]">{line.text}</span>
-      </div>
-    )
-  }
   if (line.type === 'plain') {
     return <div className="text-[#111]">{line.text}</div>
-  }
-  if (line.type === 'prop') {
-    return (
-      <div>
-        <span className="text-[#2563eb]">{line.key}</span>
-        <span className="text-[#111]">: </span>
-        <span className="text-[#16a34a]">{line.val}</span>
-        <span className="text-[#111]">,</span>
-      </div>
-    )
-  }
-  if (line.type === 'keyword') {
-    return (
-      <div>
-        <span className="text-[#7c3aed]">{line.text}</span>
-        <span className="text-[#111]">{line.after}</span>
-        <span className="text-[#7c3aed]">{line.keyword2}</span>
-        {line.keyword3 && (
-          <span className="text-[#7c3aed]">{line.keyword3}</span>
-        )}
-        {line.fn && <span className="text-[#b45309]">{line.fn}</span>}
-        {line.args && <span className="text-[#111]">{line.args}</span>}
-        {line.string && <span className="text-[#16a34a]">{line.string}</span>}
-      </div>
-    )
   }
   return null
 }
@@ -208,12 +122,12 @@ export const DevExSection = () => {
       <div className="mx-auto max-w-6xl">
         <div className="mb-16">
           <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-black/[0.06] bg-black/[0.05] px-3 py-1.5 text-[10px] tracking-widest text-black/40 uppercase">
-            Developer Experience
+            Eligibility
           </div>
           <h2 className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-            Built for developers.
+            Prior experience shortens
             <br />
-            Loved by teams.
+            the path. It does not exclude.
           </h2>
         </div>
 

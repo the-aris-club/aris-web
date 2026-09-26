@@ -3,46 +3,38 @@
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
+// The three selection rounds, quoted from the recruitment form description in
+// FormBuilder.gs and from recruitment-flow.md. Card mechanics are unchanged.
 const AGENTS = [
   {
-    desc: 'Autonomously browses the web, extracts structured data, synthesizes reports from multiple sources with citations.',
-    img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/researcher-CvhqOuV6irGwBOnJoTGFlXdbyYBRjb.png',
-    label: 'RESEARCHER',
+    desc: 'The recruitment Form. Eligibility and application review, with a reason recorded for every outcome.',
+    img: '/brand/aris-hero.webp',
+    label: 'ROUND 01',
     stats: [
-      { l: 'tasks run', v: '2.4M' },
-      { l: 'accuracy', v: '98.2%' },
+      { l: 'takes', v: '~10 min' },
+      { l: 'outcome', v: 'Recorded' },
     ],
-    title: 'Web & data research',
+    title: 'Application review',
   },
   {
-    desc: 'Writes, refactors, and reviews code across 40+ languages. Runs tests, fixes bugs, opens pull requests automatically.',
-    img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/coder-9bItvCegU6TXUqbX3tUXGBAtvkBkXp.png',
-    label: 'CODER',
+    desc: 'Selection looks for people who can learn, contribute and follow the code of conduct.',
+    img: '/brand/aris-hero.webp',
+    label: 'ROUND 02',
     stats: [
-      { l: 'PRs merged', v: '1.1M' },
-      { l: 'avg response', v: '3.2s' },
+      { l: 'format', v: 'Interview' },
+      { l: 'scored', v: 'Indep.' },
     ],
-    title: 'Code generation & review',
+    title: 'Interview',
   },
   {
-    desc: 'Connects to your databases, runs queries, visualizes trends, and surfaces anomalies before they become problems.',
-    img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/analyst-Ysxnqg7Fpy2cfA56PiIttv1KximMhT.png',
-    label: 'ANALYST',
+    desc: 'A common part on safety, teamwork and openness, plus a part for the department you picked.',
+    img: '/brand/aris-hero.webp',
+    label: 'ROUND 03',
     stats: [
-      { l: 'reports', v: '880K' },
-      { l: 'faster', v: '12x' },
+      { l: 'parts', v: '2' },
+      { l: 'notified', v: 'Each' },
     ],
-    title: 'Data analysis & insights',
-  },
-  {
-    desc: 'Takes actions across APIs: sends messages, creates calendar events, triggers webhooks, and manages third-party apps.',
-    img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/executor-o1q6509qMLXMtpBIGo49vcgOu34sI1.png',
-    label: 'EXECUTOR',
-    stats: [
-      { l: 'executions', v: '5.6M' },
-      { l: 'uptime', v: '99.9%' },
-    ],
-    title: 'Workflow automation',
+    title: 'Skills test',
   },
 ]
 
