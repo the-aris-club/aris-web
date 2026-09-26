@@ -20,7 +20,9 @@ env:
   # there: PRs run with a local cache only. `A && B || ''` is the GitHub
   # expression form of a conditional secret (falsy '' keeps the key out).
   TURBO_TOKEN: ${{ github.event_name != 'pull_request' && secrets.TURBO_TOKEN || '' }}
-  TURBO_TEAM: ${{ github.event_name != 'pull_request' && secrets.TURBO_TEAM || '' }}
+  # The team slug is not a secret. Keeping it in a repository variable rather than
+  # a secret stops GitHub censoring it as *** in job logs.
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
   TURBO_CACHE_DIR: ~/.turbo
 
 jobs:
