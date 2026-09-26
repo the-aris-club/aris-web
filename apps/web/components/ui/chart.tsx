@@ -155,7 +155,7 @@ const ChartTooltipContent = ({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+}: RechartsPrimitive.TooltipContentProps &
   React.ComponentProps<'div'> & {
     hideLabel?: boolean
     hideIndicator?: boolean
@@ -223,7 +223,9 @@ const ChartTooltipContent = ({
 
           return (
             <div
-              key={item.dataKey}
+              // recharts 3 widened dataKey to a formatter function, which React
+              // cannot use as a key. The derived string key above is stable.
+              key={key}
               className={cn(
                 '[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5',
                 indicator === 'dot' && 'items-center'
@@ -294,7 +296,7 @@ const ChartLegendContent = ({
   verticalAlign = 'bottom',
   nameKey,
 }: React.ComponentProps<'div'> &
-  Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
+  RechartsPrimitive.DefaultLegendContentProps & {
     hideIcon?: boolean
     nameKey?: string
   }) => {
