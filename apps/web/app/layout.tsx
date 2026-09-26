@@ -1,23 +1,37 @@
-import React from "react"
+import React from 'react'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono, IBM_Plex_Sans } from 'next/font/google'
 import { Courier_Prime } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
-const _courierPrime = Courier_Prime({ weight: ["400", "700"], subsets: ["latin"] });
-const _ibmPlexSans = IBM_Plex_Sans({ weight: ["300", "400", "500", "600"], subsets: ["latin"] });
+const _geist = Geist({ subsets: ['latin'] })
+const _geistMono = Geist_Mono({ subsets: ['latin'] })
+const _courierPrime = Courier_Prime({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+})
+const _ibmPlexSans = IBM_Plex_Sans({
+  weight: ['300', '400', '500', '600'],
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
   title: 'Agentic — Autonomous AI Agents at Scale',
-  description: 'Deploy autonomous AI agents that think, act, and execute across any workflow. Connect 200+ integrations, run agents in parallel, and ship faster with the Agentic platform.',
-  keywords: ['AI agents', 'autonomous agents', 'LLM orchestration', 'AI automation', 'multi-agent platform'],
+  description:
+    'Deploy autonomous AI agents that think, act, and execute across any workflow. Connect 200+ integrations, run agents in parallel, and ship faster with the Agentic platform.',
+  keywords: [
+    'AI agents',
+    'autonomous agents',
+    'LLM orchestration',
+    'AI automation',
+    'multi-agent platform',
+  ],
   authors: [{ name: 'Agentic' }],
   openGraph: {
     title: 'Agentic — Autonomous AI Agents at Scale',
-    description: 'Deploy autonomous AI agents that think, act, and execute across any workflow.',
+    description:
+      'Deploy autonomous AI agents that think, act, and execute across any workflow.',
     type: 'website',
     url: 'https://agentic.ai',
     siteName: 'Agentic',
@@ -25,7 +39,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Agentic — Autonomous AI Agents at Scale',
-    description: 'Deploy autonomous AI agents that think, act, and execute across any workflow.',
+    description:
+      'Deploy autonomous AI agents that think, act, and execute across any workflow.',
   },
   icons: {
     icon: [

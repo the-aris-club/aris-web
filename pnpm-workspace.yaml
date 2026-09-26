@@ -1,0 +1,6 @@
+packages:
+  - 'apps/*'
+
+# Next.js pulls in sharp for its image optimizer; approve its native build.
+allowBuilds:
+  sharp: true

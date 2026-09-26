@@ -127,7 +127,8 @@
 
 /* Glitch Animation */
 @keyframes glitch-shift {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0);
   }
   33% {
@@ -139,7 +140,8 @@
 }
 
 @keyframes glitch-opacity {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -148,7 +150,9 @@
 }
 
 .glitch-layer {
-  animation: glitch-shift 5s infinite ease-in-out, glitch-opacity 3s infinite ease-in-out;
+  animation:
+    glitch-shift 5s infinite ease-in-out,
+    glitch-opacity 3s infinite ease-in-out;
 }
 
 /* Word reveal — blur + translateY */
@@ -188,14 +192,25 @@
 
 /* Bento shimmer on hover */
 @keyframes shimmer {
-  0% { transform: translateX(-100%) }
-  100% { transform: translateX(200%) }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
 }
 
 /* Pulse dot */
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1) }
-  50% { opacity: 0.4; transform: scale(0.8) }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
 }
 
 /* Smooth scrolling */
@@ -205,10 +220,18 @@ html {
 
 /* Marquee animations */
 @keyframes marqueeLeft {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-33.333%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
 }
 @keyframes marqueeRight {
-  from { transform: translateX(-33.333%); }
-  to   { transform: translateX(0); }
+  from {
+    transform: translateX(-33.333%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
