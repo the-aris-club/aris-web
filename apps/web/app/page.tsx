@@ -514,92 +514,72 @@ const ArisPage = () => {
               </RevealText>
             </div>
             <p className="max-w-xs text-sm leading-relaxed text-black/45">
-              Discord for coordination, GitHub for records, Google Forms and
-              Sheets for the operating ledger, Apps Script for the pipeline
-              behind it.
+              Any of these may be changed, paused or replaced. A service is not
+              guaranteed to be always available, and an important record must
+              never exist only in a chat message.
             </p>
           </div>
 
-          {/* Full-width image block with glass cards */}
-          {/* Mobile: flex-col, image + cards stacked. Desktop: image fills block, cards absolute */}
+          {/* Image and card as two grid cells rather than a fixed-height box
+              with cards floated over it. The absolute version had a hardcoded
+              480px against a card column that measured 528px, and
+              overflow-hidden sliced 63px off the top of the first card. Here
+              the cards are in normal flow and items-stretch lets the image
+              fill whatever height they take, so content length can no longer
+              clip anything. */}
           <div
-            className="flex flex-col overflow-hidden rounded-2xl border border-black/[0.07] md:relative md:block"
+            className="grid gap-3 md:grid-cols-[1fr_20rem] md:items-stretch"
             onMouseMove={handleMouse}
           >
-            {/* Image */}
-            <div className="relative h-[280px] w-full shrink-0 md:h-[480px]">
+            <div className="relative min-h-[280px] overflow-hidden rounded-2xl border border-black/[0.07] md:min-h-[520px]">
               <Image
-                alt="Autonomous Systems, Robotics, IoT and Software"
+                alt="Robotics and IoT workbench in a lab"
                 fill
-                sizes="100vw"
-                src="/brand/aris-banner.webp"
+                sizes="(min-width: 768px) 60vw, 100vw"
+                src="/brand/aris-hero.webp"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
             </div>
 
-            {/* Cards — flex row on mobile (equal spacing), absolute on desktop */}
-            <div className="flex flex-col gap-3 p-4 md:absolute md:right-4 md:bottom-4 md:w-72 md:p-0">
-              <div
-                className="rounded-xl border border-white/50 p-6"
-                style={{
-                  WebkitBackdropFilter: 'blur(24px)',
-                  backdropFilter: 'blur(24px)',
-                  background: 'rgba(255,255,255,0.60)',
-                }}
-              >
-                <Tag>STRUCTURED DATA</Tag>
-                <h3 className="mt-3 mb-2 text-lg font-light">
-                  How this page describes itself
-                </h3>
-                <p className="mb-4 text-xs leading-relaxed text-black/45">
-                  The same object search and generative engines read. Only
-                  claims the club has actually made are encoded.
-                </p>
-                <div className="rounded-lg border border-black/[0.07] bg-black/[0.05] p-3 font-mono text-[11px] leading-relaxed text-black/50">
-                  <span className="text-black/25">declared in layout.tsx</span>
-                  <br />
-                  <span className="text-blue-600/70">
-                    &apos;@type&apos;
-                  </span>:{' '}
-                  <span className="text-green-700/70">
-                    &apos;Organization&apos;
-                  </span>
-                  ,<br />
-                  {'  '}
-                  <span className="text-amber-700/70">slogan</span>:{' '}
-                  <span className="text-black/35">
-                    &apos;We build systems&hellip;&apos;
-                  </span>
-                  <br />
-                  {'  '}
-                  <span className="text-amber-700/70">logo</span>:{' '}
-                  <span className="text-black/35">/brand/&hellip;.png</span>
-                  <br />
-                  {'}'}
-                </div>
-              </div>
-
-              <div
-                className="rounded-xl border border-white/50 p-6"
-                style={{
-                  WebkitBackdropFilter: 'blur(24px)',
-                  backdropFilter: 'blur(24px)',
-                  background: 'rgba(255,255,255,0.60)',
-                }}
-              >
-                <div className="mb-2 flex items-center gap-2">
-                  <div className="bg-aris-navy/60 h-2 w-2 rounded-full" />
-                  <span className="text-xs tracking-widest text-black/40">
-                    NO SPONSOR CONTROL
-                  </span>
-                </div>
-                <p className="text-sm text-black/45">
-                  A sponsorship does not give a sponsor control over research
-                  results, member decisions, confidential data or the
-                  club&rsquo;s internal governance.
-                </p>
-              </div>
-            </div>
+            <BentoCard className="p-8" delay={0}>
+              <h3 className="mb-6 text-lg font-light">
+                Five services, and what each is for
+              </h3>
+              <ul className="space-y-5">
+                {[
+                  {
+                    detail: 'Coordination, community and announcements.',
+                    name: 'Discord',
+                  },
+                  {
+                    detail: 'Issues, pull requests and project records.',
+                    name: 'GitHub',
+                  },
+                  {
+                    detail: 'Recruitment intake, minimal data only.',
+                    name: 'Google Forms',
+                  },
+                  {
+                    detail: 'Operating ledgers, not legal records.',
+                    name: 'Google Sheets',
+                  },
+                  {
+                    detail: 'The automation behind the recruitment pipeline.',
+                    name: 'Apps Script',
+                  },
+                ].map((service) => (
+                  <li
+                    className="border-t border-black/[0.06] pt-5 first:border-0 first:pt-0"
+                    key={service.name}
+                  >
+                    <div className="text-base font-medium">{service.name}</div>
+                    <div className="mt-1 text-sm text-black/50">
+                      {service.detail}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </BentoCard>
           </div>
         </div>
       </section>
@@ -659,12 +639,15 @@ const ArisPage = () => {
                 ))}
               </div>
 
-              {/* The charter's hard prohibitions, quoted rather than badged */}
+              {/* The charter's hard prohibitions plus the sponsorship limit,
+                  which is a limit on what an outsider may do and so belongs
+                  with the other things the club will not do. */}
               <div className="flex flex-col gap-2 pt-4">
                 {[
                   'No medical, legal or educational authority',
                   'No outcome promised without evidence',
                   'No HCMIU logo, name or claim of recognition',
+                  'No sponsor control over results or members',
                 ].map((badge) => (
                   <div
                     key={badge}

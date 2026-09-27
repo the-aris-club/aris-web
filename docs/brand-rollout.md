@@ -15,7 +15,7 @@ Every string on the page is quoted from a document the club already has in Engli
 | Departments | Visual Agent Builder, Real-time Monitoring, Memory & Context, Guardrails | Autonomous Systems, Robotics, IoT, Software | `server-orientation.md` |
 | Automation | 4 plug-and-play agent types, 2.4M tasks, 98.2% accuracy | what a bot may assist with, may not decide, may not act | Community Terms §9 |
 | Projects | Define, Compose, Test, Deploy | what every project has to name | Community Terms §11, §8, §6 |
-| Tools | 200+ connectors, SDK code sample | Discord, GitHub, Forms, Sheets, Apps Script | `CONTEXT.md`, `automation/` |
+| Tools | 200+ connectors, SDK code sample | the five services, and what each is for | `CONTEXT.md`, `automation/`, Community Terms §14 |
 | Privacy | SOC 2 Type II, GDPR, HIPAA Ready, ISO 27001, live audit trail | what the club never collects, and what a sponsor does not control | Community Terms §7, §10 |
 | Content and ownership | npm install @agentic/sdk | the four things the club will not do with your work | Community Terms §8 |
 | Marquee | 20 AI capabilities | departments and real operational capabilities | `operations-development.md` |
@@ -23,6 +23,14 @@ Every string on the page is quoted from a document the club already has in Engli
 | Footer | `AGENTIC`, four `href="#"` legal links | mark, real anchors, Terms, contact | — |
 
 Recruitment content was removed from the landing page on request. The three sections that were about applying were replaced with the club's own operating rules, and the hero figures stopped counting rounds and windows. What survives is the word "recruitment" inside one quoted sentence, where it names one of eight decision types reserved to people, and the `APPLY` button in the nav.
+
+### The Tools section is a grid, not an overlay
+
+It started as a fixed-height 480px box with two glass cards absolutely positioned over the image, and that arrangement clipped itself: the card column measured 528px inside a 482px box, and `overflow-hidden` cut 63px off the top of the first card, taking its rounded corners with it. The image was also the full banner, which carries the club's own lockup and headline, so the section titled "The services we actually run" was showing a logo instead of any of its services.
+
+It is now two grid cells. The cards sit in normal flow and `items-stretch` lets the image fill whatever height they take, so no content length can clip anything and there is no magic pixel value to re-tune. The image is the text-free lab crop so it supports the section rather than competing with it, and the card lists all five services, which is what the heading claims.
+
+Keep the card column in normal flow. Moving it back to `absolute` reintroduces the bug the moment a line of text changes.
 
 ### The Projects section has four cards for five rules
 
