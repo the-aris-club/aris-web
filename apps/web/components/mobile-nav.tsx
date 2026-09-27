@@ -31,7 +31,7 @@ export const MobileNav = () => {
           style={NAV_STYLE}
         >
           <span className="font-pixel text-xs tracking-[0.25em] text-black/70">
-            AGENTIC
+            ARIS
           </span>
 
           {/* Desktop links */}

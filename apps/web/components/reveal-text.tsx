@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Ref } from 'react'
 
 // Splits text into words and reveals each with staggered opacity+blur+translateY
-// matching the AGENTIC intro animation style.
+// matching the ARIS intro animation style.
 export const RevealText = ({
   children,
   className = '',

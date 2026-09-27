@@ -10,6 +10,9 @@ import React from 'react'
 
 import './globals.css'
 
+const NAME = 'The Aris Club'
+const SITE_URL = 'https://aris.resonance.io.vn'
+
 const _geist = Geist({ subsets: ['latin'] })
 const _geistMono = Geist_Mono({ subsets: ['latin'] })
 const _courierPrime = Courier_Prime({
@@ -21,27 +24,13 @@ const _ibmPlexSans = IBM_Plex_Sans({
   weight: ['300', '400', '500', '600'],
 })
 
+// Icons come from the app/ file conventions — icon.png, apple-icon.png and
+// opengraph-image.jpg. An explicit metadata.icons block would override them and
+// point the tab back at the Agentic set in public/.
 export const metadata: Metadata = {
-  authors: [{ name: 'Agentic' }],
+  authors: [{ name: NAME }],
   description:
-    'Deploy autonomous AI agents that think, act, and execute across any workflow. Connect 200+ integrations, run agents in parallel, and ship faster with the Agentic platform.',
-  icons: {
-    apple: '/apple-icon.png',
-    icon: [
-      {
-        media: '(prefers-color-scheme: light)',
-        url: '/icon-light-32x32.png',
-      },
-      {
-        media: '(prefers-color-scheme: dark)',
-        url: '/icon-dark-32x32.png',
-      },
-      {
-        type: 'image/svg+xml',
-        url: '/icon.svg',
-      },
-    ],
-  },
+    'Deploy autonomous AI agents that think, act, and execute across any workflow. Connect 200+ integrations, run agents in parallel, and ship faster with The Aris Club platform.',
   keywords: [
     'AI agents',
     'autonomous agents',
@@ -49,20 +38,21 @@ export const metadata: Metadata = {
     'AI automation',
     'multi-agent platform',
   ],
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     description:
       'Deploy autonomous AI agents that think, act, and execute across any workflow.',
-    siteName: 'Agentic',
-    title: 'Agentic — Autonomous AI Agents at Scale',
+    siteName: NAME,
+    title: `${NAME} — Autonomous AI Agents at Scale`,
     type: 'website',
-    url: 'https://agentic.ai',
+    url: SITE_URL,
   },
-  title: 'Agentic — Autonomous AI Agents at Scale',
+  title: `${NAME} — Autonomous AI Agents at Scale`,
   twitter: {
     card: 'summary_large_image',
     description:
       'Deploy autonomous AI agents that think, act, and execute across any workflow.',
-    title: 'Agentic — Autonomous AI Agents at Scale',
+    title: `${NAME} — Autonomous AI Agents at Scale`,
   },
 }
 

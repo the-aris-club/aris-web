@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-const LETTERS = ['A', 'G', 'E', 'N', 'T', 'I', 'C']
+const LETTERS = ['A', 'R', 'I', 'S']
 
 // ms between each letter appearing
 const LETTER_IN_STAGGER = 90
@@ -87,7 +87,7 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
         }}
       />
 
-      {/* AGENTIC letters */}
+      {/* Club wordmark */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="flex" style={{ gap: '0.06em' }}>
           {LETTERS.map((letter, i) => {

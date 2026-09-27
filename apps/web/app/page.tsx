@@ -84,7 +84,7 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
 )
 
 // ─── Main page ────────────────────────────────────────────────────────────────
-const AgenticPage = () => {
+const ArisPage = () => {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [heroReady, setHeroReady] = useState(false)
@@ -1021,7 +1021,7 @@ const AgenticPage = () => {
       <footer className="border-t border-black/[0.06] px-6 py-10 md:px-12 lg:px-20">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row md:items-center">
           <span className="font-pixel text-xs tracking-[0.25em] text-black/50">
-            AGENTIC
+            ARIS
           </span>
 
           {/* Nav sections */}
@@ -1064,7 +1064,7 @@ const AgenticPage = () => {
         </div>
         <div className="mx-auto mt-8 max-w-6xl border-t border-black/[0.04] pt-6">
           <span className="text-xs text-black/20">
-            © 2026 Agentic. All rights reserved.
+            © 2026 The Aris Club. All rights reserved.
           </span>
         </div>
       </footer>
@@ -1072,4 +1072,4 @@ const AgenticPage = () => {
   )
 }
 
-export default AgenticPage
+export default ArisPage
