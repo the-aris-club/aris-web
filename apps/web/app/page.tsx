@@ -855,9 +855,15 @@ const ArisPage = () => {
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
       <footer className="border-t border-black/[0.06] px-6 py-10 md:px-12 lg:px-20">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row md:items-center">
-          <span className="font-pixel text-xs tracking-[0.25em] text-black/50">
-            ARIS
-          </span>
+          {/* The full lockup, mark over wordmark. There is room for it here,
+              which the nav bar does not have. */}
+          <Image
+            src="/brand/aris-logo.png"
+            alt="The Aris Club"
+            width={367}
+            height={280}
+            className="h-16 w-auto shrink-0"
+          />
 
           {/* Nav sections. Live and Pricing are gone with their sections. */}
           <div className="flex flex-wrap items-center gap-x-8 gap-y-3">

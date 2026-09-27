@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 
 // The club's own recruitment form, from recruitment-flow.md.
@@ -33,9 +34,16 @@ export const MobileNav = () => {
           className="flex items-center justify-between rounded-2xl border border-black/[0.06] px-5 py-3"
           style={NAV_STYLE}
         >
-          <span className="font-pixel text-xs tracking-[0.25em] text-black/70">
-            ARIS
-          </span>
+          {/* The mark rather than the full lockup: the stacked lockup is taller
+              than the bar, and at 24px the wordmark under it would be illegible. */}
+          <Image
+            src="/brand/aris-mark.png"
+            alt="The Aris Club"
+            width={132}
+            height={65}
+            priority
+            className="h-6 w-auto shrink-0"
+          />
 
           {/* Desktop links */}
           <div

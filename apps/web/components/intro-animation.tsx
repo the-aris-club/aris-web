@@ -87,9 +87,10 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
         }}
       />
 
-      {/* Club wordmark */}
+      {/* Club wordmark. Michroma approximates the drawn ARIS, so it is set in
+          the logo's own navy rather than the page's near-black. */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="flex" style={{ gap: '0.06em' }}>
+        <div className="flex" style={{ gap: '0.02em' }}>
           {LETTERS.map((letter, i) => {
             const inDelay = i * LETTER_IN_STAGGER
             const outDelay = i * LETTER_OUT_STAGGER
@@ -112,11 +113,14 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
             return (
               <span
                 key={i}
-                className="font-sans leading-none font-bold text-[#111] select-none"
+                className="font-display leading-none select-none"
                 style={{
+                  color: '#003070',
                   filter: `blur(${blur}px)`,
-                  fontSize: `calc((100vw - 64px) / ${LETTERS.length})`,
-                  letterSpacing: '0.05em',
+                  // Michroma is already wide, so the old divide-by-four sizing
+                  // overflows. Cap it and let the viewport scale it down.
+                  fontSize: 'min(calc((100vw - 96px) / 5), 26vw)',
+                  letterSpacing: '0.02em',
                   opacity,
                   transform: `translateY(${translateY}px)`,
                   transition,

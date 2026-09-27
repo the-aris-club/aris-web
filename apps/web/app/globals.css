@@ -78,6 +78,9 @@
   --font-sans: 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --font-pixel: 'Courier Prime', monospace;
+  /* The wordmark face. Michroma stands in for the drawn ARIS in the logo; see
+     the note in app/layout.tsx. Body copy never uses this. */
+  --font-display: var(--font-michroma);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
