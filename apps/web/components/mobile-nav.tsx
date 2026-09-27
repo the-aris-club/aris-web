@@ -6,11 +6,15 @@ import { useState } from 'react'
 // The live recruitment form. Public, English, and the club's own.
 const FORM_URL = 'https://forms.gle/RnSVePAY9JWeZsKn9'
 
+// Anchors are the section ids the page actually renders. Three of these were
+// dead for a while: the ids below the hero are #platform, #agents, #workflow,
+// #integrations, #security and #devex.
 const NAV_LINKS = [
-  { href: '#departments', label: 'Departments' },
-  { href: '#select', label: 'Selection' },
-  { href: '#who', label: 'Eligibility' },
-  { href: '#support', label: 'Support' },
+  { href: '#platform', label: 'Departments' },
+  { href: '#agents', label: 'Automation' },
+  { href: '#workflow', label: 'Projects' },
+  { href: '#integrations', label: 'Tools' },
+  { href: '#security', label: 'Privacy' },
 ]
 
 const NAV_STYLE = {

@@ -2,73 +2,65 @@
 
 import { useState, useEffect } from 'react'
 
-// Quoted from the club's own English job descriptions. The panel, the step
-// cards and the auto-advance timing are unchanged; only the content moved.
+// Community Terms of Use section 8, which lists exactly four things the club
+// must not do. The panel, the step cards and the auto-advance are unchanged.
 const STEPS = [
   {
     code: [
-      { text: '// job-description/member.md', type: 'comment' },
+      { text: '// community-terms-of-use.md', type: 'comment' },
       { type: 'gap' },
-      { text: 'Membership does not require', type: 'plain' },
-      { text: 'a technical background or a', type: 'plain' },
-      { text: 'fixed number of hours.', type: 'plain' },
+      { text: 'The club must not:', type: 'plain' },
     ],
-    desc: 'No background, no hour quota',
-    file: 'membership',
+    desc: 'Private work stays private',
+    file: 'content',
     lang: 'text',
     num: '01',
-    title: 'No required background',
+    title: 'Reuse',
   },
   {
     code: [
-      { text: '// job-description/member.md', type: 'comment' },
+      { text: '// community-terms-of-use.md', type: 'comment' },
       { type: 'gap' },
-      { text: 'Technical and operational', type: 'plain' },
-      { text: 'skills are learned through', type: 'plain' },
-      { text: 'the department framework,', type: 'plain' },
-      { text: 'tasks, reviews, workshops', type: 'plain' },
-      { text: 'and mentorship.', type: 'plain' },
+      { text: 'A member keeps ownership of work', type: 'plain' },
+      { text: 'they create unless a separate', type: 'plain' },
+      { text: 'written agreement says otherwise.', type: 'plain' },
     ],
-    desc: 'Learned inside the club, not before it',
-    file: 'learning',
+    desc: 'Authorship is never removed',
+    file: 'ownership',
     lang: 'text',
     num: '02',
-    title: 'Skills are learned',
+    title: 'Authorship',
   },
   {
     code: [
-      { text: '// software-department-member.md', type: 'comment' },
+      { text: '// community-terms-of-use.md', type: 'comment' },
       { type: 'gap' },
-      { text: 'Prior experience is evidence', type: 'plain' },
-      { text: 'and can shorten the path,', type: 'plain' },
-      { text: 'not exclude an applicant.', type: 'plain' },
+      { text: 'A work containing another', type: 'plain' },
+      { text: 'person\u2019s data, a restricted dataset', type: 'plain' },
+      { text: 'or an unclear license must not be', type: 'plain' },
+      { text: 'published until the issue is resolved.', type: 'plain' },
     ],
-    desc: 'Evidence, never a precondition',
-    file: 'evidence',
+    desc: 'Confidential data blocks publication',
+    file: 'publication',
     lang: 'text',
     num: '03',
-    title: 'Experience never excludes',
+    title: 'Publication',
   },
   {
     code: [
-      { text: '// recruitment-flow.md', type: 'comment' },
+      { text: '// community-terms-of-use.md', type: 'comment' },
       { type: 'gap' },
-      { text: 'Recruitment opens once a year,', type: 'plain' },
-      { text: 'in a four-week window.', type: 'plain' },
-      { type: 'gap' },
-      { text: '\u2192 forms.gle/RnSVePAY9JWeZsKn9', type: 'url' },
+      { text: 'Third-party libraries, data and', type: 'plain' },
+      { text: 'content keep their own owner.', type: 'plain' },
     ],
-    desc: 'One form, about ten minutes',
-    file: 'apply',
+    desc: 'We never claim someone else\u2019s work',
+    file: 'third-party',
     lang: 'text',
     num: '04',
-    title: 'Apply once a year',
+    title: 'Third-party work',
   },
 ]
 
-// Only the line types the club's own quotations need. The output, success,
-// command, prop and keyword branches that used to render the @agentic/sdk
-// samples went with that data.
 const CodeLine = ({ line }: { line: (typeof STEPS)[0]['code'][0] }) => {
   if (line.type === 'gap') {
     return <div className="h-3" />
@@ -122,12 +114,12 @@ export const DevExSection = () => {
       <div className="mx-auto max-w-6xl">
         <div className="mb-16">
           <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-black/[0.06] bg-black/[0.05] px-3 py-1.5 text-[10px] tracking-widest text-black/40 uppercase">
-            Eligibility
+            Content and ownership
           </div>
           <h2 className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-            Prior experience shortens
+            Four things the club
             <br />
-            the path. It does not exclude.
+            will not do with your work.
           </h2>
         </div>
 

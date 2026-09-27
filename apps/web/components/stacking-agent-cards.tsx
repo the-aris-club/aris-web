@@ -3,38 +3,39 @@
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
-// The three selection rounds, quoted from the recruitment form description in
-// FormBuilder.gs and from recruitment-flow.md. Card mechanics are unchanged.
+// Community Terms of Use section 9, quoted verbatim. Card mechanics unchanged.
+// The counts are the lengths of the three lists in that section, so they can be
+// checked against the source.
 const AGENTS = [
   {
-    desc: 'The recruitment Form. Eligibility and application review, with a reason recorded for every outcome.',
+    desc: 'AI may assist with drafting, questions, summaries, translation, search, data-quality checks and routine reminders.',
     img: '/brand/aris-hero.webp',
-    label: 'ROUND 01',
+    label: 'MAY ASSIST',
     stats: [
-      { l: 'takes', v: '~10 min' },
-      { l: 'outcome', v: 'Recorded' },
+      { l: 'listed assists', v: '7' },
+      { l: 'decided by it', v: '0' },
     ],
-    title: 'Application review',
+    title: 'Assist',
   },
   {
-    desc: 'Selection looks for people who can learn, contribute and follow the code of conduct.',
+    desc: 'It does not make final membership, recruitment, disciplinary, financial, legal, medical, educational or deployment decisions.',
     img: '/brand/aris-hero.webp',
-    label: 'ROUND 02',
+    label: 'MAY NOT DECIDE',
     stats: [
-      { l: 'format', v: 'Interview' },
-      { l: 'scored', v: 'Indep.' },
+      { l: 'reserved to people', v: '8' },
+      { l: 'human review', v: 'Kept' },
     ],
-    title: 'Interview',
+    title: 'Decide',
   },
   {
-    desc: 'A common part on safety, teamwork and openness, plus a part for the department you picked.',
+    desc: 'A bot may prepare a draft, reminder or approval card. It may not independently accept, reject, promote, remove, discipline, vote, merge, deploy, spend money or bypass an approval.',
     img: '/brand/aris-hero.webp',
-    label: 'ROUND 03',
+    label: 'MAY NOT ACT',
     stats: [
-      { l: 'parts', v: '2' },
-      { l: 'notified', v: 'Each' },
+      { l: 'barred actions', v: '10' },
+      { l: 'may prepare', v: 'Drafts' },
     ],
-    title: 'Skills test',
+    title: 'Act',
   },
 ]
 

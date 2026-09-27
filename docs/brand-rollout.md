@@ -10,17 +10,23 @@ Every string on the page is quoted from a document the club already has in Engli
 | --- | --- | --- | --- |
 | Intro | `AGENTIC` letters | `ARIS` | — |
 | Hero headline | "Build & orchestrate AI agents while you sleep." | "We build systems that turn complexity into capability." | `brand-catalog.md` |
-| Hero figures | 50M+ tasks, 99.9% uptime, 180+ countries | 4 departments, 3 rounds, 4-week window | charter, form description |
+| Hero figures | 50M+ tasks, 99.9% uptime, 180+ countries | 4 technical departments, 5 groups, 0 fees charged | `server-orientation.md`, Community Terms §10 |
 | Hero media | unrelated stock video | the club's own banner, cropped to the lab scene | supplied artwork |
 | Departments | Visual Agent Builder, Real-time Monitoring, Memory & Context, Guardrails | Autonomous Systems, Robotics, IoT, Software | `server-orientation.md` |
-| Selection | 4 plug-and-play agent types, 2.4M tasks, 98.2% accuracy | 3 real rounds, Application review / Interview / Skills test | `FormBuilder.gs`, `recruitment-flow.md` |
-| Window | Define, Compose, Test, Deploy | Apply, Screening, Interview, Decision | `recruitment-flow.md` calendar |
+| Automation | 4 plug-and-play agent types, 2.4M tasks, 98.2% accuracy | what a bot may assist with, may not decide, may not act | Community Terms §9 |
+| Projects | Define, Compose, Test, Deploy | what every project has to name | Community Terms §11, §8, §6 |
 | Tools | 200+ connectors, SDK code sample | Discord, GitHub, Forms, Sheets, Apps Script | `CONTEXT.md`, `automation/` |
-| Privacy | SOC 2 Type II, GDPR, HIPAA Ready, ISO 27001, live audit trail | what the club never collects, from the Community Terms | `community-terms-of-use.md` §7 |
-| Eligibility | npm install @agentic/sdk | four quotations about background and experience | `job-description/` |
+| Privacy | SOC 2 Type II, GDPR, HIPAA Ready, ISO 27001, live audit trail | what the club never collects, and what a sponsor does not control | Community Terms §7, §10 |
+| Content and ownership | npm install @agentic/sdk | the four things the club will not do with your work | Community Terms §8 |
 | Marquee | 20 AI capabilities | departments and real operational capabilities | `operations-development.md` |
-| CTA | fake email capture, "You're on the list" | a link to the live recruitment form | `FormBuilder.gs` |
+| CTA | fake email capture, "You're on the list" | the decision-log statement, the Terms, and contact | Community Terms §11 |
 | Footer | `AGENTIC`, four `href="#"` legal links | mark, real anchors, Terms, contact | — |
+
+Recruitment content was removed from the landing page on request. The three sections that were about applying were replaced with the club's own operating rules, and the hero figures stopped counting rounds and windows. What survives is the word "recruitment" inside one quoted sentence, where it names one of eight decision types reserved to people, and the `APPLY` button in the nav.
+
+### The Projects section has four cards for five rules
+
+Community Terms §11 lists five things every project must identify. The grid is four columns and changing that would alter the layout, so two of the five share a card with both item names printed verbatim beneath the title. The full list is at `/legal/community-terms`. If the layout is ever opened up, give the fifth one its own card.
 
 ## Two sections removed rather than rewritten
 

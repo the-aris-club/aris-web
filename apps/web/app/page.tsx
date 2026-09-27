@@ -106,7 +106,7 @@ const ArisPage = () => {
       <MobileNav />
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section className="relative h-screen overflow-hidden">
+      <section className="relative h-screen overflow-hidden" id="top">
         {/* Hero artwork — the club's own lab scene, cropped free of text and
             lockup so the page headline has room. The stock video that was here
             showed unrelated footage. The scale-in on reveal is unchanged. */}
@@ -198,9 +198,9 @@ const ArisPage = () => {
           {/* 3 metrics — staggered after title */}
           <div className="flex gap-8 sm:gap-12">
             {[
-              { label: 'Departments', value: '4' },
-              { label: 'Rounds', value: '3' },
-              { label: 'Window', value: '4 wks' },
+              { label: 'Technical departments', value: '4' },
+              { label: 'Groups in the club', value: '5' },
+              { label: 'Fees charged', value: '0' },
             ].map((stat, i) => (
               <div
                 key={i}
@@ -392,15 +392,15 @@ const ArisPage = () => {
             <div>
               <PixelIcon type="agents" size={40} />
               <div className="mt-4">
-                <Tag>SELECTION</Tag>
+                <Tag>AUTOMATION</Tag>
               </div>
               <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-                {'Three rounds,\ntold after each.'}
+                {'What a bot may do,\nand what it may not.'}
               </RevealText>
             </div>
             <p className="max-w-xs text-sm leading-relaxed text-black/45">
-              We recruit on evidence of how you learn and work, not on what you
-              already know. No prior technical background is required.
+              AI may assist with drafting, questions, summaries, translation,
+              search, data-quality checks and routine reminders.
             </p>
           </div>
 
@@ -417,10 +417,10 @@ const ArisPage = () => {
           <div className="mb-16">
             <PixelIcon type="workflow" size={40} />
             <div className="mt-4">
-              <Tag>WINDOW</Tag>
+              <Tag>PROJECTS</Tag>
             </div>
             <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-              {'Once a year,\nin four weeks.'}
+              {'What every project\nhas to name.'}
             </RevealText>
           </div>
 
@@ -431,31 +431,31 @@ const ArisPage = () => {
             {[
               {
                 delay: 0,
-                desc: 'The recruitment Form opens. Answer only the section for the group you pick.',
+                desc: 'Roles are assigned for a scope and term. They are not ranks.',
                 img: '/brand/aris-hero.webp',
                 n: '01',
-                title: 'Apply',
+                title: 'Purpose and owner',
               },
               {
                 delay: 80,
-                desc: 'Eligibility and application review. Pass, hold or reject, with a reason recorded.',
+                desc: 'A member keeps ownership of work they create unless a separate written agreement says otherwise.',
                 img: '/brand/aris-hero.webp',
                 n: '02',
-                title: 'Screening',
+                title: 'Deliverable and acceptance criteria',
               },
               {
                 delay: 140,
-                desc: 'Interview and skills test. A common part, plus a part for your department.',
+                desc: 'Deadline and escalation contact. Safety and data check.',
                 img: '/brand/aris-hero.webp',
                 n: '03',
-                title: 'Interview',
+                title: 'Safety and data check',
               },
               {
                 delay: 200,
-                desc: 'Panel review, Board decision and notification. Criteria are published before the test.',
+                desc: 'Members must complete handover before losing access.',
                 img: '/brand/aris-hero.webp',
                 n: '04',
-                title: 'Decision',
+                title: 'Handover or closing decision',
               },
             ].map((step) => (
               <BentoCard
@@ -590,12 +590,13 @@ const ArisPage = () => {
                 <div className="mb-2 flex items-center gap-2">
                   <div className="bg-aris-navy/60 h-2 w-2 rounded-full" />
                   <span className="text-xs tracking-widest text-black/40">
-                    ONE OPENING
+                    NO SPONSOR CONTROL
                   </span>
                 </div>
                 <p className="text-sm text-black/45">
-                  Recruitment opens once a year, in a four-week window.
-                  Applicants apply through a form, not through Discord.
+                  A sponsorship does not give a sponsor control over research
+                  results, member decisions, confidential data or the
+                  club&rsquo;s internal governance.
                 </p>
               </div>
             </div>
@@ -819,22 +820,29 @@ const ArisPage = () => {
         />
         <div className="relative z-10 mx-auto max-w-2xl text-center">
           <h2 className="mb-6 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl lg:text-6xl">
-            No prior technical
+            A decision log,
             <br />
-            background is required.
+            not a chat history.
           </h2>
           <p className="mb-10 text-sm leading-relaxed text-black/45">
-            Recruitment opens once a year, in a four-week window. The form takes
-            about 10 minutes. Answer only the section for the group you pick.
+            The club&rsquo;s decision log, ADRs, meeting records and project
+            records remain separate from informal chat. The Community Terms of
+            Use are published in full.
           </p>
-          <a
-            className="mx-auto flex max-w-md items-center justify-center gap-2 rounded-xl border border-black/10 px-8 py-3 text-sm font-medium tracking-widest text-black/70 transition-colors hover:border-black/25 hover:bg-black/[0.04] hover:text-black"
-            href="https://forms.gle/RnSVePAY9JWeZsKn9"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            APPLY
-          </a>
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <Link
+              className="rounded-xl border border-black/10 px-8 py-3 text-sm font-medium tracking-widest text-black/70 transition-colors hover:border-black/25 hover:bg-black/[0.04] hover:text-black"
+              href="/legal/community-terms"
+            >
+              COMMUNITY TERMS
+            </Link>
+            <a
+              className="rounded-xl border border-black/10 px-8 py-3 text-sm font-medium tracking-widest text-black/70 transition-colors hover:border-black/25 hover:bg-black/[0.04] hover:text-black"
+              href="mailto:thearisclub.hcmiu@gmail.com"
+            >
+              CONTACT
+            </a>
+          </div>
         </div>
       </section>
 
@@ -853,8 +861,8 @@ const ArisPage = () => {
           <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
             {[
               { href: '#platform', label: 'Departments' },
-              { href: '#agents', label: 'Selection' },
-              { href: '#workflow', label: 'Window' },
+              { href: '#agents', label: 'Automation' },
+              { href: '#workflow', label: 'Projects' },
               { href: '#integrations', label: 'Tools' },
               { href: '#security', label: 'Privacy' },
             ].map((l) => (

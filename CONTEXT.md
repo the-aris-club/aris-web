@@ -30,7 +30,9 @@ Glossary for this repository. This is the public web page for The Aris Club, a s
 
 ## Interface
 
-**Selection round**: one of the three fixed stages of recruitment, application review, interview and skills test. Results are notified after each. _Avoid_: step, phase, stage of onboarding.
+**Selection round**: one of the three fixed stages of recruitment, application review, interview and skills test. Results are notified after each. Not on the landing page, which carries no recruitment content. _Avoid_: step, phase, stage of onboarding.
+
+**Bot authority**: what the club's automation may and may not do. It may prepare drafts, reminders and approval cards. It may not decide membership, recruitment, discipline, money, law, medicine, education or deployment, and it may not accept, reject, promote, remove, vote, merge, deploy, spend or bypass an approval. This is the Automation section, quoted from Community Terms §9. _Avoid_: automation policy, bot rules, AI guardrails.
 
 **Technical department**: Autonomous Systems, Robotics, IoT or Software. Four, never five. _Avoid_: department for Operations and Development.
 
