@@ -18,7 +18,7 @@ const SectionHeading = ({ children }: HeadingProps) => (
   </h2>
 )
 
-const components: MDXComponents = {
+export const components: MDXComponents = {
   a: ({ children, ...props }) => (
     <a
       className="text-aris-blue underline underline-offset-4 hover:opacity-75"

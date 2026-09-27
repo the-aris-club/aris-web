@@ -47,10 +47,27 @@ Closing any of these needs the club to publish an English original first. A tran
 
 - `app/page.tsx`, `app/layout.tsx`, `app/globals.css` — content, metadata, font
 - `components/intro-animation.tsx`, `mobile-nav.tsx`, `stacking-agent-cards.tsx`, `devex-section.tsx`, `reveal-text.tsx` — content only
-- `app/legal/community-terms/` — the Community Terms, MDX plus a layout
+- `app/legal/community-terms/terms.mdx` — the Community Terms, plain Markdown
+- `app/legal/community-terms/page.tsx` — a thin client wrapper that supplies the component map
+- `app/legal/community-terms/layout.tsx` — version banner and page chrome
+- `mdx-components.tsx`, `mdx.d.ts` — the prose styles and the module declaration
 - `app/icon.png`, `app/apple-icon.png`, `app/opengraph-image.jpg` — from the logo
 - `public/brand/` — logo, mark, banner, hero crop
 - `tools/build-brand-assets.py` — regenerates all of the above from source
+
+### One thing to know before editing the Terms
+
+The component map has to be passed to the MDX file as a `components` prop in `page.tsx`. Do not reach for `MDXProvider` or for a loader option instead, for two reasons that are not obvious.
+
+MDX only consults its provider when a document uses an element name that is not a standard HTML tag. The Terms use nothing but `h1`, `h2`, `p`, `ul`, `li`, `em`, `strong` and `a`, so the provider is never called and the page renders as bare HTML however it is wired. `props.components` is the only path that applies.
+
+Three other mechanisms look right and each fails **silently**, which is the reason this note exists:
+
+- the loader `providerImportSource` option, because Turbopack accepts a rule's `options` key and then never passes it to the loader. The build succeeds even when the value names a module that does not exist.
+- the App Router's root `mdx-components.tsx` convention, because `next-mdx` wires it through a `resolveAlias` to a `turbopack-next` module that is not published on npm.
+- an `mdx.config.js` in `apps/web`, which is not found from the configured `turbopack.root`, two directories up.
+
+If the page ever renders unstyled, check that the prop is still being passed before suspecting the styles.
 
 ## Regenerating the brand assets
 

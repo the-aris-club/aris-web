@@ -23,6 +23,12 @@ const nextConfig = {
     // condition, which Turbopack does not match the way webpack would. The
     // explicit glob below is what makes app/**\page.mdx resolve, and
     // `as: '*.tsx'` is what lets the App Router treat it as a page file.
+    //
+    // No loader `options` here on purpose. providerImportSource is the documented
+    // way to point MDX at a project component map, but Turbopack accepts an
+    // `options` key and then never passes it to the loader: the build still
+    // succeeds when it names a module that does not exist. The components are
+    // wired through MDXProvider instead, see the community-terms mdx-provider.
     rules: {
       '*.mdx': {
         as: '*.tsx',
