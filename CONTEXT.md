@@ -32,7 +32,7 @@ Glossary for this repository. This is the public web page for The Aris Club, a s
 
 ## Interface
 
-**Selection round**: one of the three fixed stages of recruitment, application review, interview and skills test. Results are notified after each. Not on the landing page, which carries no recruitment content. _Avoid_: step, phase, stage of onboarding.
+**Selection round**: one of the three fixed stages of recruitment, application review, interview and skills test. Results are notified after each. On the landing page only as the count behind the Apply link; the round-by-round detail is not on it. _Avoid_: step, phase, stage of onboarding.
 
 **Bot authority**: what the club's automation may and may not do. It may prepare drafts, reminders and approval cards. It may not decide membership, recruitment, discipline, money, law, medicine, education or deployment, and it may not accept, reject, promote, remove, vote, merge, deploy, spend or bypass an approval. This is the Automation section, quoted from Community Terms §9. _Avoid_: automation policy, bot rules, AI guardrails.
 
@@ -42,4 +42,6 @@ Glossary for this repository. This is the public web page for The Aris Club, a s
 
 **Community Terms of Use**: the club's participation terms, version 0.1-draft. Published on this site as a copy of the document held in the club repository. _Avoid_: legal contract, privacy policy, university policy.
 
-**Contact mailbox**: `thearisclub.hcmiu@gmail.com`. Transitional, and explicitly not an official HCMIU address. The footer says so. _Avoid_: official address, club domain.
+**Contact mailbox**: `thearisclub.hcmiu@gmail.com`. Transitional, and explicitly not an official HCMIU address. The page says so in both places it appears, the Apply block and the footer. _Avoid_: official address, club domain.
+
+**Landing page sections**, in order: Groups, Departments, Projects, Your work, Automation. The section anchors are `#groups`, `#departments`, `#projects`, `#ownership` and `#automation`; the fourth is anchored `ownership` rather than `your-work` because an anchor should not carry a space or a hyphen that the copy does not. Two sections the template shipped were deleted rather than rewritten: a live activity feed, which would be placeholder content, and pricing, which Charter §8 forbids. A third, the SDK tutorial, was deleted because the four real services are a disclaimer in §14 and not a marketing section. _Avoid_: adding a section back because the template had one.
