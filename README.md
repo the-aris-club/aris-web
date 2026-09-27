@@ -19,7 +19,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:8300](http://localhost:8300) with your browser to see the result.
 
 You can start editing the page by modifying `apps/web/app/page.tsx`. The page auto-updates as you edit the file.
 
@@ -27,7 +27,7 @@ You can start editing the page by modifying `apps/web/app/page.tsx`. The page au
 
 | Command          | What it does                                            |
 | ---------------- | ------------------------------------------------------- |
-| `pnpm dev`       | Dev server on http://localhost:3000                     |
+| `pnpm dev`       | Dev server on http://localhost:8300                     |
 | `pnpm build`     | Production build (`turbo run build`)                    |
 | `pnpm typecheck` | `tsc --noEmit` via turbo                                |
 | `pnpm lint`      | ultracite — oxlint + oxfmt, every rule, no suppressions |
