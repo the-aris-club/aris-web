@@ -3,23 +3,26 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
-// The letters are cut out of the wordmark in aris-logo.png by
+// The letters are traced out of the wordmark in aris-logo.png by
 // tools/build-brand-assets.py, not typed. No published typeface is close
-// enough to the drawn one, and these already share a cap height and a
-// baseline, so the page sets one height and lines them up on the bottom.
-// The widths include the transparent share of the letterspacing on each side,
-// so these four butted together are the drawn wordmark exactly. Do not add a
-// gap here: the drawn gaps are not even, and a single value restyles it.
+// enough to the drawn one, and a bitmap of them goes soft: the source
+// wordmark is 76px tall and this draws it near 370px. Vector is crisp at
+// either, and the four files together are under 2 KB.
+//
+// The widths include each letter's share of the drawn letterspacing, so these
+// butted together are the wordmark exactly. Do not add a gap here: the drawn
+// gaps are not even, and a single value restyles it.
 const LETTERS = [
-  { height: 76, src: '/brand/letter-a.webp', width: 121 },
-  { height: 76, src: '/brand/letter-r.webp', width: 108 },
-  { height: 76, src: '/brand/letter-i.webp', width: 35 },
-  { height: 76, src: '/brand/letter-s.webp', width: 103 },
+  { height: 76, src: '/brand/letters/a.svg', width: 123 },
+  { height: 76, src: '/brand/letters/r.svg', width: 108 },
+  { height: 76, src: '/brand/letters/i.svg', width: 34 },
+  { height: 76, src: '/brand/letters/s.svg', width: 103 },
 ]
 
-// Rendered cap height. The four are 367px wide at a 76px cap, so the word is
-// about 4.8x this; capping on width as well as height keeps it inside a narrow
-// viewport.
+// Rendered cap height. The four are 368px wide at a 76px cap, so the word is
+// 4.84x this. Capping on width as well as height keeps it inside any viewport:
+// when this resolves on vw the word comes to 92vw, and when it resolves on vh
+// that only happens past 1.37vh, which puts the word under 100vw.
 const CAP_HEIGHT = 'min(26vh, 19vw)'
 
 // ms between each letter appearing

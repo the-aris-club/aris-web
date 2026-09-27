@@ -135,19 +135,25 @@ def ink_columns(image: Image.Image) -> list[tuple[int, int]]:
     return runs
 
 
-def cut_letters(image: Image.Image, band: tuple[int, int]) -> list[Image.Image]:
-    """Cut the wordmark band into one image per letter.
+def cut_letters(
+    image: Image.Image, band: tuple[int, int]
+) -> list[tuple[str, int, int]]:
+    """Trace the wordmark into one SVG path per letter.
 
-    The intro reveals the wordmark one letter at a time, and setting those
-    letters in a text font looked wrong: no published typeface matches the
-    drawn one closely enough, and Michroma was visibly not it. Cutting them
-    out of the artwork makes the intro the same letters as the logo, at the
-    logo's own weight and proportions, with no font in the path.
+    The intro reveals the wordmark one letter at a time. Setting those letters
+    in a text font was visibly not the logo, and cutting them out as bitmaps
+    was worse: the source wordmark is 76px tall and the intro draws it near
+    370px, so a 5x upscale of a bitmap is visibly soft. Tracing the outline and
+    shipping vector fixes it at any size and costs about 1.6 KB for the word.
 
-    The letters carry their own share of the letterspacing as transparent
-    padding, so the page lays them out with no gap of its own. Returns them
-    left to right. Raises rather than guessing if the wordmark does not come
-    apart cleanly, because a wrong count would ship the wrong letters.
+    Each letter is given half of the gap on either side of it as empty space in
+    its viewBox, so the page lays them out with no gap of its own. The drawn
+    letterspacing is not even -- AR is three pixels against RI and IS at ten and
+    eleven -- so a single CSS gap value would quietly restyle the word.
+
+    Returns (path data, viewBox width, viewBox height) left to right. Raises
+    rather than guessing if the wordmark does not come apart cleanly, because a
+    wrong count would ship the wrong letters.
     """
     strip = crop_band(image, band)
     runs = ink_columns(strip)
@@ -157,26 +163,204 @@ def cut_letters(image: Image.Image, band: tuple[int, int]) -> list[Image.Image]:
             "The letterforms probably changed; cut them by hand."
         )
 
-    # Each letter is given half of the gap on either side of it as transparent
-    # padding, so butting the four together with no CSS gap reproduces the
-    # drawn letterspacing exactly. The gaps in this wordmark are not even --
-    # AR is much tighter than RI and IS -- so a single CSS gap value would
-    # quietly restyle it.
-    letters = []
-    for i, (x0, x1) in enumerate(runs):
-        left = (runs[i - 1][1] + x0) // 2 if i else x0
-        right = (x1 + runs[i + 1][0]) // 2 if i < len(runs) - 1 else x1
-        letters.append(strip.crop((left, 0, right + 1, strip.height)))
+    contours = trace_contours(np.array(strip.getchannel("A")))
 
-    # Bottom-align onto a common height, so the shared baseline survives and the
-    # page never has to know which letter is the tallest.
-    tallest = max(letter.height for letter in letters)
-    padded = []
-    for letter in letters:
-        canvas = Image.new("RGBA", (letter.width, tallest), (0, 0, 0, 0))
-        canvas.paste(letter, (0, tallest - letter.height))
-        padded.append(canvas)
-    return padded
+    # Assign each contour to the letter whose ink run is nearest its middle.
+    # Nearest-centre rather than a containment test: the contour runs at alpha
+    # 128 while the runs are measured at INK_CUT, so the contour sits about a
+    # pixel and a half outside the run on each side and any containment test
+    # needs a tolerance guessed to cover that. Nearest-centre needs none, and a
+    # letter with a counter simply contributes two contours to the same group.
+    centres = [(x0 + x1) / 2 for x0, x1 in runs]
+    groups: list[list[list[tuple]]] = [[] for _ in runs]
+    for contour in contours:
+        xs = [p[0] for p in contour]
+        middle = (min(xs) + max(xs)) / 2
+        groups[min(range(len(runs)), key=lambda i: abs(centres[i] - middle))].append(
+            contour
+        )
+    for i, group in enumerate(groups):
+        if not group:
+            raise SystemExit(
+                f"letter {i + 1} at x {runs[i][0]}..{runs[i][1]} traced to "
+                "nothing. The artwork probably has an edge the tracer cannot "
+                "follow."
+            )
+
+    # The letterspacing is measured on the contours, not on the ink runs, so it
+    # is the gap the SVG actually draws rather than the gap the threshold found.
+    spans = [
+        (
+            min(p[0] for c in group for p in c),
+            max(p[0] for c in group for p in c),
+        )
+        for group in groups
+    ]
+
+    letters = []
+    for i, group in enumerate(groups):
+        lo, hi = spans[i]
+        left = round((spans[i - 1][1] + lo) / 2) if i else round(lo)
+        right = round((hi + spans[i + 1][0]) / 2) if i < len(groups) - 1 else round(hi)
+        parts = []
+        for contour in group:
+            pts = simplify(contour, TRACE_EPSILON)
+            if len(pts) < 3:
+                continue
+            d = [f"M{pts[0][0] - left:.2f} {pts[0][1]:.2f}"]
+            d += [f"L{x - left:.2f} {y:.2f}" for x, y in pts[1:]]
+            parts.append("".join(d) + "Z")
+        letters.append(("".join(parts), right - left + 1, strip.height))
+    return letters
+
+
+# Marching squares, one entry per corner code, listing the cell edges the
+# contour crosses. Bits are tl=1, tr=2, br=4, bl=8; edges are T, R, B, L.
+#
+# Codes 5 and 10 are saddles and cross two pairs of edges. Every other code
+# crosses one pair, which is exactly why these two are written out as pairs of
+# pairs: treat them as a single pair and the counters of A and R vanish.
+_TRACE_TABLE = {
+    1: (("L", "T"),),
+    2: (("T", "R"),),
+    3: (("L", "R"),),
+    4: (("R", "B"),),
+    5: (("L", "T"), ("R", "B")),
+    6: (("T", "B"),),
+    7: (("L", "B"),),
+    8: (("B", "L"),),
+    9: (("B", "T"),),
+    10: (("T", "R"), ("B", "L")),
+    11: (("B", "R"),),
+    12: (("R", "L"),),
+    13: (("R", "T"),),
+    14: (("T", "L"),),
+}
+
+# Half the alpha range, so the contour sits on the perceived edge of the ink
+# rather than on the first or last fully opaque pixel.
+_TRACE_LEVEL = 128.0
+
+# Douglas-Peucker tolerance, in source pixels. A third of a pixel is well under
+# what shows at display size, and it takes the wordmark from ~1900 contour
+# points to 130.
+TRACE_EPSILON = 0.3
+
+
+def trace_contours(alpha: np.ndarray, level: float = _TRACE_LEVEL) -> list[list[tuple]]:
+    """Marching squares over the alpha channel, returning closed contours.
+
+    Each grid edge's crossing point is computed once and cached, so two cells
+    sharing an edge agree bit for bit and the segments chain by exact match
+    instead of a tolerance search.
+    """
+    padded = np.pad(alpha.astype(np.float64), 1, mode="constant")
+    rows, cols = padded.shape
+
+    def lerp(p: float, q: float) -> float:
+        return 0.5 if q == p else (level - p) / (q - p)
+
+    across: dict[tuple[int, int], float] = {}
+    down: dict[tuple[int, int], float] = {}
+
+    def point(name: str, y: int, x: int) -> tuple[float, float]:
+        if name == "T":
+            across.setdefault((y, x), x + lerp(padded[y, x], padded[y, x + 1]))
+            return (across[(y, x)], float(y))
+        if name == "B":
+            across.setdefault(
+                (y + 1, x), x + lerp(padded[y + 1, x], padded[y + 1, x + 1])
+            )
+            return (across[(y + 1, x)], float(y + 1))
+        if name == "L":
+            down.setdefault((y, x), y + lerp(padded[y, x], padded[y + 1, x]))
+            return (float(x), down[(y, x)])
+        down.setdefault((y, x + 1), y + lerp(padded[y, x + 1], padded[y + 1, x + 1]))
+        return (float(x + 1), down[(y, x + 1)])
+
+    segments = []
+    for y in range(rows - 1):
+        for x in range(cols - 1):
+            code = (
+                (1 if padded[y, x] >= level else 0)
+                | (2 if padded[y, x + 1] >= level else 0)
+                | (4 if padded[y + 1, x + 1] >= level else 0)
+                | (8 if padded[y + 1, x] >= level else 0)
+            )
+            for first, second in _TRACE_TABLE.get(code, ()):
+                segments.append((point(first, y, x), point(second, y, x)))
+
+    def key(pt: tuple[float, float]) -> tuple[float, float]:
+        # The +1 on both axes undoes the pad, putting the result back in the
+        # source image's coordinate frame.
+        return (round(pt[0], 6) + 1.0, round(pt[1], 6) + 1.0)
+
+    # Start point -> the segments leaving it. A saddle has two leaving the same
+    # point, so this is a list and the walk takes whichever is still unused.
+    leaving: dict[tuple[float, float], list[int]] = {}
+    for i, (start_pt, _end) in enumerate(segments):
+        leaving.setdefault(key(start_pt), []).append(i)
+
+    used = [False] * len(segments)
+    contours = []
+    for first_unused in range(len(segments)):
+        if used[first_unused]:
+            continue
+        used[first_unused] = True
+        contour = [key(segments[first_unused][0]), key(segments[first_unused][1])]
+        while True:
+            nxt = next(
+                (i for i in leaving.get(contour[-1], []) if not used[i]),
+                None,
+            )
+            if nxt is None:
+                break
+            used[nxt] = True
+            contour.append(key(segments[nxt][1]))
+            if contour[-1] == contour[0]:
+                break
+        if len(contour) > 3:
+            contours.append(contour)
+    return contours
+
+
+def simplify(points: list[tuple], epsilon: float) -> list[tuple]:
+    """Douglas-Peucker. Collapses the contour's staircase into real edges.
+
+    Straight runs in this wordmark are long and the curves are generous, so a
+    third of a pixel is well under what shows at display size while taking the
+    path from ~1900 points per letter to a few dozen.
+    """
+    if len(points) < 3:
+        return [tuple(p) for p in points]
+    pts = np.asarray(points, dtype=np.float64)
+    keep = np.zeros(len(pts), dtype=bool)
+    keep[0] = keep[-1] = True
+    stack = [(0, len(pts) - 1)]
+    while stack:
+        i, j = stack.pop()
+        if j <= i + 1:
+            continue
+        head, tail = pts[i], pts[j]
+        leg = tail - head
+        length = float(np.hypot(*leg))
+        middle = pts[i + 1 : j]
+        if length == 0:
+            distance = np.hypot(middle[:, 0] - head[0], middle[:, 1] - head[1])
+        else:
+            distance = (
+                np.abs(
+                    (middle[:, 0] - head[0]) * leg[1]
+                    - (middle[:, 1] - head[1]) * leg[0]
+                )
+                / length
+            )
+        worst = int(np.argmax(distance))
+        if distance[worst] > epsilon:
+            keep[i + 1 + worst] = True
+            stack.append((i, i + 1 + worst))
+            stack.append((i + 1 + worst, j))
+    return [tuple(p) for p in pts[keep]]
 
 
 def build_og_image(source: Path) -> Image.Image:
@@ -258,13 +442,27 @@ def main() -> None:
     write(mark, "aris-mark.webp", quality=92, method=6)
     write(mark, "aris-mark.png", optimize=True)
 
-    # The intro reveals the wordmark one letter at a time. Those letters are
-    # cut out of the artwork rather than typed, so they carry the drawn weight
-    # and proportions. Trimmed, so each one is tight and the page can line them
-    # up on a common baseline by bottom rather than by guesswork.
-    print("wordmark cut into four letters, for the intro reveal")
-    for letter, name in zip(cut_letters(keyed, wordmark_band), "aris", strict=True):
-        write(letter, f"letter-{name}.webp", quality=92, method=6)
+    # The intro reveals the wordmark one letter at a time, drawn near five times
+    # the height of the source. Bitmaps go soft at that size, so these are
+    # traced outlines: one path per letter, each carrying its own share of the
+    # letterspacing so the page adds no gap of its own.
+    print("wordmark traced into four letter outlines, for the intro reveal")
+    letters_dir = OUT / "letters"
+    letters_dir.mkdir(parents=True, exist_ok=True)
+    for name, (d, w, h) in zip("aris", cut_letters(keyed, wordmark_band), strict=True):
+        # width and height as well as the viewBox. An SVG with only a viewBox
+        # has no intrinsic size, and `width: auto` on an <img> then resolves to
+        # zero in some engines; carrying the dimensions makes each file stand on
+        # its own wherever it ends up being used.
+        svg = (
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" '
+            f'viewBox="0 0 {w} {h}" fill="{NAVY}"><path d="{d}"/></svg>\n'
+        )
+        path = letters_dir / f"{name}.svg"
+        path.write_text(svg, encoding="utf-8")
+        print(
+            f"  letter-{name}.svg            {w}x{h}  {path.stat().st_size // 1024 + 1} KB"
+        )
 
     print("app icon, transparent square, mark only")
     icon = centre_on_square(mark).resize((512, 512), Image.LANCZOS)
