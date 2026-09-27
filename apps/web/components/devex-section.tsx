@@ -2,62 +2,117 @@
 
 import { useState, useEffect } from 'react'
 
-// Community Terms of Use section 8, which lists exactly four things the club
-// must not do. The panel, the step cards and the auto-advance are unchanged.
 const STEPS = [
   {
     code: [
-      { text: '// community-terms-of-use.md', type: 'comment' },
+      { text: '# Install the Agentic SDK', type: 'comment' },
+      { text: 'npm install @agentic/sdk', type: 'command' },
       { type: 'gap' },
-      { text: 'The club must not:', type: 'plain' },
+      { text: '# Initialize your project', type: 'comment' },
+      { text: 'npx agentic init', type: 'command' },
+      { type: 'gap' },
+      { text: '✓ Project initialized', type: 'output' },
+      { text: '✓ Config file created', type: 'output' },
+      { text: '✓ Ready to build', type: 'output' },
     ],
-    desc: 'Private work stays private',
-    file: 'content',
-    lang: 'text',
+    desc: 'One command to get started',
+    file: 'terminal',
+    lang: 'bash',
     num: '01',
-    title: 'Reuse',
+    title: 'Install SDK',
   },
   {
     code: [
-      { text: '// community-terms-of-use.md', type: 'comment' },
+      { text: '// agents/researcher.ts', type: 'comment' },
+      {
+        after: ' { Agent, Tool } ',
+        keyword2: 'from',
+        string: " '@agentic/sdk'",
+        text: 'import',
+        type: 'keyword',
+      },
       { type: 'gap' },
-      { text: 'A member keeps ownership of work', type: 'plain' },
-      { text: 'they create unless a separate', type: 'plain' },
-      { text: 'written agreement says otherwise.', type: 'plain' },
+      {
+        after: ' webSearch ',
+        args: "('web-search', async (q) => { ... })",
+        fn: 'Tool',
+        keyword2: '=',
+        keyword3: ' new ',
+        text: 'const',
+        type: 'keyword',
+      },
+      { type: 'gap' },
+      {
+        after: ' researcher ',
+        args: '({',
+        fn: 'Agent',
+        keyword2: '=',
+        keyword3: ' new ',
+        text: 'export const',
+        type: 'keyword',
+      },
+      { key: '  name', type: 'prop', val: "'researcher'" },
+      { key: '  model', type: 'prop', val: "'claude-opus'" },
+      { key: '  tools', type: 'prop', val: '[webSearch]' },
+      { key: '  memory', type: 'prop', val: 'true' },
+      { text: '});', type: 'plain' },
     ],
-    desc: 'Authorship is never removed',
-    file: 'ownership',
-    lang: 'text',
+    desc: 'TypeScript-first agent class',
+    file: 'agents/researcher.ts',
+    lang: 'typescript',
     num: '02',
-    title: 'Authorship',
+    title: 'Define Agent',
   },
   {
     code: [
-      { text: '// community-terms-of-use.md', type: 'comment' },
+      { text: '// Add long-term memory to any agent', type: 'comment' },
+      {
+        after: ' { VectorMemory } ',
+        keyword2: 'from',
+        string: " '@agentic/memory'",
+        text: 'import',
+        type: 'keyword',
+      },
       { type: 'gap' },
-      { text: 'A work containing another', type: 'plain' },
-      { text: 'person\u2019s data, a restricted dataset', type: 'plain' },
-      { text: 'or an unclear license must not be', type: 'plain' },
-      { text: 'published until the issue is resolved.', type: 'plain' },
+      {
+        after: ' memory ',
+        args: '({',
+        fn: 'VectorMemory',
+        keyword2: '=',
+        keyword3: ' new ',
+        text: 'const',
+        type: 'keyword',
+      },
+      { key: '  provider', type: 'prop', val: "'pgvector'" },
+      { key: '  namespace', type: 'prop', val: "'researcher'" },
+      { text: '})', type: 'plain' },
+      { type: 'gap' },
+      { text: '// Attach to agent', type: 'comment' },
+      { text: 'researcher.use(memory)', type: 'plain' },
     ],
-    desc: 'Confidential data blocks publication',
-    file: 'publication',
-    lang: 'text',
+    desc: 'Persistent conversation context',
+    file: 'agents/memory.ts',
+    lang: 'typescript',
     num: '03',
-    title: 'Publication',
+    title: 'Add Memory',
   },
   {
     code: [
-      { text: '// community-terms-of-use.md', type: 'comment' },
+      { text: '# Deploy to Agentic Cloud', type: 'comment' },
+      { text: 'agentic deploy --prod', type: 'command' },
       { type: 'gap' },
-      { text: 'Third-party libraries, data and', type: 'plain' },
-      { text: 'content keep their own owner.', type: 'plain' },
+      { text: '  Building agent...', type: 'output' },
+      { text: '  Running tests...', type: 'output' },
+      { text: '  Deploying to edge...', type: 'output' },
+      { type: 'gap' },
+      { text: '✓ researcher deployed', type: 'success' },
+      { text: '  → https://agents.agentic.dev/researcher', type: 'url' },
     ],
-    desc: 'We never claim someone else\u2019s work',
-    file: 'third-party',
-    lang: 'text',
+    desc: 'One command to production',
+    file: 'terminal',
+    lang: 'bash',
     num: '04',
-    title: 'Third-party work',
+    title: 'Deploy',
   },
 ]
 
@@ -68,11 +123,50 @@ const CodeLine = ({ line }: { line: (typeof STEPS)[0]['code'][0] }) => {
   if (line.type === 'comment') {
     return <div className="text-[#9ca3af]">{line.text}</div>
   }
+  if (line.type === 'output') {
+    return <div className="text-[#6b7280]">{line.text}</div>
+  }
+  if (line.type === 'success') {
+    return <div className="text-[#16a34a]">{line.text}</div>
+  }
   if (line.type === 'url') {
     return <div className="text-[#2563eb] underline">{line.text}</div>
   }
+  if (line.type === 'command') {
+    return (
+      <div>
+        <span className="text-[#16a34a]">$ </span>
+        <span className="text-[#111]">{line.text}</span>
+      </div>
+    )
+  }
   if (line.type === 'plain') {
     return <div className="text-[#111]">{line.text}</div>
+  }
+  if (line.type === 'prop') {
+    return (
+      <div>
+        <span className="text-[#2563eb]">{line.key}</span>
+        <span className="text-[#111]">: </span>
+        <span className="text-[#16a34a]">{line.val}</span>
+        <span className="text-[#111]">,</span>
+      </div>
+    )
+  }
+  if (line.type === 'keyword') {
+    return (
+      <div>
+        <span className="text-[#7c3aed]">{line.text}</span>
+        <span className="text-[#111]">{line.after}</span>
+        <span className="text-[#7c3aed]">{line.keyword2}</span>
+        {line.keyword3 && (
+          <span className="text-[#7c3aed]">{line.keyword3}</span>
+        )}
+        {line.fn && <span className="text-[#b45309]">{line.fn}</span>}
+        {line.args && <span className="text-[#111]">{line.args}</span>}
+        {line.string && <span className="text-[#16a34a]">{line.string}</span>}
+      </div>
+    )
   }
   return null
 }
@@ -114,12 +208,12 @@ export const DevExSection = () => {
       <div className="mx-auto max-w-6xl">
         <div className="mb-16">
           <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-black/[0.06] bg-black/[0.05] px-3 py-1.5 text-[10px] tracking-widest text-black/40 uppercase">
-            Content and ownership
+            Developer Experience
           </div>
           <h2 className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-            Four things the club
+            Built for developers.
             <br />
-            will not do with your work.
+            Loved by teams.
           </h2>
         </div>
 

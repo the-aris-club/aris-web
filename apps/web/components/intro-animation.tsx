@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-const LETTERS = ['A', 'R', 'I', 'S']
+const LETTERS = ['A', 'G', 'E', 'N', 'T', 'I', 'C']
 
 // ms between each letter appearing
 const LETTER_IN_STAGGER = 90
@@ -75,12 +75,11 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
       className="pointer-events-none fixed inset-0 z-[100]"
       aria-hidden="true"
     >
-      {/* Curtain — retracts upward to reveal the page. The colour must match
-          --aris-canvas exactly or the seam shows while it lifts. */}
+      {/* Gradient curtain — retracts upward, revealing mountains from bottom */}
       <div
         className="absolute inset-x-0 top-0"
         style={{
-          background: '#f5f4f0',
+          background: '#f5f4f1',
           bottom: curtainUp ? '100%' : '0%',
           transition: curtainUp
             ? 'bottom 1.3s cubic-bezier(0.76, 0, 0.24, 1)'
@@ -88,7 +87,7 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
         }}
       />
 
-      {/* Club wordmark */}
+      {/* AGENTIC letters */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="flex" style={{ gap: '0.06em' }}>
           {LETTERS.map((letter, i) => {
@@ -113,7 +112,7 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
             return (
               <span
                 key={i}
-                className="text-aris-navy font-sans leading-none font-bold select-none"
+                className="font-sans leading-none font-bold text-[#111] select-none"
                 style={{
                   filter: `blur(${blur}px)`,
                   fontSize: `calc((100vw - 64px) / ${LETTERS.length})`,
