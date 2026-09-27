@@ -1,11 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
-import {
-  Geist,
-  Geist_Mono,
-  IBM_Plex_Sans,
-  Courier_Prime,
-} from 'next/font/google'
+import { Geist, Geist_Mono, Courier_Prime } from 'next/font/google'
 import React from 'react'
 
 import './globals.css'
@@ -13,15 +8,17 @@ import './globals.css'
 const NAME = 'The Aris Club'
 const SITE_URL = 'https://aris.resonance.io.vn'
 
+// These three back the --font-sans, --font-mono and --font-pixel tokens in
+// globals.css. Every text style on the page goes through one of those tokens.
+// IBM Plex Sans used to be loaded here as a fourth family, referenced only by
+// three hardcoded inline fontFamily styles; it is gone, because resolving its
+// font files failed the build on Vercel ("Can't resolve
+// '@vercel/turbopack-next/internal/font/google/font'").
 const _geist = Geist({ subsets: ['latin'] })
 const _geistMono = Geist_Mono({ subsets: ['latin'] })
 const _courierPrime = Courier_Prime({
   subsets: ['latin'],
   weight: ['400', '700'],
-})
-const _ibmPlexSans = IBM_Plex_Sans({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
 })
 
 // Icons come from the app/ file conventions — icon.png, apple-icon.png and

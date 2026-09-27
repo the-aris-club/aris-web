@@ -174,10 +174,9 @@ const ArisPage = () => {
         <div className="absolute inset-x-0 bottom-0 z-30 flex max-w-3xl flex-col px-6 pb-12 md:px-12">
           {/* Title */}
           <h1
-            className="mb-10 text-6xl leading-[1.0] font-light tracking-tight text-[#111] sm:text-7xl md:text-8xl"
+            className="mb-10 font-sans text-6xl leading-[1.0] font-light tracking-tight text-[#111] sm:text-7xl md:text-8xl"
             style={{
               filter: heroReady ? 'blur(0px)' : 'blur(24px)',
-              fontFamily: '"IBM Plex Sans", sans-serif',
               opacity: heroReady ? 1 : 0,
               transform: heroReady ? 'translateY(0px)' : 'translateY(32px)',
               transition:
@@ -209,16 +208,10 @@ const ArisPage = () => {
                   transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms, filter 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms`,
                 }}
               >
-                <div
-                  className="text-3xl font-light tracking-tight text-[#111] sm:text-4xl"
-                  style={{ fontFamily: '"IBM Plex Sans", sans-serif' }}
-                >
+                <div className="font-sans text-3xl font-light tracking-tight text-[#111] sm:text-4xl">
                   {stat.value}
                 </div>
-                <div
-                  className="mt-1 text-xs tracking-widest text-black/40 uppercase"
-                  style={{ fontFamily: '"IBM Plex Sans", sans-serif' }}
-                >
+                <div className="mt-1 font-sans text-xs tracking-widest text-black/40 uppercase">
                   {stat.label}
                 </div>
               </div>
