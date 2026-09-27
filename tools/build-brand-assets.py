@@ -114,6 +114,71 @@ def write(
     print(f"  {name:28} {image.width}x{image.height}  {path.stat().st_size // 1024} KB")
 
 
+def ink_columns(image: Image.Image) -> list[tuple[int, int]]:
+    """Column ranges that contain ink, as whole runs.
+
+    Same threshold as ink_bands, transposed. Used to cut the wordmark into
+    individual letters: the gaps between ARIS are wide enough that the runs
+    come back as exactly four.
+    """
+    columns = (np.array(image.getchannel("A")) >= INK_CUT).sum(axis=0)
+    runs: list[tuple[int, int]] = []
+    start: int | None = None
+    for x, count in enumerate(columns):
+        if count and start is None:
+            start = x
+        elif not count and start is not None:
+            runs.append((start, x - 1))
+            start = None
+    if start is not None:
+        runs.append((start, len(columns) - 1))
+    return runs
+
+
+def cut_letters(image: Image.Image, band: tuple[int, int]) -> list[Image.Image]:
+    """Cut the wordmark band into one image per letter.
+
+    The intro reveals the wordmark one letter at a time, and setting those
+    letters in a text font looked wrong: no published typeface matches the
+    drawn one closely enough, and Michroma was visibly not it. Cutting them
+    out of the artwork makes the intro the same letters as the logo, at the
+    logo's own weight and proportions, with no font in the path.
+
+    The letters carry their own share of the letterspacing as transparent
+    padding, so the page lays them out with no gap of its own. Returns them
+    left to right. Raises rather than guessing if the wordmark does not come
+    apart cleanly, because a wrong count would ship the wrong letters.
+    """
+    strip = crop_band(image, band)
+    runs = ink_columns(strip)
+    if len(runs) != 4:
+        raise SystemExit(
+            f"expected 4 letters in the wordmark, measured {len(runs)}. "
+            "The letterforms probably changed; cut them by hand."
+        )
+
+    # Each letter is given half of the gap on either side of it as transparent
+    # padding, so butting the four together with no CSS gap reproduces the
+    # drawn letterspacing exactly. The gaps in this wordmark are not even --
+    # AR is much tighter than RI and IS -- so a single CSS gap value would
+    # quietly restyle it.
+    letters = []
+    for i, (x0, x1) in enumerate(runs):
+        left = (runs[i - 1][1] + x0) // 2 if i else x0
+        right = (x1 + runs[i + 1][0]) // 2 if i < len(runs) - 1 else x1
+        letters.append(strip.crop((left, 0, right + 1, strip.height)))
+
+    # Bottom-align onto a common height, so the shared baseline survives and the
+    # page never has to know which letter is the tallest.
+    tallest = max(letter.height for letter in letters)
+    padded = []
+    for letter in letters:
+        canvas = Image.new("RGBA", (letter.width, tallest), (0, 0, 0, 0))
+        canvas.paste(letter, (0, tallest - letter.height))
+        padded.append(canvas)
+    return padded
+
+
 def build_og_image(source: Path) -> Image.Image:
     """Crop the supplied banner to the 1.91:1 Open Graph ratio.
 
@@ -193,13 +258,25 @@ def main() -> None:
     write(mark, "aris-mark.webp", quality=92, method=6)
     write(mark, "aris-mark.png", optimize=True)
 
+    # The intro reveals the wordmark one letter at a time. Those letters are
+    # cut out of the artwork rather than typed, so they carry the drawn weight
+    # and proportions. Trimmed, so each one is tight and the page can line them
+    # up on a common baseline by bottom rather than by guesswork.
+    print("wordmark cut into four letters, for the intro reveal")
+    for letter, name in zip(cut_letters(keyed, wordmark_band), "aris", strict=True):
+        write(letter, f"letter-{name}.webp", quality=92, method=6)
+
     print("app icon, transparent square, mark only")
     icon = centre_on_square(mark).resize((512, 512), Image.LANCZOS)
     write(icon, "icon.png", app, optimize=True)
 
-    print("apple touch icon, plated white because iOS drops transparency")
+    # Named apple-icon.png, not apple-touch-icon.png. The App Router's file
+    # convention is `apple-icon`, and an explicit metadata.icons block overrides
+    # it, so the old name would sit in app/ unused while the page kept serving
+    # whatever apple-icon.png happened to be there.
+    print("apple icon, plated white because iOS drops transparency")
     plated = centre_on_square(mark, (255, 255, 255)).resize((180, 180), Image.LANCZOS)
-    write(plated.convert("RGB"), "apple-touch-icon.png", app, optimize=True)
+    write(plated.convert("RGB"), "apple-icon.png", app, optimize=True)
 
     if banner is not None:
         print("open graph image, 1200x630 cropped from the banner")

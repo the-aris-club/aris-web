@@ -1,6 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Courier_Prime, Michroma } from 'next/font/google'
+import { Geist, Geist_Mono, Courier_Prime } from 'next/font/google'
 import React from 'react'
 
 import './globals.css'
@@ -28,21 +28,6 @@ const _geistMono = Geist_Mono({ subsets: ['latin'] })
 const _courierPrime = Courier_Prime({
   subsets: ['latin'],
   weight: ['400', '700'],
-})
-
-// Michroma stands in for the wordmark in the logo artwork. It is the closest
-// Google Font to the drawn "ARIS": wide geometric forms, a flat-topped A, a
-// straight-legged R and an S with cut diagonals. It is an approximation, not
-// the original typeface, which is not published.
-//
-// Single weight, and that matters twice over. `weight: '400'` keeps the query
-// to a single font file, which is the case that has not broken the Vercel
-// build; IBM Plex Sans asked for four and failed there. And the intro must not
-// ask for bold, because there is none and the request would be dropped.
-const michroma = Michroma({
-  subsets: ['latin'],
-  variable: '--font-michroma',
-  weight: '400',
 })
 
 // Icons come from the app/ file conventions — icon.png, apple-icon.png and
@@ -77,7 +62,7 @@ export const metadata: Metadata = {
 }
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => (
-  <html className={michroma.variable} lang="en">
+  <html lang="en">
     <body className="font-sans antialiased">
       {children}
       <Analytics />

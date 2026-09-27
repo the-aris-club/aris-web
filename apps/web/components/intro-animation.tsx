@@ -1,8 +1,26 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
-const LETTERS = ['A', 'R', 'I', 'S']
+// The letters are cut out of the wordmark in aris-logo.png by
+// tools/build-brand-assets.py, not typed. No published typeface is close
+// enough to the drawn one, and these already share a cap height and a
+// baseline, so the page sets one height and lines them up on the bottom.
+// The widths include the transparent share of the letterspacing on each side,
+// so these four butted together are the drawn wordmark exactly. Do not add a
+// gap here: the drawn gaps are not even, and a single value restyles it.
+const LETTERS = [
+  { height: 76, src: '/brand/letter-a.webp', width: 121 },
+  { height: 76, src: '/brand/letter-r.webp', width: 108 },
+  { height: 76, src: '/brand/letter-i.webp', width: 35 },
+  { height: 76, src: '/brand/letter-s.webp', width: 103 },
+]
+
+// Rendered cap height. The four are 367px wide at a 76px cap, so the word is
+// about 4.8x this; capping on width as well as height keeps it inside a narrow
+// viewport.
+const CAP_HEIGHT = 'min(26vh, 19vw)'
 
 // ms between each letter appearing
 const LETTER_IN_STAGGER = 90
@@ -87,10 +105,10 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
         }}
       />
 
-      {/* Club wordmark. Michroma approximates the drawn ARIS, so it is set in
-          the logo's own navy rather than the page's near-black. */}
+      {/* Club wordmark, cut from the logo artwork. items-end puts the letters
+          on their shared baseline; the letterspace is inside the images. */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="flex" style={{ gap: '0.02em' }}>
+        <div className="flex items-end">
           {LETTERS.map((letter, i) => {
             const inDelay = i * LETTER_IN_STAGGER
             const outDelay = i * LETTER_OUT_STAGGER
@@ -111,24 +129,22 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
             }
 
             return (
-              <span
-                key={i}
-                className="font-display leading-none select-none"
+              <Image
+                alt=""
+                height={letter.height}
+                key={letter.src}
+                src={letter.src}
                 style={{
-                  color: '#003070',
                   filter: `blur(${blur}px)`,
-                  // Michroma is already wide, so the old divide-by-four sizing
-                  // overflows. Cap it and let the viewport scale it down.
-                  fontSize: 'min(calc((100vw - 96px) / 5), 26vw)',
-                  letterSpacing: '0.02em',
+                  height: CAP_HEIGHT,
                   opacity,
                   transform: `translateY(${translateY}px)`,
                   transition,
+                  width: 'auto',
                   willChange: 'opacity, filter, transform',
                 }}
-              >
-                {letter}
-              </span>
+                width={letter.width}
+              />
             )
           })}
         </div>
