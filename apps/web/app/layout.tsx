@@ -53,6 +53,22 @@ export const metadata: Metadata = {
     type: 'website',
     url: SITE_URL,
   },
+  // The release gate, enforced. CONTEXT.md calls Deployed: false a gate and
+  // not a setting, and the custom domain is public because Vercel's SSO
+  // protection exempts custom domains. Without this the page is fully
+  // indexable by any search engine.
+  //
+  // A noindex meta rather than a robots.txt Disallow, deliberately. A
+  // Disallow stops the crawler fetching the page at all, which is how
+  // facebookexternalhit and Twitterbot end up with an empty card instead of a
+  // preview. noindex lets them fetch and read the Open Graph tags while keeping
+  // the page out of search results, which is the actual requirement here.
+  //
+  // Remove this when the authority confirms the club.
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: `${NAME} — ${SCOPE}`,
   twitter: {
     card: 'summary_large_image',
