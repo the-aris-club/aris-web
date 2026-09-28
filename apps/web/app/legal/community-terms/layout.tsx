@@ -20,13 +20,24 @@ export const metadata: Metadata = {
  * path: fetch at build time and delete the copy, or publish the source document
  * and link to it. Rationale in docs/brand-rollout.md.
  *
- * Two consequences of the copy worth knowing:
+ * Three consequences of the copy worth knowing:
  * - The source has two relative links into the same private repository. They
  *   became plain text here, because linking would 404.
  * - This note lives in a TSX file rather than in the MDX, because a JSX comment
  *   in MDX is parsed as a JavaScript expression: a slash pair in the prose
  *   reads as a regular expression whose trailing characters are then rejected as
  *   invalid flags. The formatter also rewrites the comment braces.
+ *
+ * A third, deliberate divergence. Two occurrences of "MSSV" are rendered here
+ * as "Student ID". The source document still says MSSV, so this copy is no
+ * longer verbatim, which is the one thing the rest of this note exists to
+ * prevent. It is a public page: MSSV is the Vietnamese abbreviation for student
+ * number and means nothing to the audience the site addresses. The club has
+ * already solved this elsewhere in English -- membership-screening-rules.md and
+ * server-rules.md both write "MSSV (student ID)" -- so this follows the club's
+ * own convention rather than inventing one. Re-syncing from the source will
+ * reintroduce MSSV, so the fix belongs upstream in
+ * community-terms-of-use.md.
  *
  * The status banner below is load-bearing, not decorative. The document is a
  * draft that declares itself not to be a contract, and rendering that

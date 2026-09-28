@@ -705,7 +705,7 @@ const ArisPage = () => {
             >
               {[
                 { delay: 0, desc: 'Personal data' },
-                { delay: 60, desc: 'MSSV' },
+                { delay: 60, desc: 'Student ID' },
                 { delay: 120, desc: 'Full CVs' },
                 { delay: 180, desc: 'Raw answers' },
                 { delay: 240, desc: 'Scores' },
