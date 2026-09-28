@@ -377,20 +377,6 @@ def build_og_image(source: Path) -> Image.Image:
     )
 
 
-def build_hero(source: Path) -> Image.Image:
-    """Take the banner's right-hand lab scene, with no text and no lockup.
-
-    The banner is a finished marketing piece: it carries its own logo and its
-    own headline, so using it whole as a hero background puts the club's wordmark
-    underneath the page headline. Cropping to the lab scene gives a background
-    with room for text and no competing typography. The hero is already faded and
-    blurred by the page, so the upscale is not visible.
-    """
-    banner = Image.open(source).convert("RGB")
-    box = (1400, 0, banner.width, banner.height)
-    return banner.crop(box)
-
-
 OUT: Path
 
 
@@ -481,8 +467,13 @@ def main() -> None:
         write(build_og_image(banner), "opengraph-image.jpg", app, quality=88)
         # Full-bleed copy for the mid-page image block.
         write(Image.open(banner).convert("RGB"), "aris-banner.webp", quality=88)
-        # Text-free lab scene for the hero, which carries the page headline.
-        write(build_hero(banner), "aris-hero.webp", quality=88)
+        # aris-hero.webp is NOT generated here. The hero is a separately
+        # commissioned 16:9 lab scene, not a crop of the banner: the banner is
+        # 1983x793 with its own wordmark, and every crop of it that leaves room
+        # for the page headline comes out portrait and too small to cover 100vw
+        # without upscaling. Regenerating it from the banner would overwrite the
+        # real asset with the crop this replaced, so the banner only feeds the
+        # banner and the OG image.
 
     print(f"-> {OUT}\n-> {app}")
 
