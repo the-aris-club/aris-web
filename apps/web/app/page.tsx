@@ -64,9 +64,14 @@ const BentoCard = ({
         transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms, border-color 0.3s ease, background-color 0.3s ease`,
       }}
     >
-      {/* Backdrop. The artwork is already faded to the page colour in the
-          region the text occupies, so it reads as part of the white card
-          rather than a picture sitting on it. Decorative: alt is empty. */}
+      {/* Backdrop. A card here measures about 279x208, a ratio of 1.34:1,
+          and the artwork is 16:9, so object-cover scales to the card's
+          height and crops the sides — there is no vertical slack, only
+          horizontal. The crop is anchored to the top right, which holds the
+          subject in the upper half and clear of the text. The artwork is
+          already faded to the page colour where the text sits, so it reads as
+          part of the white card rather than a picture on it. Decorative:
+          alt is empty. */}
       {image && (
         <Image
           src={image}
@@ -74,7 +79,7 @@ const BentoCard = ({
           aria-hidden="true"
           fill
           sizes="(min-width: 768px) 25vw, 100vw"
-          className="pointer-events-none absolute inset-0 object-cover object-[70%_20%]"
+          className="pointer-events-none absolute inset-0 object-cover object-top-right"
         />
       )}
       {/* Hover glow spot */}

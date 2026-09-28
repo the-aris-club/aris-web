@@ -108,9 +108,13 @@ export const StackingAgentCards = () => {
               }}
             >
               <div className="group relative cursor-pointer overflow-hidden rounded-2xl border border-black/[0.07] bg-[#faf9f7]">
-                {/* No per-department artwork exists, so the card is text only.
-                    The stock agent portraits that used to sit here were not the
-                    club's, and the brand set has no department images. */}
+                {/* Text only, while the Groups cards carry the department
+                    artwork. This card is 1152x177, a ratio of 6.5:1, and the
+                    artwork is 16:9 — object-cover would keep 27% of the image
+                    height, and the same four pictures would appear twice
+                    within two screens. The stock agent portraits that used to
+                    sit here were never the club's. Give this its own wide
+                    images before adding a backdrop. */}
                 <div className="relative z-10 p-8">
                   <div className="md:max-w-[70%]">
                     <div className="mb-6 flex items-start justify-between">
