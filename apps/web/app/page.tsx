@@ -1,11 +1,10 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import React, { useRef, useEffect, useState, useCallback } from 'react'
 
-import { DevExSection } from '@/components/devex-section'
 import { IntroAnimation, HERO_REVEAL_MS } from '@/components/intro-animation'
-import { LiveAgentFeed, LiveAgentCounter } from '@/components/live-agent-feed'
 import { MobileNav } from '@/components/mobile-nav'
 import { PixelIcon } from '@/components/pixel-icon'
 import { RevealText } from '@/components/reveal-text'
@@ -83,10 +82,25 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
   </span>
 )
 
+// ─── Club contact ─────────────────────────────────────────────────────────────
+// Both are the club's own, from recruitment-flow.md. The mailbox is
+// transitional and is not an official HCMIU address, which the page says out
+// loud in both places it appears rather than implying otherwise.
+const FORM_URL = 'https://forms.gle/RnSVePAY9JWeZsKn9'
+const CONTACT_EMAIL = 'thearisclub.hcmiu@gmail.com'
+
+// ─── Hero entrance stagger ────────────────────────────────────────────────────
+// The hero reveal is driven by heroReady rather than the scroll observer, so it
+// needs its own helper. i is in 80ms steps, matching the old metrics row.
+const stagger = (ready: boolean, i: number) => ({
+  filter: ready ? 'blur(0px)' : 'blur(16px)',
+  opacity: ready ? 1 : 0,
+  transform: ready ? 'translateY(0px)' : 'translateY(20px)',
+  transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms, filter 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms`,
+})
+
 // ─── Main page ────────────────────────────────────────────────────────────────
-const AgenticPage = () => {
-  const [email, setEmail] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+const ArisPage = () => {
   const [heroReady, setHeroReady] = useState(false)
   const [videoReady, setVideoReady] = useState(false)
   const handleIntroDone = useCallback(() => {
@@ -109,14 +123,15 @@ const AgenticPage = () => {
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
       <section className="relative h-screen overflow-hidden">
-        {/* Video background — zooms in once intro is done */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
+        {/* Banner — the club's own artwork, zooms in once intro is done */}
+        <Image
+          src="/brand/aris-hero.webp"
+          alt=""
+          aria-hidden="true"
+          fill
+          priority
+          sizes="100vw"
           className="absolute inset-0 z-0 h-full w-full object-cover"
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/agentic-hero-9yW3wnTNMfn2U6lsVhTTZSJFEvAoSj.mp4"
           style={{
             transform: videoReady ? 'scale(1.05)' : 'scale(0.85)',
             transition: 'transform 2s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -170,73 +185,51 @@ const AgenticPage = () => {
         {/* Spacer so hero content doesn't sit under the fixed nav */}
         <div className="h-20" />
 
-        {/* Title + metrics — anchored to bottom left */}
+        {/* Title + scope — anchored to bottom left. No figures: the club has no
+            traction to report and CONTEXT.md forbids inventing any. */}
         <div className="absolute inset-x-0 bottom-0 z-30 flex max-w-3xl flex-col px-6 pb-12 md:px-12">
-          {/* Title */}
+          {/* Slogan, verbatim from brand-catalog.md */}
           <h1
-            className="mb-10 text-6xl leading-[1.0] font-light tracking-tight text-[#111] sm:text-7xl md:text-8xl"
+            className="mb-8 font-sans text-5xl leading-[1.02] font-light tracking-tight text-[#111] sm:text-6xl md:text-7xl"
             style={{
               filter: heroReady ? 'blur(0px)' : 'blur(24px)',
-              fontFamily: '"IBM Plex Sans", sans-serif',
               opacity: heroReady ? 1 : 0,
               transform: heroReady ? 'translateY(0px)' : 'translateY(32px)',
               transition:
                 'opacity 1s cubic-bezier(0.16,1,0.3,1) 0ms, filter 1s cubic-bezier(0.16,1,0.3,1) 0ms, transform 1s cubic-bezier(0.16,1,0.3,1) 0ms',
             }}
           >
-            Build &amp;
+            We build systems
             <br />
-            orchestrate AI
+            that turn complexity
             <br />
-            agents while
-            <br />
-            you sleep.
+            into capability.
           </h1>
 
-          {/* 3 metrics — staggered after title */}
-          <div className="flex gap-8 sm:gap-12">
-            {[
-              { label: 'Tasks', value: '50M+' },
-              { label: 'Uptime', value: '99.9%' },
-              { label: 'Countries', value: '180+' },
-            ].map((stat, i) => (
-              <div
-                key={i}
-                style={{
-                  filter: heroReady ? 'blur(0px)' : 'blur(16px)',
-                  opacity: heroReady ? 1 : 0,
-                  transform: heroReady ? 'translateY(0px)' : 'translateY(20px)',
-                  transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms, filter 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms`,
-                }}
-              >
-                <div
-                  className="text-3xl font-light tracking-tight text-[#111] sm:text-4xl"
-                  style={{ fontFamily: '"IBM Plex Sans", sans-serif' }}
-                >
-                  {stat.value}
-                </div>
-                <div
-                  className="mt-1 text-xs tracking-widest text-black/40 uppercase"
-                  style={{ fontFamily: '"IBM Plex Sans", sans-serif' }}
-                >
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+          {/* Scope, then the barrier a prospective member actually worries
+              about — both quoted, see docs/adr/0005 and job-description/member.md */}
+          <div style={stagger(heroReady, 0)}>
+            <p className="font-sans text-sm tracking-wide text-black/50 uppercase">
+              Autonomous Systems, Robotics, IoT &amp; Software
+            </p>
+            <p className="mt-3 max-w-xl font-sans text-sm leading-relaxed text-black/45">
+              Membership does not require a technical background or a fixed
+              number of hours.
+            </p>
           </div>
         </div>
       </section>
 
       {/* ── PLATFORM OVERVIEW (bento) ──────────────────────────────────────── */}
-      <section id="platform" className="px-6 py-32 md:px-12 lg:px-20">
+      <section id="groups" className="px-6 py-32 md:px-12 lg:px-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-16">
             <PixelIcon type="platform" size={40} />
             <div className="mt-4">
-              <Tag>PLATFORM</Tag>
+              <Tag>GROUPS</Tag>
             </div>
             <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl lg:text-6xl">
-              {'Everything you need\nto ship agents.'}
+              {'Four departments.\nOne capability group.'}
             </RevealText>
           </div>
 
@@ -298,18 +291,22 @@ const AgenticPage = () => {
                   </svg>
                 </div>
                 <h3 className="mb-3 text-xl font-light">
-                  Visual Agent Builder
+                  Operations and Development
                 </h3>
                 <p className="max-w-sm text-sm leading-relaxed text-black/45">
-                  Drag, connect, and configure agents through an intuitive graph
-                  editor. No boilerplate. Ship in minutes, not days.
+                  The umbrella group for capabilities that are not technical
+                  departments and are not the governing Board: moderation,
+                  membership operations, finance and records, project
+                  administration, university liaison, and communications.
                 </p>
               </div>
             </BentoCard>
 
-            {/* Bottom row */}
+            {/* Four technical departments. The grid is twelve columns, so four
+                cells at three each. Not five: Operations and Development is a
+                capability pool, not a technical department. */}
             <BentoCard
-              className="col-span-12 min-h-[200px] p-8 md:col-span-4"
+              className="col-span-12 min-h-[200px] p-8 md:col-span-3"
               delay={120}
             >
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
@@ -324,15 +321,14 @@ const AgenticPage = () => {
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                 </svg>
               </div>
-              <h3 className="mb-2 text-lg font-light">Real-time Monitoring</h3>
+              <h3 className="mb-2 text-lg font-light">Autonomous Systems</h3>
               <p className="text-sm leading-relaxed text-black/45">
-                Trace every decision. Debug with full execution history and live
-                logs.
+                Systems that decide and act under their own control.
               </p>
             </BentoCard>
 
             <BentoCard
-              className="col-span-12 min-h-[200px] p-8 md:col-span-4"
+              className="col-span-12 min-h-[200px] p-8 md:col-span-3"
               delay={160}
             >
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
@@ -348,15 +344,14 @@ const AgenticPage = () => {
                   <path d="M8 10h8M8 14h5" />
                 </svg>
               </div>
-              <h3 className="mb-2 text-lg font-light">Memory & Context</h3>
+              <h3 className="mb-2 text-lg font-light">Robotics</h3>
               <p className="text-sm leading-relaxed text-black/45">
-                Persistent long-term memory across sessions. Agents learn from
-                every interaction.
+                Hardware you can put on a table and make move.
               </p>
             </BentoCard>
 
             <BentoCard
-              className="col-span-12 min-h-[200px] p-8 md:col-span-4"
+              className="col-span-12 min-h-[200px] p-8 md:col-span-3"
               delay={200}
             >
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
@@ -371,12 +366,32 @@ const AgenticPage = () => {
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
               </div>
-              <h3 className="mb-2 text-lg font-light">
-                Guardrails & Permissions
-              </h3>
+              <h3 className="mb-2 text-lg font-light">IoT</h3>
               <p className="text-sm leading-relaxed text-black/45">
-                Define what agents can and cannot do. Fine-grained access
-                control per tool.
+                Devices that report what they sense, and take instruction.
+              </p>
+            </BentoCard>
+
+            <BentoCard
+              className="col-span-12 min-h-[200px] p-8 md:col-span-3"
+              delay={240}
+            >
+              <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <polyline points="16 18 22 12 16 6" />
+                  <polyline points="8 6 2 12 8 18" />
+                </svg>
+              </div>
+              <h3 className="mb-2 text-lg font-light">Software</h3>
+              <p className="text-sm leading-relaxed text-black/45">
+                The part that holds the other three together.
               </p>
             </BentoCard>
           </div>
@@ -385,7 +400,7 @@ const AgenticPage = () => {
 
       {/* ── BUILD YOUR AGENTS (4 cards) ───────────────────────────────────── */}
       <section
-        id="agents"
+        id="departments"
         className="border-t border-black/[0.06] px-6 py-32 md:px-12 lg:px-20"
       >
         <div className="mx-auto max-w-6xl">
@@ -393,15 +408,15 @@ const AgenticPage = () => {
             <div>
               <PixelIcon type="agents" size={40} />
               <div className="mt-4">
-                <Tag>AGENT TYPES</Tag>
+                <Tag>DEPARTMENTS</Tag>
               </div>
               <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-                {'Plug-and-play agents\nready to deploy.'}
+                {'Pick the one you\nwant to get good at.'}
               </RevealText>
             </div>
             <p className="max-w-xs text-sm leading-relaxed text-black/45">
-              Start with a pre-built agent or compose your own from primitives.
-              Every agent is versioned, testable, and observable.
+              A member has one primary department and may support another with
+              an explicit assignment.
             </p>
           </div>
 
@@ -409,20 +424,24 @@ const AgenticPage = () => {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ──────────────────────────────────────────────────── */}
+      {/* ── WHAT A PROJECT MUST NAME ──────────────────────────────────────── */}
       <section
-        id="workflow"
+        id="projects"
         className="overflow-hidden border-t border-black/[0.06] px-6 py-32 md:px-12 lg:px-20"
       >
         <div className="mx-auto max-w-6xl">
           <div className="mb-16">
             <PixelIcon type="workflow" size={40} />
             <div className="mt-4">
-              <Tag>WORKFLOW</Tag>
+              <Tag>PROJECTS</Tag>
             </div>
             <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-              {'From idea to running agent\nin four steps.'}
+              {'Five things every\nproject must name.'}
             </RevealText>
+            <p className="mt-6 max-w-xl text-sm leading-relaxed text-black/45">
+              Quoted from Community Terms §11. A Discord message is not one of
+              the five: a project is a formal record, not a conversation.
+            </p>
           </div>
 
           <div
@@ -432,31 +451,30 @@ const AgenticPage = () => {
             {[
               {
                 delay: 0,
-                desc: 'Describe your agent in plain language. Set objectives, tools, and boundaries.',
-                img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/define-5aafAmGBrxZpOqJ3XLHY3n3qzC2I5K.png',
+                desc: 'Who owns it, and what problem it exists to solve.',
                 n: '01',
-                title: 'Define',
+                title: 'Purpose and owner',
               },
               {
                 delay: 80,
-                desc: 'Chain agents together in the visual editor. Wire triggers, conditions, and outputs.',
-                img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/compose-5RT5VR4f1Y3GoFmovqTKLTG4UXp3g2.png',
+                desc: 'What is delivered, and what counts as done.',
                 n: '02',
-                title: 'Compose',
+                title: 'Deliverable and acceptance criteria',
               },
               {
                 delay: 140,
-                desc: 'Run sandboxed simulations. Inspect every decision in the execution trace.',
-                img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/test-zm8guZwxJHtwWsJ7XO4B0CF7GzlNK8.png',
+                desc: 'When it is due, and who to escalate to when it is not.',
                 n: '03',
-                title: 'Test',
+                title: 'Deadline and escalation contact',
               },
               {
+                // The grid is four columns and §11 lists five items, so the last
+                // two share a card. Both are printed verbatim under the title.
+                // If the layout is ever opened up, give 05 its own card.
                 delay: 200,
-                desc: 'Push globally in one click. Agents auto-scale, self-heal, and report back.',
-                img: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/deploy-an8fgHSLzniojkcmRyGGIFQUJF9T5J.png',
+                desc: '04 — Safety and data check.\n05 — Handover or closing decision.',
                 n: '04',
-                title: 'Deploy',
+                title: 'Safety, data, and how it ends',
               },
             ].map((step) => (
               <BentoCard
@@ -464,21 +482,6 @@ const AgenticPage = () => {
                 className="relative flex min-h-[320px] flex-col overflow-hidden"
                 delay={step.delay}
               >
-                {/* Image at top — mask fades it out strongly before the bottom edge */}
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-56">
-                  <Image
-                    src={step.img}
-                    alt={step.title}
-                    fill
-                    className="h-full w-full object-cover object-top"
-                    style={{
-                      WebkitMaskImage:
-                        'linear-gradient(to bottom, black 0%, black 30%, transparent 80%)',
-                      maskImage:
-                        'linear-gradient(to bottom, black 0%, black 30%, transparent 80%)',
-                    }}
-                  />
-                </div>
                 {/* Number top-left */}
                 <div className="relative z-10 p-7">
                   <span className="font-pixel block text-[11px] tracking-widest text-black/20">
@@ -488,7 +491,7 @@ const AgenticPage = () => {
                 {/* Text pushed further down */}
                 <div className="relative z-10 mt-auto px-7 pt-16 pb-7">
                   <h3 className="mb-3 text-2xl font-light">{step.title}</h3>
-                  <p className="text-sm leading-relaxed text-black/45">
+                  <p className="text-sm leading-relaxed whitespace-pre-line text-black/45">
                     {step.desc}
                   </p>
                 </div>
@@ -498,9 +501,9 @@ const AgenticPage = () => {
         </div>
       </section>
 
-      {/* ── INTEGRATIONS ──────────────────────────────────────────────────── */}
+      {/* ── CONTENT AND OWNERSHIP ─────────────────────────────────────────── */}
       <section
-        id="integrations"
+        id="ownership"
         className="border-t border-black/[0.06] px-6 py-32 md:px-12 lg:px-20"
       >
         <div className="mx-auto max-w-6xl">
@@ -508,228 +511,219 @@ const AgenticPage = () => {
             <div>
               <PixelIcon type="integrations" size={40} />
               <div className="mt-4">
-                <Tag>INTEGRATIONS</Tag>
+                <Tag>YOUR WORK</Tag>
               </div>
               <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-                {'Connect any tool.\nControl any system.'}
+                {'You keep what\nyou build.'}
               </RevealText>
             </div>
             <p className="max-w-xs text-sm leading-relaxed text-black/45">
-              200+ native connectors. Everything from Slack to your internal
-              database. Build custom tools with our SDK in minutes.
+              A member keeps ownership of work they create unless a separate
+              written agreement says otherwise.
             </p>
           </div>
 
-          {/* Full-width image block with glass cards */}
-          {/* Mobile: flex-col, image + cards stacked. Desktop: image fills block, cards absolute */}
+          {/* Cards sit in normal flow, never absolute. An earlier revision
+              positioned this column over the image and overflow-hidden cut the
+              top off the first card, taking its rounded corners with it. */}
           <div
-            className="flex flex-col overflow-hidden rounded-2xl border border-black/[0.07] md:relative md:block"
+            className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-2"
             onMouseMove={handleMouse}
           >
-            {/* Image */}
-            <div className="relative h-[280px] w-full shrink-0 md:h-[480px]">
-              <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Org%20Arc%20-%20Upscaled-Sk90jShfu7nltLnhoQbaMJC1YaQKuU.png"
-                alt="Agent orchestration architecture"
-                fill
-                className="absolute inset-0 h-full w-full object-cover object-center"
-              />
-            </div>
-
-            {/* Cards — flex row on mobile (equal spacing), absolute on desktop */}
-            <div className="flex flex-col gap-3 p-4 md:absolute md:right-4 md:bottom-4 md:w-72 md:p-0">
-              <div
-                className="rounded-xl border border-white/50 p-6"
-                style={{
-                  WebkitBackdropFilter: 'blur(24px)',
-                  backdropFilter: 'blur(24px)',
-                  background: 'rgba(255,255,255,0.60)',
-                }}
-              >
-                <Tag>SDK</Tag>
-                <h3 className="mt-3 mb-2 text-lg font-light">
-                  Build custom tools
-                </h3>
-                <p className="mb-4 text-xs leading-relaxed text-black/45">
-                  Define any function as a tool your agents can call. TypeScript
-                  and Python.
-                </p>
-                <div className="rounded-lg border border-black/[0.07] bg-black/[0.05] p-3 font-mono text-[11px] leading-relaxed text-black/50">
-                  <span className="text-black/25">
-                    &#47;&#47; tool definition
-                  </span>
-                  <br />
-                  <span className="text-blue-600/70">defineTool</span>
-                  {'({'}
-                  <br />
-                  {'  '}
-                  <span className="text-amber-700/70">name</span>:{' '}
-                  <span className="text-green-700/70">
-                    &apos;fetchPrice&apos;
-                  </span>
-                  ,<br />
-                  {'  '}
-                  <span className="text-amber-700/70">run</span>:{' '}
-                  <span className="text-black/35">async (q) </span>={'>'}
-                  <br />
-                  {'    '}
-                  <span className="text-blue-600/70">api</span>.get(q)
-                  <br />
-                  {'})'}
-                </div>
+            <BentoCard className="flex flex-col p-7" delay={0}>
+              <div>
+                <Tag>OWNERSHIP</Tag>
               </div>
+              <h3 className="mt-3 mb-2 text-lg font-light">
+                The licence is limited
+              </h3>
+              <p className="text-sm leading-relaxed text-black/45">
+                Submitting work to a club project grants a non-exclusive,
+                limited licence to store, run, review, display, maintain and
+                hand over that work for the club&rsquo;s stated purpose.
+              </p>
+            </BentoCard>
 
-              <div
-                className="rounded-xl border border-white/50 p-6"
-                style={{
-                  WebkitBackdropFilter: 'blur(24px)',
-                  backdropFilter: 'blur(24px)',
-                  background: 'rgba(255,255,255,0.60)',
-                }}
-              >
-                <div className="mb-2 flex items-center gap-2">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-500/80" />
-                  <span className="text-xs tracking-widest text-black/40">
-                    LIVE API
-                  </span>
-                </div>
-                <p className="text-sm text-black/45">
-                  Full REST + WebSocket API. Stream agent outputs directly into
-                  your product.
-                </p>
+            <BentoCard className="flex flex-col p-7" delay={80}>
+              <div>
+                <Tag>UNPUBLISHED</Tag>
               </div>
+              <h3 className="mt-3 mb-2 text-lg font-light">
+                Held until it is clean
+              </h3>
+              <p className="text-sm leading-relaxed text-black/45">
+                Work containing another person&rsquo;s data, a restricted
+                dataset or an unclear licence must not be published until the
+                issue is resolved.
+              </p>
+            </BentoCard>
+          </div>
+
+          <div className="mt-16">
+            <RevealText className="mb-6 text-2xl leading-[1.1] font-light tracking-tight">
+              The club must not:
+            </RevealText>
+            <div
+              className="grid grid-cols-1 gap-3 md:grid-cols-2"
+              onMouseMove={handleMouse}
+            >
+              {[
+                {
+                  delay: 0,
+                  desc: 'Reuse private work for unrelated training or commercial purposes.',
+                },
+                {
+                  delay: 80,
+                  desc: 'Remove authorship or license information.',
+                },
+                {
+                  delay: 160,
+                  desc: "Publish a work that contains another person's confidential data.",
+                },
+                {
+                  delay: 240,
+                  desc: 'Claim ownership of external libraries, data or third-party content.',
+                },
+              ].map((item) => (
+                <BentoCard
+                  key={item.desc}
+                  className="flex items-start gap-4 p-6"
+                  delay={item.delay}
+                >
+                  <span className="font-pixel mt-1 block shrink-0 text-[11px] tracking-widest text-black/20">
+                    ✕
+                  </span>
+                  <p className="text-sm leading-relaxed text-black/55">
+                    {item.desc}
+                  </p>
+                </BentoCard>
+              ))}
             </div>
+            <p className="mt-6 text-xs leading-relaxed text-black/35">
+              Quoted from Community Terms §8.
+            </p>
           </div>
         </div>
       </section>
 
       {/* ── SECURITY & OBSERVABILITY ──────────────────────────────────��──── */}
       <section
-        id="security"
+        id="automation"
         className="border-t border-black/[0.06] px-6 py-32 md:px-12 lg:px-20"
       >
         <div className="mx-auto max-w-6xl">
           <div className="mb-16">
             <PixelIcon type="platform" size={40} />
             <div className="mt-4">
-              <Tag>SECURITY</Tag>
+              <Tag>AUTOMATION</Tag>
             </div>
             <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-              {'Enterprise-grade\nfrom day one.'}
+              {'What a bot\nmay not decide.'}
             </RevealText>
+            <p className="mt-6 max-w-xl text-sm leading-relaxed text-black/45">
+              AI may assist with drafting, questions, summaries, translation,
+              search, data-quality checks and routine reminders. Eight decisions
+              are never one of them.
+            </p>
           </div>
 
-          {/* Asymmetric grid: left text + title, right interactive audit log */}
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {/* Left side — descriptions */}
-            <div className="space-y-6">
-              <p className="text-sm leading-relaxed text-black/45">
-                Every action is logged, every decision is traceable. Built for
-                teams that need compliance without compromise.
-              </p>
-
-              <div className="space-y-4">
+            {/* Left — the eight decisions reserved to people, §9 */}
+            <div>
+              <div className="mb-5 text-xs tracking-widest text-black/30 uppercase">
+                Reserved to people
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 {[
-                  {
-                    desc: 'Independently audited security controls',
-                    label: 'SOC 2 Type II',
-                  },
-                  {
-                    desc: 'Every decision logged with full traceability',
-                    label: 'Full Audit Trail',
-                  },
-                  {
-                    desc: 'Monitor, debug, and replay any execution',
-                    label: 'Real-time Observability',
-                  },
-                ].map((item) => (
-                  <div key={item.label} className="flex gap-4">
-                    <div className="w-1 shrink-0 rounded-full bg-black/10" />
-                    <div>
-                      <h3 className="mb-1 text-sm font-light">{item.label}</h3>
-                      <p className="text-xs text-black/35">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Compliance badges — vertical stack */}
-              <div className="flex flex-col gap-2 pt-4">
-                {['SOC 2', 'GDPR', 'HIPAA Ready', 'ISO 27001'].map((badge) => (
-                  <div
-                    key={badge}
-                    className="flex items-center gap-2 text-xs text-black/25"
+                  'Membership',
+                  'Recruitment',
+                  'Disciplinary',
+                  'Financial',
+                  'Legal',
+                  'Medical',
+                  'Educational',
+                  'Deployment',
+                ].map((item, i) => (
+                  <BentoCard
+                    key={item}
+                    className="flex items-center gap-3 p-5"
+                    delay={i * 40}
                   >
-                    <span className="h-1 w-1 rounded-full bg-black/25" />
-                    {badge}
-                  </div>
+                    <span className="font-pixel block shrink-0 text-[11px] text-black/20">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="text-sm font-light">{item}</span>
+                  </BentoCard>
                 ))}
               </div>
+              <p className="mt-5 text-xs leading-relaxed text-black/35">
+                A person may refuse an AI-assisted process without losing the
+                right to a fair human review.
+              </p>
             </div>
 
-            {/* Right side — live audit log visualization */}
-            <BentoCard className="p-6 lg:row-span-1" delay={0}>
-              <div className="mb-4 text-xs tracking-widest text-black/30 uppercase">
-                Live Audit Trail
+            {/* Right — what a bot may not independently do, §9 */}
+            <BentoCard className="flex flex-col p-7" delay={0}>
+              <div className="mb-5 text-xs tracking-widest text-black/30 uppercase">
+                A bot may not independently
               </div>
-              <div className="space-y-2">
+              <div className="grid flex-1 grid-cols-2 gap-x-4 gap-y-2.5 self-start">
                 {[
-                  {
-                    action: 'agent_executed',
-                    status: 'success',
-                    time: '12:34:21',
-                  },
-                  {
-                    action: 'decision_logged',
-                    status: 'success',
-                    time: '12:34:18',
-                  },
-                  {
-                    action: 'tool_called',
-                    status: 'success',
-                    time: '12:34:15',
-                  },
-                  {
-                    action: 'memory_updated',
-                    status: 'success',
-                    time: '12:34:12',
-                  },
-                  {
-                    action: 'output_generated',
-                    status: 'success',
-                    time: '12:34:09',
-                  },
-                ].map((log, i) => (
-                  <div
-                    key={i}
-                    className="group flex cursor-pointer items-center gap-3 rounded-lg border border-black/[0.04] bg-black/[0.02] px-3 py-2.5 transition-colors hover:bg-black/[0.04]"
-                    style={{
-                      animation: `fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) ${i * 80}ms both`,
-                    }}
-                  >
-                    <span className="min-w-[60px] font-mono text-[10px] text-black/25">
-                      {log.time}
+                  'Accept',
+                  'Reject',
+                  'Promote',
+                  'Remove',
+                  'Discipline',
+                  'Vote',
+                  'Merge',
+                  'Deploy',
+                  'Spend money',
+                  'Bypass an approval',
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-2.5">
+                    <span className="shrink-0 text-[11px] text-black/20">
+                      ✕
                     </span>
-                    <span className="flex-1 text-[11px] font-light text-black/50">
-                      {log.action}
-                    </span>
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500/60 transition-colors group-hover:bg-green-500" />
+                    <span className="text-sm text-black/50">{item}</span>
                   </div>
                 ))}
               </div>
-              <style>{`
-                @keyframes fadeInUp {
-                  from { opacity: 0; transform: translateY(8px); }
-                  to { opacity: 1; transform: translateY(0); }
-                }
-              `}</style>
+              <p className="mt-6 border-t border-black/[0.06] pt-4 text-xs leading-relaxed text-black/35">
+                It may prepare a draft, reminder or approval card. Quoted from
+                Community Terms §9.
+              </p>
             </BentoCard>
+          </div>
+
+          <div className="mt-16">
+            <RevealText className="mb-6 text-2xl leading-[1.1] font-light tracking-tight">
+              What the club never sends to an AI provider
+            </RevealText>
+            <div
+              className="grid grid-cols-1 gap-3 md:grid-cols-3"
+              onMouseMove={handleMouse}
+            >
+              {[
+                { delay: 0, desc: 'Personal data' },
+                { delay: 60, desc: 'Student ID' },
+                { delay: 120, desc: 'Full CVs' },
+                { delay: 180, desc: 'Raw answers' },
+                { delay: 240, desc: 'Scores' },
+                { delay: 300, desc: 'Private channels and moderation records' },
+              ].map((item) => (
+                <BentoCard key={item.desc} className="p-5" delay={item.delay}>
+                  <span className="text-sm text-black/55">{item.desc}</span>
+                </BentoCard>
+              ))}
+            </div>
+            <p className="mt-6 text-xs leading-relaxed text-black/35">
+              Not by default, and any AI interview dataset needs a separate
+              policy, opt-in, de-identification, retention rule and human
+              review. Quoted from Community Terms §9.
+            </p>
           </div>
         </div>
       </section>
-
-      {/* ── DEVELOPER EXPERIENCE ──────────────────────────────────────────── */}
-      <DevExSection />
 
       {/* ── MARQUEE CAPABILITIES ──────────────────────────────────────────── */}
       <section className="overflow-hidden border-t border-black/[0.06] py-0 select-none">
@@ -740,16 +734,11 @@ const AgenticPage = () => {
           {Array.from({ length: 3 }).map((_, rep) => (
             <div key={rep} className="flex shrink-0">
               {[
-                'Web Research',
-                'Code Generation',
-                'Email Drafting',
-                'Data Analysis',
-                'PR Reviews',
-                'Scheduling',
-                'SQL Queries',
-                'API Calls',
-                'File Processing',
-                'Monitoring',
+                'Autonomous Systems',
+                'Robotics',
+                'IoT',
+                'Software',
+                'Operations and Development',
               ].map((cap) => (
                 <div
                   key={cap}
@@ -771,16 +760,15 @@ const AgenticPage = () => {
           {Array.from({ length: 3 }).map((_, rep) => (
             <div key={rep} className="flex shrink-0">
               {[
-                'Report Writing',
-                'Slack Summaries',
-                'Lead Scoring',
-                'Image Tagging',
-                'Test Running',
-                'Deployment',
-                'Log Parsing',
-                'Invoice Processing',
-                'Meeting Notes',
-                'Sentiment Analysis',
+                'Moderation',
+                'Membership operations',
+                'Finance and records',
+                'Project administration',
+                'University liaison',
+                'Communications',
+                'Events',
+                'Research',
+                'Editing and media',
               ].map((cap) => (
                 <div
                   key={cap}
@@ -794,151 +782,6 @@ const AgenticPage = () => {
               ))}
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* ── LIVE AGENTS ��──────────────────────────────────────────────────── */}
-      <section
-        id="live"
-        className="border-t border-black/[0.06] px-6 py-32 md:px-12 lg:px-20"
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 items-center gap-20 lg:grid-cols-2">
-            <div>
-              <PixelIcon type="agents" size={40} />
-              <div className="mt-4">
-                <Tag>LIVE RIGHT NOW</Tag>
-              </div>
-              <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl lg:text-6xl">
-                {'Agents working\n24 / 7, autonomously.'}
-              </RevealText>
-              <p className="mt-6 max-w-sm text-base leading-relaxed text-black/40">
-                At any moment, thousands of agents are running tasks on behalf
-                of teams around the world — no human in the loop.
-              </p>
-              <div className="mt-10 flex items-end gap-2">
-                <LiveAgentCounter />
-                <span className="mb-1 text-sm tracking-wide text-black/30">
-                  agents active globally
-                </span>
-              </div>
-            </div>
-            <div className="relative">
-              <LiveAgentFeed />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── PRICING ───────────────────────────────────���────������─────────────── */}
-      <section
-        id="pricing"
-        className="border-t border-black/[0.06] px-6 py-32 md:px-12 lg:px-20"
-      >
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-16 flex flex-col items-center text-center">
-            <PixelIcon type="pricing" size={40} />
-            <div className="mt-4">
-              <Tag>PRICING</Tag>
-            </div>
-            <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-              Pay as your agents grow.
-            </RevealText>
-          </div>
-
-          <div
-            className="grid grid-cols-1 gap-3 md:grid-cols-3"
-            onMouseMove={handleMouse}
-          >
-            {[
-              {
-                delay: 0,
-                features: [
-                  '5 agents',
-                  '1,000 tasks/mo',
-                  'Community support',
-                  'Basic traces',
-                ],
-                name: 'Sandbox',
-                price: 'Free',
-                sub: 'Start experimenting',
-              },
-              {
-                delay: 80,
-                features: [
-                  '50 agents',
-                  '100K tasks/mo',
-                  'Priority support',
-                  'Full traces + replay',
-                  'Custom tools',
-                  'REST API',
-                ],
-                highlight: true,
-                name: 'Builder',
-                period: '/mo',
-                price: '$49',
-                sub: 'For teams shipping fast',
-              },
-              {
-                delay: 140,
-                features: [
-                  'Unlimited agents',
-                  'Unlimited tasks',
-                  'Dedicated infra',
-                  'SOC 2 / HIPAA',
-                  'SLA guarantees',
-                  'Custom contracts',
-                ],
-                name: 'Enterprise',
-                price: 'Custom',
-                sub: 'For orgs at scale',
-              },
-            ].map((plan) => (
-              <BentoCard
-                key={plan.name}
-                className={`flex flex-col p-8 ${plan.highlight ? 'border-black/20 bg-[#F0EEE8]' : ''}`}
-                delay={plan.delay}
-              >
-                <div className="mb-8">
-                  <div className="font-pixel mb-4 text-[11px] tracking-widest text-black/40">
-                    {plan.name}
-                  </div>
-                  <div className="mb-1 flex items-baseline gap-1">
-                    <span className="text-4xl font-light">{plan.price}</span>
-                    {plan.period && (
-                      <span className="text-sm text-black/40">
-                        {plan.period}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs tracking-wide text-black/35">
-                    {plan.sub}
-                  </p>
-                </div>
-                <ul className="mb-8 flex-1 space-y-3">
-                  {plan.features.map((f) => (
-                    <li
-                      key={f}
-                      className="flex items-center gap-3 text-sm text-black/55"
-                    >
-                      <div className="h-1 w-1 shrink-0 rounded-full bg-black/25" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  type="button"
-                  className={`w-full rounded-xl py-3 text-sm tracking-widest transition-all duration-200 ${
-                    plan.highlight
-                      ? 'bg-[#111] text-white hover:bg-[#333]'
-                      : 'border border-black/10 text-black/60 hover:border-black/25 hover:bg-black/[0.04] hover:text-black'
-                  }`}
-                >
-                  {plan.name === 'Enterprise' ? 'CONTACT SALES' : 'GET STARTED'}
-                </button>
-              </BentoCard>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -975,64 +818,61 @@ const AgenticPage = () => {
         />
         <div className="relative z-10 mx-auto max-w-2xl text-center">
           <h2 className="mb-6 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl lg:text-6xl">
-            Start building your
+            A clear path from
             <br />
-            agent workforce.
+            application to
+            <br />
+            meaningful first work.
           </h2>
-          <p className="mb-10 text-sm leading-relaxed text-black/45">
-            Join thousands of teams deploying AI agents that work around the
-            clock, across every timezone.
+          <p className="mb-8 text-sm leading-relaxed text-black/45">
+            Four weeks, one form, three evaluators at least. The status is
+            controlled by the Recruitment Panel or the Board, and an applicant
+            cannot change it directly.
           </p>
-          {submitted ? (
-            <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-600/20 bg-emerald-50 px-6 py-3 text-sm text-emerald-700">
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              You&apos;re on the list. We&apos;ll be in touch.
-            </div>
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                if (email) {
-                  setSubmitted(true)
-                }
-              }}
-              className="mx-auto flex max-w-md flex-col gap-2 sm:flex-row"
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <a
+              href={FORM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl bg-[#111] px-8 py-3 text-sm font-medium tracking-widest text-white transition-colors hover:bg-[#333]"
             >
-              <input
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="flex-1 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm text-[#111] transition-colors placeholder:text-black/25 focus:border-black/25 focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="rounded-xl bg-[#111] px-8 py-3 text-sm font-medium tracking-widest text-white transition-colors hover:bg-[#333]"
-              >
-                JOIN
-              </button>
-            </form>
-          )}
+              APPLY
+            </a>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="rounded-xl border border-black/10 bg-white px-8 py-3 text-sm font-medium tracking-widest text-[#111] transition-colors hover:border-black/25"
+            >
+              EMAIL US
+            </a>
+          </div>
+          <p className="mt-8 text-xs leading-relaxed text-black/35">
+            {CONTACT_EMAIL} is a transitional service mailbox, not an official
+            HCMIU address.
+          </p>
         </div>
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
       <footer className="border-t border-black/[0.06] px-6 py-10 md:px-12 lg:px-20">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row md:items-center">
-          <span className="font-pixel text-xs tracking-[0.25em] text-black/50">
-            AGENTIC
-          </span>
+          {/* The full lockup, mark over wordmark. There is room for it here,
+              which the nav bar does not have. */}
+          <Image
+            src="/brand/aris-logo.png"
+            alt="The Aris Club"
+            width={367}
+            height={280}
+            className="h-16 w-auto shrink-0"
+          />
 
-          {/* Nav sections */}
+          {/* Nav sections. Live and Pricing are gone with their sections. */}
           <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
             {[
-              { href: '#platform', label: 'Platform' },
-              { href: '#agents', label: 'Agents' },
-              { href: '#workflow', label: 'Workflow' },
-              { href: '#integrations', label: 'Integrations' },
-              { href: '#live', label: 'Live' },
-              { href: '#pricing', label: 'Pricing' },
+              { href: '#groups', label: 'Groups' },
+              { href: '#departments', label: 'Departments' },
+              { href: '#projects', label: 'Projects' },
+              { href: '#automation', label: 'Automation' },
+              { href: '#ownership', label: 'Your work' },
             ].map((l) => (
               <a
                 key={l.label}
@@ -1044,27 +884,36 @@ const AgenticPage = () => {
             ))}
           </div>
 
-          {/* Legal links */}
+          {/* Every one of these points somewhere that exists. The club has no
+              public GitHub organisation or Discord invite yet, so those links
+              are absent rather than left as href="#". */}
           <div className="flex items-center gap-6">
-            {[
-              { href: '#', label: 'Privacy' },
-              { href: '#', label: 'Terms' },
-              { href: '#', label: 'Docs' },
-              { href: '#', label: 'GitHub' },
-            ].map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                className="text-xs tracking-widest text-black/25 transition-colors hover:text-black/55"
-              >
-                {l.label}
-              </a>
-            ))}
+            <Link
+              href="/legal/community-terms"
+              className="text-xs tracking-widest text-black/25 transition-colors hover:text-black/55"
+            >
+              Terms
+            </Link>
+            <a
+              href={FORM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs tracking-widest text-black/25 transition-colors hover:text-black/55"
+            >
+              Apply
+            </a>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="text-xs tracking-widest text-black/25 transition-colors hover:text-black/55"
+            >
+              Contact
+            </a>
           </div>
         </div>
         <div className="mx-auto mt-8 max-w-6xl border-t border-black/[0.04] pt-6">
           <span className="text-xs text-black/20">
-            © 2026 Agentic. All rights reserved.
+            © 2026 The Aris Club. {CONTACT_EMAIL} is a transitional service
+            mailbox, not an official HCMIU address.
           </span>
         </div>
       </footer>
@@ -1072,4 +921,4 @@ const AgenticPage = () => {
   )
 }
 
-export default AgenticPage
+export default ArisPage

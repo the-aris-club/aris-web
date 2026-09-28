@@ -1,13 +1,17 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 
+// The club's own recruitment form, from recruitment-flow.md.
+const FORM_URL = 'https://forms.gle/RnSVePAY9JWeZsKn9'
+
 const NAV_LINKS = [
-  { href: '#platform', label: 'Platform' },
-  { href: '#agents', label: 'Agents' },
-  { href: '#workflow', label: 'Workflow' },
-  { href: '#integrations', label: 'Integrations' },
-  { href: '#pricing', label: 'Pricing' },
+  { href: '#groups', label: 'Groups' },
+  { href: '#departments', label: 'Departments' },
+  { href: '#projects', label: 'Projects' },
+  { href: '#automation', label: 'Automation' },
+  { href: '#ownership', label: 'Your work' },
 ]
 
 const NAV_STYLE = {
@@ -30,9 +34,16 @@ export const MobileNav = () => {
           className="flex items-center justify-between rounded-2xl border border-black/[0.06] px-5 py-3"
           style={NAV_STYLE}
         >
-          <span className="font-pixel text-xs tracking-[0.25em] text-black/70">
-            AGENTIC
-          </span>
+          {/* The mark rather than the full lockup: the stacked lockup is taller
+              than the bar, and at 24px the wordmark under it would be illegible. */}
+          <Image
+            src="/brand/aris-mark.png"
+            alt="The Aris Club"
+            width={132}
+            height={65}
+            priority
+            className="h-6 w-auto shrink-0"
+          />
 
           {/* Desktop links */}
           <div
@@ -51,13 +62,15 @@ export const MobileNav = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
+            <a
+              href={FORM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="hidden rounded-xl border border-black/10 px-4 py-2 text-[11px] tracking-wide text-black/60 transition-all duration-200 hover:border-black/20 hover:bg-black/[0.03] hover:text-black md:block"
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
             >
-              START BUILDING
-            </button>
+              APPLY
+            </a>
 
             {/* Burger — mobile only */}
             <button
@@ -113,13 +126,15 @@ export const MobileNav = () => {
               </a>
             ))}
             <div className="mt-1 px-2 pb-1">
-              <button
-                type="button"
-                className="w-full rounded-xl border border-black/10 px-4 py-2.5 text-[11px] tracking-wide text-black/60 transition-all duration-200 hover:border-black/20 hover:bg-black/[0.03] hover:text-black"
+              <a
+                href={FORM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full rounded-xl border border-black/10 px-4 py-2.5 text-center text-[11px] tracking-wide text-black/60 transition-all duration-200 hover:border-black/20 hover:bg-black/[0.03] hover:text-black"
                 style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               >
-                START BUILDING
-              </button>
+                APPLY
+              </a>
             </div>
           </div>
         </div>

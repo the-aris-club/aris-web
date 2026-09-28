@@ -1,8 +1,29 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
-const LETTERS = ['A', 'G', 'E', 'N', 'T', 'I', 'C']
+// The letters are traced out of the wordmark in aris-logo.png by
+// tools/build-brand-assets.py, not typed. No published typeface is close
+// enough to the drawn one, and a bitmap of them goes soft: the source
+// wordmark is 76px tall and this draws it near 370px. Vector is crisp at
+// either, and the four files together are under 2 KB.
+//
+// The widths include each letter's share of the drawn letterspacing, so these
+// butted together are the wordmark exactly. Do not add a gap here: the drawn
+// gaps are not even, and a single value restyles it.
+const LETTERS = [
+  { height: 76, src: '/brand/letters/a.svg', width: 123 },
+  { height: 76, src: '/brand/letters/r.svg', width: 108 },
+  { height: 76, src: '/brand/letters/i.svg', width: 34 },
+  { height: 76, src: '/brand/letters/s.svg', width: 103 },
+]
+
+// Rendered cap height. The four are 368px wide at a 76px cap, so the word is
+// 4.84x this. Capping on width as well as height keeps it inside any viewport:
+// when this resolves on vw the word comes to 92vw, and when it resolves on vh
+// that only happens past 1.37vh, which puts the word under 100vw.
+const CAP_HEIGHT = 'min(26vh, 19vw)'
 
 // ms between each letter appearing
 const LETTER_IN_STAGGER = 90
@@ -87,9 +108,10 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
         }}
       />
 
-      {/* AGENTIC letters */}
+      {/* Club wordmark, cut from the logo artwork. items-end puts the letters
+          on their shared baseline; the letterspace is inside the images. */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="flex" style={{ gap: '0.06em' }}>
+        <div className="flex items-end">
           {LETTERS.map((letter, i) => {
             const inDelay = i * LETTER_IN_STAGGER
             const outDelay = i * LETTER_OUT_STAGGER
@@ -110,21 +132,22 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
             }
 
             return (
-              <span
-                key={i}
-                className="font-sans leading-none font-bold text-[#111] select-none"
+              <Image
+                alt=""
+                height={letter.height}
+                key={letter.src}
+                src={letter.src}
                 style={{
                   filter: `blur(${blur}px)`,
-                  fontSize: `calc((100vw - 64px) / ${LETTERS.length})`,
-                  letterSpacing: '0.05em',
+                  height: CAP_HEIGHT,
                   opacity,
                   transform: `translateY(${translateY}px)`,
                   transition,
+                  width: 'auto',
                   willChange: 'opacity, filter, transform',
                 }}
-              >
-                {letter}
-              </span>
+                width={letter.width}
+              />
             )
           })}
         </div>
