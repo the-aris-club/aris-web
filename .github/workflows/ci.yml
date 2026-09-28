@@ -39,9 +39,12 @@ jobs:
         with:
           run_install: false
 
+      # Pinned to the same major as `engines.node` in package.json, which is
+      # also what Vercel builds with. This was 26, which meant CI validated a
+      # runtime nothing deployed on.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 26
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
