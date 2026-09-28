@@ -46,10 +46,12 @@ const BentoCard = ({
   children,
   className = '',
   delay = 0,
+  image,
 }: {
   children: React.ReactNode
   className?: string
   delay?: number
+  image?: string
 }) => {
   const { ref, inView } = useInView(0.1)
   return (
@@ -62,6 +64,19 @@ const BentoCard = ({
         transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms, border-color 0.3s ease, background-color 0.3s ease`,
       }}
     >
+      {/* Backdrop. The artwork is already faded to the page colour in the
+          region the text occupies, so it reads as part of the white card
+          rather than a picture sitting on it. Decorative: alt is empty. */}
+      {image && (
+        <Image
+          src={image}
+          alt=""
+          aria-hidden="true"
+          fill
+          sizes="(min-width: 768px) 25vw, 100vw"
+          className="pointer-events-none absolute inset-0 object-cover object-[70%_20%]"
+        />
+      )}
       {/* Hover glow spot */}
       <div
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
@@ -123,7 +138,12 @@ const ArisPage = () => {
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
       <section className="relative h-screen overflow-hidden">
-        {/* Banner — the club's own artwork, zooms in once intro is done */}
+        {/* Banner — the club's own artwork, zooms in once intro is done.
+            object-cover on a 16:9 image inside a portrait viewport shows only
+            the centre ~26%, which put the arm's shoulder behind the headline on
+            mobile. Anchoring to 20% below md shows the quiet left of the frame
+            and pushes the arm clear to the right; from md up the viewport is
+            roughly 16:9, the whole frame fits, and centring is correct. */}
         <Image
           src="/brand/aris-hero.webp"
           alt=""
@@ -131,7 +151,7 @@ const ArisPage = () => {
           fill
           priority
           sizes="100vw"
-          className="absolute inset-0 z-0 h-full w-full object-cover"
+          className="absolute inset-0 z-0 h-full w-full object-cover object-[20%_50%] md:object-center"
           style={{
             transform: videoReady ? 'scale(1.05)' : 'scale(0.85)',
             transition: 'transform 2s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -308,91 +328,103 @@ const ArisPage = () => {
             <BentoCard
               className="col-span-12 min-h-[200px] p-8 md:col-span-3"
               delay={120}
+              image="/brand/dept-01.webp"
             >
-              <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                </svg>
+              <div className="relative z-10">
+                <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                  </svg>
+                </div>
+                <h3 className="mb-2 text-lg font-light">Autonomous Systems</h3>
+                <p className="text-sm leading-relaxed text-black/45">
+                  Systems that decide and act under their own control.
+                </p>
               </div>
-              <h3 className="mb-2 text-lg font-light">Autonomous Systems</h3>
-              <p className="text-sm leading-relaxed text-black/45">
-                Systems that decide and act under their own control.
-              </p>
             </BentoCard>
 
             <BentoCard
               className="col-span-12 min-h-[200px] p-8 md:col-span-3"
               delay={160}
+              image="/brand/dept-02.webp"
             >
-              <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <path d="M8 10h8M8 14h5" />
-                </svg>
+              <div className="relative z-10">
+                <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M8 10h8M8 14h5" />
+                  </svg>
+                </div>
+                <h3 className="mb-2 text-lg font-light">Robotics</h3>
+                <p className="text-sm leading-relaxed text-black/45">
+                  Hardware you can put on a table and make move.
+                </p>
               </div>
-              <h3 className="mb-2 text-lg font-light">Robotics</h3>
-              <p className="text-sm leading-relaxed text-black/45">
-                Hardware you can put on a table and make move.
-              </p>
             </BentoCard>
 
             <BentoCard
               className="col-span-12 min-h-[200px] p-8 md:col-span-3"
               delay={200}
+              image="/brand/dept-03.webp"
             >
-              <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
+              <div className="relative z-10">
+                <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                </div>
+                <h3 className="mb-2 text-lg font-light">IoT</h3>
+                <p className="text-sm leading-relaxed text-black/45">
+                  Devices that report what they sense, and take instruction.
+                </p>
               </div>
-              <h3 className="mb-2 text-lg font-light">IoT</h3>
-              <p className="text-sm leading-relaxed text-black/45">
-                Devices that report what they sense, and take instruction.
-              </p>
             </BentoCard>
 
             <BentoCard
               className="col-span-12 min-h-[200px] p-8 md:col-span-3"
               delay={240}
+              image="/brand/dept-04.webp"
             >
-              <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <polyline points="16 18 22 12 16 6" />
-                  <polyline points="8 6 2 12 8 18" />
-                </svg>
+              <div className="relative z-10">
+                <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <polyline points="16 18 22 12 16 6" />
+                    <polyline points="8 6 2 12 8 18" />
+                  </svg>
+                </div>
+                <h3 className="mb-2 text-lg font-light">Software</h3>
+                <p className="text-sm leading-relaxed text-black/45">
+                  The part that holds the other three together.
+                </p>
               </div>
-              <h3 className="mb-2 text-lg font-light">Software</h3>
-              <p className="text-sm leading-relaxed text-black/45">
-                The part that holds the other three together.
-              </p>
             </BentoCard>
           </div>
         </div>
