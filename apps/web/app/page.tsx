@@ -64,13 +64,15 @@ const BentoCard = ({
         transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms, border-color 0.3s ease, background-color 0.3s ease`,
       }}
     >
-      {/* Backdrop. A card here measures about 279x208, a ratio of 1.34:1,
-          and the artwork is 16:9, so object-cover scales to the card's
-          height and crops the sides — there is no vertical slack, only
-          horizontal. The crop is anchored to the top right, which holds the
-          subject in the upper half and clear of the text. The artwork is
-          already faded to the page colour where the text sits, so it reads as
-          part of the white card rather than a picture on it. Decorative:
+      {/* Backdrop. The card's shape is not fixed: it measures 159x304 at the
+          md breakpoint and 279x208 above lg, a ratio of 0.52:1 at one end and
+          1.34:1 at the other. The artwork is 16:9 throughout, so no single
+          re-cut would fit that range — object-cover is what absorbs it, and
+          the anchor keeps the subject in the top right at every width.
+
+          The mask fades the artwork out toward the bottom. It is what makes a
+          tall, narrow card work: there the subject is near the middle of the
+          cropped frame and would otherwise sit under the text. Decorative:
           alt is empty. */}
       {image && (
         <Image
@@ -80,6 +82,12 @@ const BentoCard = ({
           fill
           sizes="(min-width: 768px) 25vw, 100vw"
           className="pointer-events-none absolute inset-0 object-cover object-top-right"
+          style={{
+            WebkitMaskImage:
+              'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.4) 22%, transparent 55%)',
+            maskImage:
+              'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.4) 22%, transparent 55%)',
+          }}
         />
       )}
       {/* Hover glow spot */}
