@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -78,6 +77,24 @@
   --font-sans: 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --font-pixel: 'Courier Prime', monospace;
+
+  /* The club's own palette. These three back bg-aris-canvas, text-aris-ink
+     and text-aris-blue, which the Community Terms layout and
+     mdx-components.tsx have always referenced — the tokens did not exist, so
+     those classes generated nothing and the Terms page rendered unstyled.
+
+     canvas and ink are the two values the landing page hardcodes as
+     bg-[#F5F4F0] and text-[#111]. blue is the navy from
+     tools/build-brand-assets.py, not the logo's bright #00A0F0 accent: that
+     one measures 2.6:1 against this canvas and fails AA as link text, where
+     the navy is 11.5:1. It stays a graphic colour in the mark.
+
+     Light only, like the rest of this file: nothing on the site ever sets a
+     .dark class, so a dark half here would be a second source of truth. */
+  --color-aris-canvas: #f5f4f0;
+  --color-aris-ink: #111111;
+  --color-aris-blue: #003070;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -125,92 +142,19 @@
   }
 }
 
-/* Glitch Animation */
-@keyframes glitch-shift {
-  0%,
-  100% {
-    transform: translate(0);
-  }
-  33% {
-    transform: translate(-2px, 2px);
-  }
-  66% {
-    transform: translate(2px, -2px);
-  }
-}
+/* Below-the-fold sections. The page is roughly nine viewport-heights of
+   static markup with twenty-odd images, and all of it was laid out and painted
+   on first render whether or not it would be seen. content-visibility skips
+   that work until the section approaches the viewport.
 
-@keyframes glitch-opacity {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-.glitch-layer {
-  animation:
-    glitch-shift 5s infinite ease-in-out,
-    glitch-opacity 3s infinite ease-in-out;
-}
-
-/* Word reveal — blur + translateY */
-@keyframes word-reveal {
-  0% {
-    opacity: 0;
-    filter: blur(24px);
-    transform: translateY(24px);
-  }
-  60% {
-    filter: blur(3px);
-    opacity: 0.85;
-  }
-  100% {
-    opacity: 1;
-    filter: blur(0px);
-    transform: translateY(0px);
-  }
-}
-
-.word-reveal {
-  opacity: 0;
-  animation: word-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
-}
-
-/* Fade up for sections */
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Bento shimmer on hover */
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(200%);
-  }
-}
-
-/* Pulse dot */
-@keyframes pulse-dot {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(0.8);
-  }
+   contain-intrinsic-size is what keeps the scrollbar honest: without it a
+   skipped section measures as zero height, so the page grows as you scroll and
+   shrinks again when you scroll back up. The `auto` keyword lets the browser
+   remember the real measurement once it has one, and the 900px is only the
+   first guess. */
+.section-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
 }
 
 /* Smooth scrolling */

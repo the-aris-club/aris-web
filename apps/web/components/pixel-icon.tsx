@@ -255,9 +255,43 @@ const drawPricing = (ctx: CanvasRenderingContext2D, W: number, t: number) => {
 }
 
 // ── Canvas wrapper ────────────────────────────────────────────────────────────
+// Six of these run on the page, one per section heading, and the section that
+// repeats a heading runs two. They were each driving a 60fps loop from mount
+// until the tab closed, whether or not anyone was looking at them.
+//
+// Two things stop that. A single shared observer counts how many icons are on
+// screen and the loop runs only while that count is above zero, so scrolling to
+// the footer costs nothing. And prefers-reduced-motion draws one frame and
+// stops, which is what the setting is asking for.
+
+// Which canvases are on screen right now. A Set keyed on the element, not a
+// running count: an observer's first callback reports isIntersecting:false for
+// every target that is off screen, and a counter would go negative by one per
+// icon at mount and never climb back to zero.
+const onScreen = new Set<Element>()
+const screenListeners = new Set<() => void>()
+let screenObserver: IntersectionObserver | null = null
+
+// Built on first use, not at module scope: this module is evaluated during
+// prerender, where there is no IntersectionObserver to construct.
+const getScreenObserver = () => {
+  screenObserver ??= new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        onScreen.add(entry.target)
+      } else {
+        onScreen.delete(entry.target)
+      }
+    }
+    for (const listener of screenListeners) {
+      listener()
+    }
+  })
+  return screenObserver
+}
+
 export const PixelIcon = ({ type, size = 40 }: PixelIconProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const rafRef = useRef<number>(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -269,15 +303,21 @@ export const PixelIcon = ({ type, size = 40 }: PixelIconProps) => {
       return
     }
 
-    const draw = (t: number) => {
-      const dpr = window.devicePixelRatio || 1
-      canvas.width = size * dpr
-      canvas.height = size * dpr
-      ctx.scale(dpr, dpr)
-      ctx.clearRect(0, 0, size, size)
+    // Size the backing store once. Assigning canvas.width reallocates it and
+    // resets the whole 2D context, so doing this inside the draw loop
+    // reallocated the store sixty times a second and re-applied the DPR
+    // transform on every frame to compensate.
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = size * dpr
+    canvas.height = size * dpr
+    ctx.scale(dpr, dpr)
+    ctx.imageSmoothingEnabled = false
 
-      // Disable anti-aliasing for crisp pixels
-      ctx.imageSmoothingEnabled = false
+    // 0 means "not running", which is how start and stop stay idempotent.
+    let raf = 0
+
+    const draw = (t: number) => {
+      ctx.clearRect(0, 0, size, size)
 
       switch (type) {
         case 'platform': {
@@ -305,11 +345,45 @@ export const PixelIcon = ({ type, size = 40 }: PixelIconProps) => {
         }
       }
 
-      rafRef.current = requestAnimationFrame(draw)
+      raf = requestAnimationFrame(draw)
     }
 
-    rafRef.current = requestAnimationFrame(draw)
-    return () => cancelAnimationFrame(rafRef.current)
+    const stop = () => {
+      cancelAnimationFrame(raf)
+      raf = 0
+    }
+    const start = () => {
+      if (raf === 0) {
+        raf = requestAnimationFrame(draw)
+      }
+    }
+
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches
+
+    if (reducedMotion) {
+      // One frame, no loop. The canvas is still aria-hidden by its surroundings
+      // and carries no information of its own.
+      draw(0)
+      return
+    }
+
+    // This icon runs only while it is itself on screen. The listener is how it
+    // learns that some other icon's visibility changed the shared picture.
+    const sync = () => (onScreen.has(canvas) ? start() : stop())
+    const observer = getScreenObserver()
+    screenListeners.add(sync)
+    observer.observe(canvas)
+    sync()
+
+    return () => {
+      screenListeners.delete(sync)
+      // unobserve fires no callback, so the entry has to go by hand.
+      onScreen.delete(canvas)
+      observer.unobserve(canvas)
+      stop()
+    }
   }, [type, size])
 
   return (
