@@ -23,9 +23,10 @@ import { CONTACT_EMAIL, FORM_URL, MAILBOX_NOTE } from '@/lib/club'
 // transitional and is not an official HCMIU address, which the page says out
 // loud in both places it appears rather than implying otherwise.
 
-// ─── Footer section nav ───────────────────────────────────────────────────────
-// Same-page anchors, so they only work here and are passed to the footer rather
-// than built into it. Live and Pricing are gone with their sections.
+// ─── Section nav ──────────────────────────────────────────────────────────────
+// Same-page anchors, so they only work here and are passed down to the nav bar
+// and the footer rather than built into either. Both were carrying their own
+// copy of this list. Live and Pricing are gone with their sections.
 const SECTION_LINKS = [
   { href: '#groups', label: 'Groups' },
   { href: '#departments', label: 'Departments' },
@@ -64,7 +65,7 @@ const ArisPage = () => (
     <Hero />
 
     {/* ── STICKY NAV ────────────────────────────────────────────────────── */}
-    <MobileNav />
+    <MobileNav sectionLinks={SECTION_LINKS} />
 
     {/* ── PLATFORM OVERVIEW (bento) ──────────────────────────────────────── */}
     <section className="section-defer px-6 py-32 md:px-12 lg:px-20" id="groups">

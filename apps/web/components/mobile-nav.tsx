@@ -5,14 +5,6 @@ import { useState } from 'react'
 
 import { FORM_URL } from '@/lib/club'
 
-const NAV_LINKS = [
-  { href: '#groups', label: 'Groups' },
-  { href: '#departments', label: 'Departments' },
-  { href: '#projects', label: 'Projects' },
-  { href: '#automation', label: 'Automation' },
-  { href: '#ownership', label: 'Your work' },
-]
-
 const NAV_STYLE = {
   WebkitBackdropFilter: 'blur(16px)',
   backdropFilter: 'blur(16px)',
@@ -20,7 +12,20 @@ const NAV_STYLE = {
   boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.06)',
 } as const
 
-export const MobileNav = () => {
+/**
+ * The bar's section links, passed in rather than declared here, for the reason
+ * Footer documents: these are same-page anchors with no leading slash, and a
+ * page with no such sections has nowhere for them to go. Only the landing page
+ * renders this bar today, so this is not yet broken — it is declared in two
+ * files and the two copies can drift, which is how the labels were ever able to
+ * disagree. Same shape as Footer's `sectionLinks`, so the landing page passes
+ * one list to both.
+ */
+interface MobileNavProps {
+  sectionLinks: { href: string; label: string }[]
+}
+
+export const MobileNav = ({ sectionLinks }: MobileNavProps) => {
   const [open, setOpen] = useState(false)
 
   const close = () => setOpen(false)
@@ -52,7 +57,7 @@ export const MobileNav = () => {
             className="hidden items-center gap-7 md:flex"
             style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
           >
-            {NAV_LINKS.map((l) => (
+            {sectionLinks.map((l) => (
               <a
                 key={l.label}
                 href={l.href}
@@ -116,7 +121,7 @@ export const MobileNav = () => {
             className="flex flex-col rounded-2xl border border-black/[0.06] px-2 py-2"
             style={NAV_STYLE}
           >
-            {NAV_LINKS.map((l) => (
+            {sectionLinks.map((l) => (
               <a
                 key={l.label}
                 href={l.href}
