@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+import { Tag } from '@/components/tag'
+
 // The four technical departments, in the order the server channels declare
 // them (server-orientation.md). Exactly four: Operations and Development is a
 // capability pool and gets no card here.
@@ -41,12 +43,6 @@ const STICKY_STEP = 16
 const SCALE_STEP = 0.04
 // px pushed down per card stacked on top
 const OFFSET_STEP = 8
-
-const Tag = ({ children }: { children: React.ReactNode }) => (
-  <span className="inline-flex items-center rounded-full bg-black/[0.04] px-3 py-1 font-sans text-[11px] tracking-widest text-black/40">
-    {children}
-  </span>
-)
 
 export const StackingAgentCards = () => {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([])

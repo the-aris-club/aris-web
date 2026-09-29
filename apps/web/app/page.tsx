@@ -1,13 +1,16 @@
 import Image from 'next/image'
-import type { ReactNode } from 'react'
 
-import { BentoCard } from '@/components/bento-card'
+import { BentoCard, DepartmentArtwork } from '@/components/bento-card'
 import Footer from '@/components/footer'
 import { Hero } from '@/components/hero'
 import { MobileNav } from '@/components/mobile-nav'
-import { PixelIcon } from '@/components/pixel-icon'
 import { RevealText } from '@/components/reveal-text'
+import {
+  SectionHeading,
+  SplitSectionHeading,
+} from '@/components/section-heading'
 import { StackingAgentCards } from '@/components/stacking-agent-cards'
+import { Tag } from '@/components/tag'
 import { CONTACT_EMAIL, FORM_URL, MAILBOX_NOTE } from '@/lib/club'
 
 // A server component. Everything below the hero is static markup, so it is
@@ -15,21 +18,15 @@ import { CONTACT_EMAIL, FORM_URL, MAILBOX_NOTE } from '@/lib/club'
 // islands that genuinely need it — the hero reveal, the mobile nav, the bento
 // reveals and the stacking cards — are client components.
 
-// ─── Pill tag ─────────────────────────────────────────────────────────────────
-const Tag = ({ children }: { children: ReactNode }) => (
-  <span className="inline-flex items-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-1 font-sans text-[11px] tracking-widest text-black/40">
-    {children}
-  </span>
-)
-
 // ─── Club contact ─────────────────────────────────────────────────────────────
 // FORM_URL, CONTACT_EMAIL and MAILBOX_NOTE come from lib/club. The mailbox is
 // transitional and is not an official HCMIU address, which the page says out
 // loud in both places it appears rather than implying otherwise.
 
-// ─── Footer section nav ───────────────────────────────────────────────────────
-// Same-page anchors, so they only work here and are passed to the footer rather
-// than built into it. Live and Pricing are gone with their sections.
+// ─── Section nav ──────────────────────────────────────────────────────────────
+// Same-page anchors, so they only work here and are passed down to the nav bar
+// and the footer rather than built into either. Both were carrying their own
+// copy of this list. Live and Pricing are gone with their sections.
 const SECTION_LINKS = [
   { href: '#groups', label: 'Groups' },
   { href: '#departments', label: 'Departments' },
@@ -68,57 +65,57 @@ const ArisPage = () => (
     <Hero />
 
     {/* ── STICKY NAV ────────────────────────────────────────────────────── */}
-    <MobileNav />
+    <MobileNav sectionLinks={SECTION_LINKS} />
 
     {/* ── PLATFORM OVERVIEW (bento) ──────────────────────────────────────── */}
     <section className="section-defer px-6 py-32 md:px-12 lg:px-20" id="groups">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-16">
-          <PixelIcon type="platform" size={40} />
-          <div className="mt-4">
-            <Tag>GROUPS</Tag>
-          </div>
-          <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl lg:text-6xl">
-            {'Four departments.\nOne capability group.'}
-          </RevealText>
-        </div>
+        <SectionHeading
+          icon="platform"
+          tag="GROUPS"
+          title={'Four departments.\nOne capability group.'}
+        />
 
         <div className="grid-rows-auto grid grid-cols-12 gap-3">
           {/* Big left card — full width now that multi-agent is removed */}
           <BentoCard
+            backdrop={
+              <>
+                {/* Arc background image — always fills container, objects pushed to bottom third */}
+                <Image
+                  src="/images/arc.webp"
+                  alt=""
+                  aria-hidden="true"
+                  fill
+                  sizes="(min-width: 1024px) 1152px, 100vw"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  style={{ objectPosition: 'center 70%' }}
+                />
+                {/* Progressive blur layer — blurs from 45% downward */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    WebkitBackdropFilter: 'blur(16px)',
+                    WebkitMaskImage:
+                      'linear-gradient(to bottom, transparent 45%, black 100%)',
+                    backdropFilter: 'blur(16px)',
+                    maskImage:
+                      'linear-gradient(to bottom, transparent 45%, black 100%)',
+                  }}
+                />
+                {/* Fade-to-background gradient — matches site bg color #f5f4f0 */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      'linear-gradient(to bottom, transparent 35%, rgba(245,244,240,0.3) 50%, rgba(245,244,240,0.75) 65%, rgba(245,244,240,0.95) 80%, rgb(245,244,240) 100%)',
+                  }}
+                />
+              </>
+            }
             className="relative col-span-12 flex min-h-[200px] flex-col justify-between overflow-hidden p-8"
             delay={0}
           >
-            {/* Arc background image — always fills container, objects pushed to bottom third */}
-            <Image
-              src="/images/arc.webp"
-              alt=""
-              aria-hidden="true"
-              fill
-              sizes="(min-width: 1024px) 1152px, 100vw"
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{ objectPosition: 'center 70%' }}
-            />
-            {/* Progressive blur layer — blurs from 45% downward */}
-            <div
-              className="absolute inset-0"
-              style={{
-                WebkitBackdropFilter: 'blur(16px)',
-                WebkitMaskImage:
-                  'linear-gradient(to bottom, transparent 45%, black 100%)',
-                backdropFilter: 'blur(16px)',
-                maskImage:
-                  'linear-gradient(to bottom, transparent 45%, black 100%)',
-              }}
-            />
-            {/* Fade-to-background gradient — matches site bg color #f5f4f0 */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  'linear-gradient(to bottom, transparent 35%, rgba(245,244,240,0.3) 50%, rgba(245,244,240,0.75) 65%, rgba(245,244,240,0.95) 80%, rgb(245,244,240) 100%)',
-              }}
-            />
             {/* Content */}
             <div className="relative z-10">
               <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 bg-white/60">
@@ -153,8 +150,9 @@ const ArisPage = () => (
           <BentoCard
             className="col-span-12 min-h-[200px] p-8 md:col-span-3"
             delay={120}
-            image="/brand/dept-01.webp"
           >
+            <DepartmentArtwork src="/brand/dept-01.webp" />
+
             <div className="relative z-10">
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
                 <svg
@@ -178,8 +176,9 @@ const ArisPage = () => (
           <BentoCard
             className="col-span-12 min-h-[200px] p-8 md:col-span-3"
             delay={160}
-            image="/brand/dept-02.webp"
           >
+            <DepartmentArtwork src="/brand/dept-02.webp" />
+
             <div className="relative z-10">
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
                 <svg
@@ -204,8 +203,9 @@ const ArisPage = () => (
           <BentoCard
             className="col-span-12 min-h-[200px] p-8 md:col-span-3"
             delay={200}
-            image="/brand/dept-03.webp"
           >
+            <DepartmentArtwork src="/brand/dept-03.webp" />
+
             <div className="relative z-10">
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
                 <svg
@@ -229,8 +229,9 @@ const ArisPage = () => (
           <BentoCard
             className="col-span-12 min-h-[200px] p-8 md:col-span-3"
             delay={240}
-            image="/brand/dept-04.webp"
           >
+            <DepartmentArtwork src="/brand/dept-04.webp" />
+
             <div className="relative z-10">
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
                 <svg
@@ -261,21 +262,12 @@ const ArisPage = () => (
       id="departments"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="mb-16 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <div>
-            <PixelIcon type="agents" size={40} />
-            <div className="mt-4">
-              <Tag>DEPARTMENTS</Tag>
-            </div>
-            <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-              {'Pick the one you\nwant to get good at.'}
-            </RevealText>
-          </div>
-          <p className="max-w-xs text-sm leading-relaxed text-black/45">
-            A member has one primary department and may support another with an
-            explicit assignment.
-          </p>
-        </div>
+        <SplitSectionHeading
+          aside="A member has one primary department and may support another with an explicit assignment."
+          icon="agents"
+          tag="DEPARTMENTS"
+          title={'Pick the one you\nwant to get good at.'}
+        />
 
         <StackingAgentCards />
       </div>
@@ -287,19 +279,12 @@ const ArisPage = () => (
       id="projects"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="mb-16">
-          <PixelIcon type="workflow" size={40} />
-          <div className="mt-4">
-            <Tag>PROJECTS</Tag>
-          </div>
-          <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-            {'Five things every\nproject must name.'}
-          </RevealText>
-          <p className="mt-6 max-w-xl text-sm leading-relaxed text-black/45">
-            Quoted from Community Terms §11. A Discord message is not one of the
-            five: a project is a formal record, not a conversation.
-          </p>
-        </div>
+        <SectionHeading
+          icon="workflow"
+          lede="Quoted from Community Terms §11. A Discord message is not one of the five: a project is a formal record, not a conversation."
+          tag="PROJECTS"
+          title={'Five things every\nproject must name.'}
+        />
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
           {[
@@ -361,21 +346,12 @@ const ArisPage = () => (
       id="ownership"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="mb-16 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <div>
-            <PixelIcon type="integrations" size={40} />
-            <div className="mt-4">
-              <Tag>YOUR WORK</Tag>
-            </div>
-            <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-              {'You keep what\nyou build.'}
-            </RevealText>
-          </div>
-          <p className="max-w-xs text-sm leading-relaxed text-black/45">
-            A member keeps ownership of work they create unless a separate
-            written agreement says otherwise.
-          </p>
-        </div>
+        <SplitSectionHeading
+          aside="A member keeps ownership of work they create unless a separate written agreement says otherwise."
+          icon="integrations"
+          tag="YOUR WORK"
+          title={'You keep what\nyou build.'}
+        />
 
         {/* Cards sit in normal flow, never absolute. An earlier revision
             positioned this column over the image and overflow-hidden cut the
@@ -460,20 +436,12 @@ const ArisPage = () => (
       id="automation"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="mb-16">
-          <PixelIcon type="platform" size={40} />
-          <div className="mt-4">
-            <Tag>AUTOMATION</Tag>
-          </div>
-          <RevealText className="mt-5 text-4xl leading-[1.05] font-light tracking-tight md:text-5xl">
-            {'What a bot\nmay not decide.'}
-          </RevealText>
-          <p className="mt-6 max-w-xl text-sm leading-relaxed text-black/45">
-            AI may assist with drafting, questions, summaries, translation,
-            search, data-quality checks and routine reminders. Eight decisions
-            are never one of them.
-          </p>
-        </div>
+        <SectionHeading
+          icon="platform"
+          lede="AI may assist with drafting, questions, summaries, translation, search, data-quality checks and routine reminders. Eight decisions are never one of them."
+          tag="AUTOMATION"
+          title={'What a bot\nmay not decide.'}
+        />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Left — the eight decisions reserved to people, §9 */}
