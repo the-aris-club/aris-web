@@ -5,7 +5,10 @@ import { useEffect, useRef } from 'react'
 // Each icon is a 12×12 pixel grid animated at 60fps with RAF
 // Colors are black at varying opacity to match the light theme
 
-type IconType = 'platform' | 'agents' | 'workflow' | 'integrations' | 'pricing'
+// One entry per section heading on the page. The pricing section was removed
+// from the site, and the icon outlived it: nothing could name it any more
+// except the type, which is why it survived as long as it did.
+type IconType = 'platform' | 'agents' | 'workflow' | 'integrations'
 
 interface PixelIconProps {
   type: IconType
@@ -224,36 +227,6 @@ const drawIntegrations = (
   }
 }
 
-// ── Pricing icon: stacked bar chart growing ───────────────────────────────────
-const drawPricing = (ctx: CanvasRenderingContext2D, W: number, t: number) => {
-  const ps = Math.floor(W / 12)
-  const bars = 3
-  const bw = ps * 2
-  const gap = ps
-  const total = bars * bw + (bars - 1) * gap
-  const offX = Math.floor((W - total) / 2)
-  const maxH = W * 0.7
-
-  const heights = [0.45, 0.75, 0.55]
-  const wave = Math.sin(t * 0.0015) * 0.12
-
-  for (const [i, h] of heights.entries()) {
-    const animated = Math.max(0.1, h + wave * (i % 2 === 0 ? 1 : -1))
-    const bh = animated * maxH
-    const x = offX + i * (bw + gap)
-    const y = W - bh - ps
-
-    // Bar body (pixelated — fill row by row)
-    const rowCount = Math.floor(bh / ps)
-    for (let row = 0; row < rowCount; row += 1) {
-      const progress = 1 - row / rowCount
-      const alpha = 0.15 + progress * 0.7
-      ctx.fillStyle = `rgba(0,0,0,${alpha})`
-      ctx.fillRect(x, y + row * ps, bw, ps - 1)
-    }
-  }
-}
-
 // ── Canvas wrapper ────────────────────────────────────────────────────────────
 // Six of these run on the page, one per section heading, and the section that
 // repeats a heading runs two. They were each driving a 60fps loop from mount
@@ -334,10 +307,6 @@ export const PixelIcon = ({ type, size = 40 }: PixelIconProps) => {
         }
         case 'integrations': {
           drawIntegrations(ctx, size, t)
-          break
-        }
-        case 'pricing': {
-          drawPricing(ctx, size, t)
           break
         }
         default: {
