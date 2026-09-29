@@ -10,16 +10,52 @@ import { useReveal } from '@/lib/use-reveal'
 // on mobile, so 10% is a fraction that a card clears almost immediately.
 const REVEAL_THRESHOLD = 0.1
 
+/**
+ * The department artwork, in the crop that suits a three-column card. The card's
+ * shape is not fixed: it measures 159x304 at the md breakpoint and 279x208
+ * above lg, a ratio of 0.52:1 at one end and 1.34:1 at the other. The artwork
+ * is 16:9 throughout, so no single re-cut would fit that range — object-cover is
+ * what absorbs it, and the anchor keeps the subject in the top right at every
+ * width.
+ *
+ * The mask fades the artwork out toward the bottom. It is what makes a tall,
+ * narrow card work: there the subject is near the middle of the cropped frame
+ * and would otherwise sit under the text. Decorative: alt is empty.
+ *
+ * A component rather than a card prop. The card took an `image` string and owned
+ * the whole crop on the card's behalf, so the one card whose artwork wanted a
+ * different anchor — Operations and Development, which is 1152 wide across
+ * twelve columns — had no way to ask and built its own image by hand. A card
+ * takes a node here, and picks this one when the default crop is right.
+ */
+export const DepartmentArtwork = ({ src }: { src: string }) => (
+  <Image
+    alt=""
+    aria-hidden="true"
+    className="pointer-events-none absolute inset-0 object-cover object-top-right"
+    fill
+    sizes="(min-width: 768px) 25vw, 100vw"
+    src={src}
+    style={{
+      WebkitMaskImage:
+        'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.4) 22%, transparent 55%)',
+      maskImage:
+        'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.4) 22%, transparent 55%)',
+    }}
+  />
+)
+
 export const BentoCard = ({
+  backdrop,
   children,
   className = '',
   delay = 0,
-  image,
 }: {
+  /** Decorative artwork behind the content, under the hover glow. */
+  backdrop?: ReactNode
   children: ReactNode
   className?: string
   delay?: number
-  image?: string
 }) => {
   const { inView, ref } = useReveal<HTMLDivElement>(REVEAL_THRESHOLD)
 
@@ -69,32 +105,7 @@ export const BentoCard = ({
         transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms, border-color 0.3s ease, background-color 0.3s ease`,
       }}
     >
-      {/* Backdrop. The card's shape is not fixed: it measures 159x304 at the
-          md breakpoint and 279x208 above lg, a ratio of 0.52:1 at one end and
-          1.34:1 at the other. The artwork is 16:9 throughout, so no single
-          re-cut would fit that range — object-cover is what absorbs it, and
-          the anchor keeps the subject in the top right at every width.
-
-          The mask fades the artwork out toward the bottom. It is what makes a
-          tall, narrow card work: there the subject is near the middle of the
-          cropped frame and would otherwise sit under the text. Decorative:
-          alt is empty. */}
-      {image ? (
-        <Image
-          src={image}
-          alt=""
-          aria-hidden="true"
-          fill
-          sizes="(min-width: 768px) 25vw, 100vw"
-          className="pointer-events-none absolute inset-0 object-cover object-top-right"
-          style={{
-            WebkitMaskImage:
-              'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.4) 22%, transparent 55%)',
-            maskImage:
-              'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.4) 22%, transparent 55%)',
-          }}
-        />
-      ) : null}
+      {backdrop}
       {/* Hover glow spot */}
       <div
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"

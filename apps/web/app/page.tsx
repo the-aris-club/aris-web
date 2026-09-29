@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { BentoCard } from '@/components/bento-card'
+import { BentoCard, DepartmentArtwork } from '@/components/bento-card'
 import Footer from '@/components/footer'
 import { Hero } from '@/components/hero'
 import { MobileNav } from '@/components/mobile-nav'
@@ -79,39 +79,43 @@ const ArisPage = () => (
         <div className="grid-rows-auto grid grid-cols-12 gap-3">
           {/* Big left card — full width now that multi-agent is removed */}
           <BentoCard
+            backdrop={
+              <>
+                {/* Arc background image — always fills container, objects pushed to bottom third */}
+                <Image
+                  src="/images/arc.webp"
+                  alt=""
+                  aria-hidden="true"
+                  fill
+                  sizes="(min-width: 1024px) 1152px, 100vw"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  style={{ objectPosition: 'center 70%' }}
+                />
+                {/* Progressive blur layer — blurs from 45% downward */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    WebkitBackdropFilter: 'blur(16px)',
+                    WebkitMaskImage:
+                      'linear-gradient(to bottom, transparent 45%, black 100%)',
+                    backdropFilter: 'blur(16px)',
+                    maskImage:
+                      'linear-gradient(to bottom, transparent 45%, black 100%)',
+                  }}
+                />
+                {/* Fade-to-background gradient — matches site bg color #f5f4f0 */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      'linear-gradient(to bottom, transparent 35%, rgba(245,244,240,0.3) 50%, rgba(245,244,240,0.75) 65%, rgba(245,244,240,0.95) 80%, rgb(245,244,240) 100%)',
+                  }}
+                />
+              </>
+            }
             className="relative col-span-12 flex min-h-[200px] flex-col justify-between overflow-hidden p-8"
             delay={0}
           >
-            {/* Arc background image — always fills container, objects pushed to bottom third */}
-            <Image
-              src="/images/arc.webp"
-              alt=""
-              aria-hidden="true"
-              fill
-              sizes="(min-width: 1024px) 1152px, 100vw"
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{ objectPosition: 'center 70%' }}
-            />
-            {/* Progressive blur layer — blurs from 45% downward */}
-            <div
-              className="absolute inset-0"
-              style={{
-                WebkitBackdropFilter: 'blur(16px)',
-                WebkitMaskImage:
-                  'linear-gradient(to bottom, transparent 45%, black 100%)',
-                backdropFilter: 'blur(16px)',
-                maskImage:
-                  'linear-gradient(to bottom, transparent 45%, black 100%)',
-              }}
-            />
-            {/* Fade-to-background gradient — matches site bg color #f5f4f0 */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  'linear-gradient(to bottom, transparent 35%, rgba(245,244,240,0.3) 50%, rgba(245,244,240,0.75) 65%, rgba(245,244,240,0.95) 80%, rgb(245,244,240) 100%)',
-              }}
-            />
             {/* Content */}
             <div className="relative z-10">
               <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 bg-white/60">
@@ -146,8 +150,9 @@ const ArisPage = () => (
           <BentoCard
             className="col-span-12 min-h-[200px] p-8 md:col-span-3"
             delay={120}
-            image="/brand/dept-01.webp"
           >
+            <DepartmentArtwork src="/brand/dept-01.webp" />
+
             <div className="relative z-10">
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
                 <svg
@@ -171,8 +176,9 @@ const ArisPage = () => (
           <BentoCard
             className="col-span-12 min-h-[200px] p-8 md:col-span-3"
             delay={160}
-            image="/brand/dept-02.webp"
           >
+            <DepartmentArtwork src="/brand/dept-02.webp" />
+
             <div className="relative z-10">
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
                 <svg
@@ -197,8 +203,9 @@ const ArisPage = () => (
           <BentoCard
             className="col-span-12 min-h-[200px] p-8 md:col-span-3"
             delay={200}
-            image="/brand/dept-03.webp"
           >
+            <DepartmentArtwork src="/brand/dept-03.webp" />
+
             <div className="relative z-10">
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
                 <svg
@@ -222,8 +229,9 @@ const ArisPage = () => (
           <BentoCard
             className="col-span-12 min-h-[200px] p-8 md:col-span-3"
             delay={240}
-            image="/brand/dept-04.webp"
           >
+            <DepartmentArtwork src="/brand/dept-04.webp" />
+
             <div className="relative z-10">
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-black/10">
                 <svg
