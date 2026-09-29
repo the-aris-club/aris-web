@@ -3,8 +3,7 @@
 import Image from 'next/image'
 import { useState } from 'react'
 
-// The club's own recruitment form, from recruitment-flow.md.
-const FORM_URL = 'https://forms.gle/RnSVePAY9JWeZsKn9'
+import { FORM_URL } from '@/lib/club'
 
 const NAV_LINKS = [
   { href: '#groups', label: 'Groups' },
@@ -35,12 +34,15 @@ export const MobileNav = () => {
           style={NAV_STYLE}
         >
           {/* The mark rather than the full lockup: the stacked lockup is taller
-              than the bar, and at 24px the wordmark under it would be illegible. */}
+              than the bar, and at 24px the wordmark under it would be illegible.
+              The intrinsic size is the mark's own 315x176. The numbers this used
+              to declare were a different crop's, and they set the layout box the
+              image occupies before it decodes. */}
           <Image
-            src="/brand/aris-mark.png"
+            src="/brand/aris-mark.webp"
             alt="The Aris Club"
-            width={132}
-            height={65}
+            width={315}
+            height={176}
             priority
             className="h-6 w-auto shrink-0"
           />

@@ -1,5 +1,3 @@
-'use client'
-
 import { components } from '@/mdx-components'
 
 import Terms from './terms.mdx'
@@ -26,7 +24,11 @@ import Terms from './terms.mdx'
  * - a `mdx.config.js` in apps/web, not found from the configured turbopack root
  *   which is two directories up
  *
- * The page still server-renders, so the whole text is in the initial HTML.
+ * The page is a server component. It carries no 'use client' directive and uses
+ * no hooks: the component map is a module of plain function components and the
+ * document is static MDX. The directive that used to sit at the top of this
+ * file did nothing except opt the whole page out of the server, which is the
+ * opposite of what the note above it claimed.
  */
 const CommunityTermsPage = () => <Terms components={components} />
 

@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import type { Ref } from 'react'
+
+import { useReveal } from '@/lib/use-reveal'
 
 // Splits text into words and reveals each with staggered opacity+blur+translateY
 // matching the ARIS intro animation style.
@@ -26,27 +27,9 @@ export const RevealText = ({
   delay?: number
   threshold?: number
 }) => {
-  const ref = useRef<HTMLElement>(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) {
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true)
-          observer.disconnect()
-        }
-      },
-      { threshold }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [threshold])
+  // The observer is shared with every other reveal on the page, keyed by
+  // threshold, rather than one native observer per heading.
+  const { inView: visible, ref } = useReveal<HTMLElement>(threshold)
 
   // Split on spaces but preserve line breaks (rendered via <br />)
   const lines = children.split('\n')

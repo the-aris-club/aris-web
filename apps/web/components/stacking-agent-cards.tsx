@@ -54,7 +54,15 @@ export const StackingAgentCards = () => {
   const [depth, setDepth] = useState<number[]>(DEPARTMENTS.map(() => 0))
 
   useEffect(() => {
-    const onScroll = () => {
+    // Measured on scroll, so the work is coalesced into one frame and then
+    // thrown away when nothing moved. The previous version wrote a fresh array
+    // on every scroll event, and a new array identity is a new render: four
+    // cards re-rendered on every tick of the scroll for the whole section,
+    // including the long stretches where the stack depth had not changed at all.
+    let frame = 0
+
+    const measure = () => {
+      frame = 0
       const nextDepth = DEPARTMENTS.map((_, i) => {
         // Count how many cards j > i are currently in sticky position (i.e. have scrolled past card i)
         let count = 0
@@ -72,12 +80,24 @@ export const StackingAgentCards = () => {
         }
         return count
       })
-      setDepth(nextDepth)
+
+      setDepth((prev) =>
+        prev.every((d, i) => d === nextDepth[i]) ? prev : nextDepth
+      )
+    }
+
+    const onScroll = () => {
+      if (frame === 0) {
+        frame = requestAnimationFrame(measure)
+      }
     }
 
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
-    return () => window.removeEventListener('scroll', onScroll)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [])
 
   return (

@@ -42,30 +42,31 @@ export const metadata: Metadata = {
  * The status banner below is load-bearing, not decorative. The document is a
  * draft that declares itself not to be a contract, and rendering that
  * declaration is the only thing that makes publishing it honest.
+ *
+ * This layout owns the document only. The canvas and the footer belong to
+ * app/legal/layout.tsx, which every page under /legal renders inside.
  */
 const VERSION = '0.1-draft'
 const STATUS =
   'Draft for internal preparation. This document is not an official HCMIU policy, does not create a legal contract and does not make The Aris Club an officially recognized club.'
 
 const CommunityTermsLayout = ({ children }: { children: ReactNode }) => (
-  <div className="bg-aris-canvas text-aris-ink min-h-screen font-sans antialiased">
-    <div className="mx-auto max-w-3xl px-6 py-24 md:px-12">
-      <Link
-        className="text-sm text-black/45 transition-colors hover:text-black"
-        href="/"
-      >
-        ← The Aris Club
-      </Link>
+  <div className="mx-auto max-w-3xl px-6 py-24 md:px-12">
+    <Link
+      className="text-sm text-black/45 transition-colors hover:text-black"
+      href="/"
+    >
+      ← The Aris Club
+    </Link>
 
-      <div className="border-aris-blue/25 bg-aris-blue/[0.05] mt-12 rounded-2xl border p-6">
-        <p className="text-aris-ink text-sm font-medium">
-          Version {VERSION} · Owner: Founding Group
-        </p>
-        <p className="mt-2 text-sm leading-relaxed text-black/60">{STATUS}</p>
-      </div>
-
-      <article className="mt-12">{children}</article>
+    <div className="border-aris-blue/25 bg-aris-blue/[0.05] mt-12 rounded-2xl border p-6">
+      <p className="text-aris-ink text-sm font-medium">
+        Version {VERSION} · Owner: Founding Group
+      </p>
+      <p className="mt-2 text-sm leading-relaxed text-black/60">{STATUS}</p>
     </div>
+
+    <article className="mt-12">{children}</article>
   </div>
 )
 
