@@ -21,7 +21,13 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    // Node's test runner resolves TypeScript imports with an explicit extension,
+    // and it does not read the "paths" alias above. tsc rejects a '.ts' import
+    // without this, so the test file and the compiler can both be right. Safe
+    // here only because noEmit is set; it does not permit emitting '.ts' imports.
+    // See docs/adr/0003-node-test-runner-without-ci-until-a-second-file.md
+    "allowImportingTsExtensions": true
   },
   "include": [
     "next-env.d.ts",

@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useState } from 'react'
 
-import { FORM_URL } from '@/lib/club'
+import { CLUB_NAME, FORM_URL } from '@/lib/club'
 
 const NAV_STYLE = {
   WebkitBackdropFilter: 'blur(16px)',
@@ -45,7 +45,7 @@ export const MobileNav = ({ sectionLinks }: MobileNavProps) => {
               image occupies before it decodes. */}
           <Image
             src="/brand/aris-mark.webp"
-            alt="The Aris Club"
+            alt={CLUB_NAME}
             width={315}
             height={176}
             priority

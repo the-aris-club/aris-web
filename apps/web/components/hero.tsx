@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useCallback, useEffect, useState } from 'react'
 
 import { HERO_REVEAL_MS, IntroAnimation } from '@/components/intro-animation'
+import { EXTENDED_NAME } from '@/lib/club'
 
 // The hero is the one section that cannot be static: the banner zoom, the
 // headline blur and the scope line are all driven by a single flag the intro
@@ -139,7 +140,7 @@ export const Hero = () => {
 
           <div style={stagger(heroReady, 0)}>
             <p className="font-sans text-sm tracking-wide text-black/50 uppercase">
-              {SCOPE}
+              {EXTENDED_NAME}
             </p>
             <p className="mt-3 max-w-xl font-sans text-sm leading-relaxed text-black/45">
               {BARRIER}

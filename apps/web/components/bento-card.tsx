@@ -45,6 +45,43 @@ export const DepartmentArtwork = ({ src }: { src: string }) => (
   />
 )
 
+/**
+ * The line mark inside each department card's tile. One per technical
+ * department, keyed by name rather than by position: an index would put the
+ * wrong mark on the wrong department the first time the list is reordered.
+ * Decorative — aria-hidden, and the department name sits beside it.
+ */
+const DEPARTMENT_MARKS: Record<string, ReactNode> = {
+  'Autonomous Systems': <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />,
+  IoT: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
+  Robotics: (
+    <>
+      <rect height="18" rx="2" width="18" x="3" y="3" />
+      <path d="M8 10h8M8 14h5" />
+    </>
+  ),
+  Software: (
+    <>
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </>
+  ),
+}
+
+export const DepartmentMark = ({ name }: { name: string }) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    height="18"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    viewBox="0 0 24 24"
+    width="18"
+  >
+    {DEPARTMENT_MARKS[name]}
+  </svg>
+)
+
 export const BentoCard = ({
   backdrop,
   children,

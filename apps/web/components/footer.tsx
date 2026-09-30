@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { CONTACT_EMAIL, FORM_URL, MAILBOX_NOTE } from '@/lib/club'
+import { CLUB_NAME, CONTACT_EMAIL, FORM_URL, MAILBOX_NOTE } from '@/lib/club'
 
 interface FooterProps {
   /**
@@ -25,7 +25,7 @@ const Footer = ({ sectionLinks }: FooterProps) => (
           which the nav bar does not have. */}
       <Image
         src="/brand/aris-logo.webp"
-        alt="The Aris Club"
+        alt={CLUB_NAME}
         width={367}
         height={280}
         className="h-16 w-auto shrink-0"
@@ -74,7 +74,7 @@ const Footer = ({ sectionLinks }: FooterProps) => (
     </div>
     <div className="mx-auto mt-8 max-w-6xl border-t border-black/[0.04] pt-6">
       <span className="text-xs text-black/20">
-        © 2026 The Aris Club. {MAILBOX_NOTE}
+        © 2026 {CLUB_NAME}. {MAILBOX_NOTE}
       </span>
     </div>
   </footer>
