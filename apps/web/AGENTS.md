@@ -12,7 +12,7 @@ Component rules, in the order they are worth breaking.
 4. **Delete a dial nothing turns.** A prop with one value at every call site is a constant with a longer name. `RevealText` had five and no caller touched any of them. Per-call-site overrides are also how five copies of a heading drifted apart in the first place, which is why `SectionHeading`'s title classes are not a prop.
 5. **One list, one home.** Data two components both render comes from one caller. `sectionLinks` is passed to `MobileNav` and to `Footer`, and the landing page passes one array to both.
 
-**One exception, because rule 3 is not free.** `PixelIcon` takes a `type` union over five drawers rather than being five components, deliberately: `type` is in the effect deps, so a swap reallocates the canvas backing store — which resets the 2D context — and re-registers the shared `IntersectionObserver`. Do not split it.
+**One exception, because rule 3 is not free.** `PixelIcon` takes a `type` union over four drawers rather than being four components, deliberately: `type` is in the effect deps, so a swap reallocates the canvas backing store — which resets the 2D context — and re-registers the shared `IntersectionObserver`. Do not split it.
 
 `Footer`'s `sectionLinks` is the model for anything else page-specific: a slot the page fills, with the reason it has to be a slot written beside it.
 

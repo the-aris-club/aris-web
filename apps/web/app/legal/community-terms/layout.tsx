@@ -2,10 +2,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
+import { CLUB_NAME, COMMUNITY_TERMS } from '@/lib/club'
+
 export const metadata: Metadata = {
-  description:
-    'How people may participate in The Aris Club, its community services, events and research.',
-  title: 'Community Terms of Use — The Aris Club',
+  description: `How people may participate in ${CLUB_NAME}, its community services, events and research.`,
+  title: `Community Terms of Use — ${CLUB_NAME}`,
 }
 
 /**
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
  * below, so a stale copy announces itself. Ceiling: the copy silently rots the
  * first time the club amends the source without telling this repo. Upgrade
  * path: fetch at build time and delete the copy, or publish the source document
- * and link to it. Rationale in docs/brand-rollout.md.
+ * and link to it.
  *
  * Three consequences of the copy worth knowing:
  * - The source has two relative links into the same private repository. They
@@ -46,9 +47,10 @@ export const metadata: Metadata = {
  * This layout owns the document only. The canvas and the footer belong to
  * app/legal/layout.tsx, which every page under /legal renders inside.
  */
-const VERSION = '0.1-draft'
-const STATUS =
-  'Draft for internal preparation. This document is not an official HCMIU policy, does not create a legal contract and does not make The Aris Club an officially recognized club.'
+// VERSION and STATUS are in lib/club with the rest of the club's governance
+// facts. They were declared here because this is the only file that renders
+// them, which is the same reason a governance string eventually disagrees with
+// itself.
 
 const CommunityTermsLayout = ({ children }: { children: ReactNode }) => (
   <div className="mx-auto max-w-3xl px-6 py-24 md:px-12">
@@ -56,14 +58,16 @@ const CommunityTermsLayout = ({ children }: { children: ReactNode }) => (
       className="text-sm text-black/45 transition-colors hover:text-black"
       href="/"
     >
-      ← The Aris Club
+      ← {CLUB_NAME}
     </Link>
 
     <div className="border-aris-blue/25 bg-aris-blue/[0.05] mt-12 rounded-2xl border p-6">
       <p className="text-aris-ink text-sm font-medium">
-        Version {VERSION} · Owner: Founding Group
+        Version {COMMUNITY_TERMS.version} · Owner: {COMMUNITY_TERMS.owner}
       </p>
-      <p className="mt-2 text-sm leading-relaxed text-black/60">{STATUS}</p>
+      <p className="mt-2 text-sm leading-relaxed text-black/60">
+        {COMMUNITY_TERMS.status}
+      </p>
     </div>
 
     <article className="mt-12">{children}</article>

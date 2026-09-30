@@ -5,17 +5,16 @@ import React from 'react'
 
 import './globals.css'
 
-const NAME = 'The Aris Club'
+import { CLUB_NAME, EXTENDED_NAME } from '@/lib/club'
+
 const SITE_URL = 'https://aris.resonance.io.vn'
 
-// The extended name, and the one line of scope the page may claim. CONTEXT.md
-// allows no dropped domain and no fifth.
-const SCOPE = 'Autonomous Systems, Robotics, IoT & Software'
-
-// Both halves are quoted rather than written: the scope is the extended name,
-// and the second sentence is the Member job description verbatim. No HCMIU
-// claim appears anywhere, which is how the charter's prohibition is met.
-const DESCRIPTION = `The Aris Club is a student club working in ${SCOPE}. Membership does not require a technical background or a fixed number of hours.`
+// Both halves are quoted rather than written: the scope is the extended name
+// (docs/adr/0001-club-identity-and-scope.md:6) and the second sentence is the
+// Member job description verbatim (job-description/member.md:11), both in the
+// private the-aris-club repository. No HCMIU claim appears anywhere, which is how
+// the charter's prohibition is met.
+const DESCRIPTION = `${CLUB_NAME} is a student club working in ${EXTENDED_NAME}. Membership does not require a technical background or a fixed number of hours.`
 
 // These three back the --font-sans, --font-mono and --font-pixel tokens in
 // globals.css. Every text style on the page goes through one of those tokens.
@@ -34,7 +33,7 @@ const _courierPrime = Courier_Prime({
 // opengraph-image.jpg. An explicit metadata.icons block would override them and
 // point the tab back at the Agentic set in public/.
 export const metadata: Metadata = {
-  authors: [{ name: NAME }],
+  authors: [{ name: CLUB_NAME }],
   description: DESCRIPTION,
   keywords: [
     'student club',
@@ -48,8 +47,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   openGraph: {
     description: DESCRIPTION,
-    siteName: NAME,
-    title: `${NAME} — ${SCOPE}`,
+    siteName: CLUB_NAME,
+    title: `${CLUB_NAME} — ${EXTENDED_NAME}`,
     type: 'website',
     url: SITE_URL,
   },
@@ -69,11 +68,11 @@ export const metadata: Metadata = {
     follow: false,
     index: false,
   },
-  title: `${NAME} — ${SCOPE}`,
+  title: `${CLUB_NAME} — ${EXTENDED_NAME}`,
   twitter: {
     card: 'summary_large_image',
     description: DESCRIPTION,
-    title: `${NAME} — ${SCOPE}`,
+    title: `${CLUB_NAME} — ${EXTENDED_NAME}`,
   },
 }
 

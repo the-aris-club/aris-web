@@ -3,39 +3,17 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { Tag } from '@/components/tag'
+import { TECHNICAL_DEPARTMENTS } from '@/lib/club'
 
-// The four technical departments, in the order the server channels declare
-// them (server-orientation.md). Exactly four: Operations and Development is a
+// The four technical departments, in the order the server channels declare them
+// (server-orientation.md), are TECHNICAL_DEPARTMENTS in lib/club: the bento cards
+// in #groups print the same four, and this used to carry its own copy of both the
+// names and the scope lines. Exactly four — Operations and Development is a
 // capability pool and gets no card here.
 //
 // No per-card figures. The club has run no projects, so any number on this card
-// would be invented, and CONTEXT.md forbids that. The scope line under each
-// name is page voice: it arranges the department's name and the club's stated
-// domains and introduces no new fact.
-const DEPARTMENTS = [
-  {
-    desc: 'Systems that decide and act under their own control.',
-    label: '01',
-    title: 'Autonomous Systems',
-  },
-  {
-    desc: 'Hardware you can put on a table and make move.',
-    label: '02',
-    title: 'Robotics',
-  },
-  {
-    desc: 'Devices that report what they sense, and take instruction.',
-    label: '03',
-    title: 'IoT',
-  },
-  {
-    desc: 'The part that holds the other three together.',
-    label: '04',
-    title: 'Software',
-  },
-]
+// would be invented, and CONTEXT.md forbids that.
 
-// matches top: 80px on first card
 const STICKY_TOP = 80
 // each card stacks 16px lower
 const STICKY_STEP = 16
@@ -47,7 +25,9 @@ const OFFSET_STEP = 8
 export const StackingAgentCards = () => {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([])
   // depth[i] = 0..N how many cards are currently stacked on top of card i
-  const [depth, setDepth] = useState<number[]>(DEPARTMENTS.map(() => 0))
+  const [depth, setDepth] = useState<number[]>(
+    TECHNICAL_DEPARTMENTS.map(() => 0)
+  )
 
   useEffect(() => {
     // Measured on scroll, so the work is coalesced into one frame and then
@@ -59,10 +39,10 @@ export const StackingAgentCards = () => {
 
     const measure = () => {
       frame = 0
-      const nextDepth = DEPARTMENTS.map((_, i) => {
+      const nextDepth = TECHNICAL_DEPARTMENTS.map((_, i) => {
         // Count how many cards j > i are currently in sticky position (i.e. have scrolled past card i)
         let count = 0
-        for (let j = i + 1; j < DEPARTMENTS.length; j += 1) {
+        for (let j = i + 1; j < TECHNICAL_DEPARTMENTS.length; j += 1) {
           const el = cardRefs.current[j]
           if (!el) {
             continue
@@ -101,7 +81,7 @@ export const StackingAgentCards = () => {
       className="flex flex-col"
       style={{ perspective: '1400px', perspectiveOrigin: '50% 0%' }}
     >
-      {DEPARTMENTS.map((dept, i) => {
+      {TECHNICAL_DEPARTMENTS.map((dept, i) => {
         const d = depth[i]
         const scale = 1 - d * SCALE_STEP
         const translateY = d * OFFSET_STEP
@@ -136,9 +116,9 @@ export const StackingAgentCards = () => {
                     <div className="mb-6 flex items-start justify-between">
                       <Tag>{dept.label}</Tag>
                     </div>
-                    <h3 className="mb-3 text-xl font-light">{dept.title}</h3>
+                    <h3 className="mb-3 text-xl font-light">{dept.name}</h3>
                     <p className="text-sm leading-relaxed text-black/45">
-                      {dept.desc}
+                      {dept.scope}
                     </p>
                   </div>
                 </div>

@@ -12,9 +12,11 @@ type IconType = 'platform' | 'agents' | 'workflow' | 'integrations'
 
 interface PixelIconProps {
   type: IconType
-  // rendered px size (default 40)
-  size?: number
 }
+
+// Rendered px size. One call site, and it passed the default, so this is a
+// constant rather than a dial.
+const SIZE = 40
 
 // ── Platform icon: rotating gear / node graph ────────────────────────────────
 const drawPlatform = (ctx: CanvasRenderingContext2D, W: number, t: number) => {
@@ -263,7 +265,7 @@ const getScreenObserver = () => {
   return screenObserver
 }
 
-export const PixelIcon = ({ type, size = 40 }: PixelIconProps) => {
+export const PixelIcon = ({ type }: PixelIconProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -281,8 +283,8 @@ export const PixelIcon = ({ type, size = 40 }: PixelIconProps) => {
     // reallocated the store sixty times a second and re-applied the DPR
     // transform on every frame to compensate.
     const dpr = window.devicePixelRatio || 1
-    canvas.width = size * dpr
-    canvas.height = size * dpr
+    canvas.width = SIZE * dpr
+    canvas.height = SIZE * dpr
     ctx.scale(dpr, dpr)
     ctx.imageSmoothingEnabled = false
 
@@ -290,23 +292,23 @@ export const PixelIcon = ({ type, size = 40 }: PixelIconProps) => {
     let raf = 0
 
     const draw = (t: number) => {
-      ctx.clearRect(0, 0, size, size)
+      ctx.clearRect(0, 0, SIZE, SIZE)
 
       switch (type) {
         case 'platform': {
-          drawPlatform(ctx, size, t)
+          drawPlatform(ctx, SIZE, t)
           break
         }
         case 'agents': {
-          drawAgents(ctx, size, t)
+          drawAgents(ctx, SIZE, t)
           break
         }
         case 'workflow': {
-          drawWorkflow(ctx, size, t)
+          drawWorkflow(ctx, SIZE, t)
           break
         }
         case 'integrations': {
-          drawIntegrations(ctx, size, t)
+          drawIntegrations(ctx, SIZE, t)
           break
         }
         default: {
@@ -353,7 +355,7 @@ export const PixelIcon = ({ type, size = 40 }: PixelIconProps) => {
       observer.unobserve(canvas)
       stop()
     }
-  }, [type, size])
+  }, [type])
 
   return (
     <canvas
@@ -361,9 +363,9 @@ export const PixelIcon = ({ type, size = 40 }: PixelIconProps) => {
       style={{
         display: 'block',
         flexShrink: 0,
-        height: size,
+        height: SIZE,
         imageRendering: 'pixelated',
-        width: size,
+        width: SIZE,
       }}
     />
   )

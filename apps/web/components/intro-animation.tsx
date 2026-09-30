@@ -46,8 +46,6 @@ const CURTAIN_DELAY = LETTERS_IN_TOTAL + 100
 const CURTAIN_DURATION = 1300
 const ANIM_TOTAL = CURTAIN_DELAY + LETTERS_OUT_TOTAL + 1400
 
-// Exported: moment the curtain finishes retracting — when the bg is fully visible
-export const INTRO_DURATION_MS = CURTAIN_DELAY + CURTAIN_DURATION
 // Exported: ms before curtain fully done to start hero animations (overlap for smoothness)
 export const HERO_REVEAL_MS = CURTAIN_DELAY + CURTAIN_DURATION - 150
 

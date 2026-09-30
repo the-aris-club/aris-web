@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useCallback, useEffect, useState } from 'react'
 
 import { HERO_REVEAL_MS, IntroAnimation } from '@/components/intro-animation'
+import { EXTENDED_NAME } from '@/lib/club'
 
 // The hero is the one section that cannot be static: the banner zoom, the
 // headline blur and the scope line are all driven by a single flag the intro
@@ -20,8 +21,15 @@ const stagger = (ready: boolean, i: number) => ({
 })
 
 // The scope, then the barrier a prospective member actually worries about — both
-// quoted, see docs/adr/0005 and job-description/member.md
-const SCOPE = 'Autonomous Systems, Robotics, IoT & Software'
+// The barrier a prospective member actually worries about, quoted. It stays
+// here rather than in lib/club because it has one call site, and a fact with
+// one call site is a constant with a longer name — the same reason PixelIcon
+// has no size prop.
+//
+//   job-description/member.md:11, verbatim second sentence, in the private
+//   the-aris-club repository. The extended name beside it moves to lib/club as
+//   EXTENDED_NAME; this file's ADR pointer was wrong, since 0005 is project
+//   lifecycle and safety and the scope is 0001.
 const BARRIER =
   'Membership does not require a technical background or a fixed number of hours.'
 
@@ -132,7 +140,7 @@ export const Hero = () => {
 
           <div style={stagger(heroReady, 0)}>
             <p className="font-sans text-sm tracking-wide text-black/50 uppercase">
-              {SCOPE}
+              {EXTENDED_NAME}
             </p>
             <p className="mt-3 max-w-xl font-sans text-sm leading-relaxed text-black/45">
               {BARRIER}
