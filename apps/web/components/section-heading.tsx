@@ -26,7 +26,7 @@ interface SectionHeadingProps {
 // sits beside it.
 const Heading = ({ icon, tag, title }: SectionHeadingProps) => (
   <>
-    <PixelIcon size={40} type={icon} />
+    <PixelIcon type={icon} />
     <div className="mt-4">
       <Tag>{tag}</Tag>
     </div>

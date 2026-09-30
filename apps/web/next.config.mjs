@@ -27,8 +27,9 @@ const nextConfig = {
     // No loader `options` here on purpose. providerImportSource is the documented
     // way to point MDX at a project component map, but Turbopack accepts an
     // `options` key and then never passes it to the loader: the build still
-    // succeeds when it names a module that does not exist. The components are
-    // wired through MDXProvider instead, see the community-terms mdx-provider.
+    // succeeds when it names a module that does not exist. The map is passed to
+    // the page as a prop instead; app/legal/community-terms/page.tsx lists the
+    // three mechanisms that were tried first and failed silently.
     rules: {
       '*.mdx': {
         as: '*.tsx',

@@ -20,8 +20,15 @@ const stagger = (ready: boolean, i: number) => ({
 })
 
 // The scope, then the barrier a prospective member actually worries about — both
-// quoted, see docs/adr/0005 and job-description/member.md
-const SCOPE = 'Autonomous Systems, Robotics, IoT & Software'
+// The barrier a prospective member actually worries about, quoted. It stays
+// here rather than in lib/club because it has one call site, and a fact with
+// one call site is a constant with a longer name — the same reason PixelIcon
+// has no size prop.
+//
+//   job-description/member.md:11, verbatim second sentence, in the private
+//   the-aris-club repository. The extended name beside it moves to lib/club as
+//   EXTENDED_NAME; this file's ADR pointer was wrong, since 0005 is project
+//   lifecycle and safety and the scope is 0001.
 const BARRIER =
   'Membership does not require a technical background or a fixed number of hours.'
 

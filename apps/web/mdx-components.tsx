@@ -68,9 +68,3 @@ export const components: MDXComponents = {
     </ul>
   ),
 }
-
-// Next.js App Router looks for this export in the project root.
-export const useMDXComponents = (provided: MDXComponents): MDXComponents => ({
-  ...components,
-  ...provided,
-})
