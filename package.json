@@ -8,6 +8,7 @@
     "dev": "turbo run dev",
     "start": "turbo run start",
     "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
     "lint": "ultracite check --max-warnings=0",
     "lint:fix": "ultracite fix",
     "format": "oxfmt --write .",

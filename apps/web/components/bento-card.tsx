@@ -1,10 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 
-import { useReveal } from '@/lib/use-reveal'
+import { useFrameCallback, useReveal } from '@/lib/motion'
 
 // The reveal threshold. Low on purpose: the card is far taller than it is wide
 // on mobile, so 10% is a fraction that a card clears almost immediately.
@@ -97,40 +97,37 @@ export const BentoCard = ({
   const { inView, ref } = useReveal<HTMLDivElement>(REVEAL_THRESHOLD)
 
   // The hover glow follows the cursor through two custom properties, read by
-  // the radial gradient below. Coalesced into one animation frame: a trackpad
-  // fires well over 100 mousemove events a second, and each one measured the
-  // card's box, which forces a layout flush ahead of the write. One measurement
-  // per frame is the floor, and the last position is the one that renders.
+  // the radial gradient below. The last position of the frame is the one that
+  // renders, and measuring it forces a layout flush, so both are once per frame
+  // — see useFrameCallback.
+  const position = useRef({ x: 0, y: 0 })
+  const onFrame = useFrameCallback(() => {
+    const el = ref.current
+    if (!el) {
+      return
+    }
+    const rect = el.getBoundingClientRect()
+    const { x, y } = position.current
+    el.style.setProperty('--mouse-x', `${x - rect.left}px`)
+    el.style.setProperty('--mouse-y', `${y - rect.top}px`)
+  })
+
   useEffect(() => {
     const el = ref.current
     if (!el) {
       return
     }
 
-    let frame = 0
-    let x = 0
-    let y = 0
-
     const onMove = (e: MouseEvent) => {
-      x = e.clientX
-      y = e.clientY
-      if (frame !== 0) {
-        return
-      }
-      frame = requestAnimationFrame(() => {
-        frame = 0
-        const rect = el.getBoundingClientRect()
-        el.style.setProperty('--mouse-x', `${x - rect.left}px`)
-        el.style.setProperty('--mouse-y', `${y - rect.top}px`)
-      })
+      position.current = { x: e.clientX, y: e.clientY }
+      onFrame()
     }
 
     el.addEventListener('mousemove', onMove, { passive: true })
     return () => {
       el.removeEventListener('mousemove', onMove)
-      cancelAnimationFrame(frame)
     }
-  }, [ref])
+  }, [onFrame, ref])
 
   return (
     <div

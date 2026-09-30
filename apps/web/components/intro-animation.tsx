@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
+import { EASE, EASE_CURTAIN, EASE_EXIT } from '@/lib/motion'
+
 // The letters are traced out of the wordmark in aris-logo.png by
 // tools/build-brand-assets.py, not typed. No published typeface is close
 // enough to the drawn one, and a bitmap of them goes soft: the source
@@ -100,9 +102,7 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
         style={{
           background: '#f5f4f1',
           bottom: curtainUp ? '100%' : '0%',
-          transition: curtainUp
-            ? 'bottom 1.3s cubic-bezier(0.76, 0, 0.24, 1)'
-            : 'none',
+          transition: curtainUp ? `bottom 1.3s ${EASE_CURTAIN}` : 'none',
         }}
       />
 
@@ -120,13 +120,13 @@ export const IntroAnimation = ({ onDone }: { onDone: () => void }) => {
 
             let transition = 'none'
             if (isOut) {
-              transition = `opacity ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
-                 filter  ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
-                 transform ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms`
+              transition = `opacity ${LETTER_OUT_DUR}ms ${EASE_EXIT} ${outDelay}ms,
+                 filter  ${LETTER_OUT_DUR}ms ${EASE_EXIT} ${outDelay}ms,
+                 transform ${LETTER_OUT_DUR}ms ${EASE_EXIT} ${outDelay}ms`
             } else if (isIn) {
-              transition = `opacity ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
-                 filter  ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
-                 transform ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms`
+              transition = `opacity ${LETTER_IN_DUR}ms ${EASE} ${inDelay}ms,
+                 filter  ${LETTER_IN_DUR}ms ${EASE} ${inDelay}ms,
+                 transform ${LETTER_IN_DUR}ms ${EASE} ${inDelay}ms`
             }
 
             return (

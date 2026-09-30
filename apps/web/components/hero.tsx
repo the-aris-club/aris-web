@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { HERO_REVEAL_MS, IntroAnimation } from '@/components/intro-animation'
 import { EXTENDED_NAME } from '@/lib/club'
+import { EASE } from '@/lib/motion'
 
 // The hero is the one section that cannot be static: the banner zoom, the
 // headline blur and the scope line are all driven by a single flag the intro
@@ -17,7 +18,7 @@ const stagger = (ready: boolean, i: number) => ({
   filter: ready ? 'blur(0px)' : 'blur(16px)',
   opacity: ready ? 1 : 0,
   transform: ready ? 'translateY(0px)' : 'translateY(20px)',
-  transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms, filter 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms`,
+  transition: `opacity 0.8s ${EASE} ${120 + i * 80}ms, filter 0.8s ${EASE} ${120 + i * 80}ms, transform 0.8s ${EASE} ${120 + i * 80}ms`,
 })
 
 // The scope, then the barrier a prospective member actually worries about — both
@@ -66,7 +67,7 @@ export const Hero = () => {
           className="absolute inset-0 z-0 h-full w-full object-cover object-[20%_50%] md:object-center"
           style={{
             transform: videoReady ? 'scale(1.05)' : 'scale(0.85)',
-            transition: 'transform 2s cubic-bezier(0.16, 1, 0.3, 1)',
+            transition: `transform 2s ${EASE}`,
           }}
         />
 
@@ -127,8 +128,7 @@ export const Hero = () => {
               filter: heroReady ? 'blur(0px)' : 'blur(24px)',
               opacity: heroReady ? 1 : 0,
               transform: heroReady ? 'translateY(0px)' : 'translateY(32px)',
-              transition:
-                'opacity 1s cubic-bezier(0.16,1,0.3,1) 0ms, filter 1s cubic-bezier(0.16,1,0.3,1) 0ms, transform 1s cubic-bezier(0.16,1,0.3,1) 0ms',
+              transition: `opacity 1s ${EASE} 0ms, filter 1s ${EASE} 0ms, transform 1s ${EASE} 0ms`,
             }}
           >
             We build systems
