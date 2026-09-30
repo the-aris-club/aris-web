@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start -p 8300",
     "typecheck": "tsc --noEmit",
-    "test": "node --test lib/"
+    "test": "node --test \"lib/*.test.ts\""
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
