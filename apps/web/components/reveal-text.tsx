@@ -1,6 +1,6 @@
 'use client'
 
-import { useReveal } from '@/lib/use-reveal'
+import { EASE, useReveal } from '@/lib/motion'
 
 // Splits text into words and reveals each with staggered opacity+blur+translateY
 // matching the ARIS intro animation style.
@@ -71,9 +71,9 @@ export const RevealText = ({
               opacity: visible ? 1 : 0,
               transform: visible ? 'translateY(0)' : 'translateY(12px)',
               transition: visible
-                ? `opacity ${DURATION}ms cubic-bezier(0.16,1,0.3,1) ${wordDelay}ms,
-                   filter  ${DURATION}ms cubic-bezier(0.16,1,0.3,1) ${wordDelay}ms,
-                   transform ${DURATION}ms cubic-bezier(0.16,1,0.3,1) ${wordDelay}ms`
+                ? `opacity ${DURATION}ms ${EASE} ${wordDelay}ms,
+                   filter  ${DURATION}ms ${EASE} ${wordDelay}ms,
+                   transform ${DURATION}ms ${EASE} ${wordDelay}ms`
                 : 'none',
             }}
           >

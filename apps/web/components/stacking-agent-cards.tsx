@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { Tag } from '@/components/tag'
 import { TECHNICAL_DEPARTMENTS } from '@/lib/club'
+import { EASE, stackDepths, useFrameCallback } from '@/lib/motion'
 
 // The four technical departments, in the order the server channels declare them
 // (server-orientation.md), are TECHNICAL_DEPARTMENTS in lib/club: the bento cards
@@ -29,52 +30,35 @@ export const StackingAgentCards = () => {
     TECHNICAL_DEPARTMENTS.map(() => 0)
   )
 
+  // Where each card parks once it is sticky. These, and the depth arithmetic in
+  // lib/motion, are the only things that decide how deep a card is stacked.
+  const stickyTops = TECHNICAL_DEPARTMENTS.map(
+    (_, i) => STICKY_TOP + i * STICKY_STEP
+  )
+
+  // Measured on scroll, so the work is coalesced into one frame and then thrown
+  // away when nothing moved. The previous version wrote a fresh array on every
+  // scroll event, and a new array identity is a new render: four cards
+  // re-rendered on every tick of the scroll for the whole section, including the
+  // long stretches where the stack depth had not changed at all.
+  const measure = useFrameCallback(() => {
+    const nextDepth = stackDepths(
+      cardRefs.current.map((el) => el?.getBoundingClientRect().top ?? null),
+      stickyTops
+    )
+
+    setDepth((prev) =>
+      prev.every((d, i) => d === nextDepth[i]) ? prev : nextDepth
+    )
+  })
+
   useEffect(() => {
-    // Measured on scroll, so the work is coalesced into one frame and then
-    // thrown away when nothing moved. The previous version wrote a fresh array
-    // on every scroll event, and a new array identity is a new render: four
-    // cards re-rendered on every tick of the scroll for the whole section,
-    // including the long stretches where the stack depth had not changed at all.
-    let frame = 0
-
-    const measure = () => {
-      frame = 0
-      const nextDepth = TECHNICAL_DEPARTMENTS.map((_, i) => {
-        // Count how many cards j > i are currently in sticky position (i.e. have scrolled past card i)
-        let count = 0
-        for (let j = i + 1; j < TECHNICAL_DEPARTMENTS.length; j += 1) {
-          const el = cardRefs.current[j]
-          if (!el) {
-            continue
-          }
-          const rect = el.getBoundingClientRect()
-          const stickyTopJ = STICKY_TOP + j * STICKY_STEP
-          // Card j is "on top of" card i when it has reached its sticky position
-          if (rect.top <= stickyTopJ + 2) {
-            count += 1
-          }
-        }
-        return count
-      })
-
-      setDepth((prev) =>
-        prev.every((d, i) => d === nextDepth[i]) ? prev : nextDepth
-      )
-    }
-
-    const onScroll = () => {
-      if (frame === 0) {
-        frame = requestAnimationFrame(measure)
-      }
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
+    window.addEventListener('scroll', measure, { passive: true })
+    measure()
     return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scroll', measure)
     }
-  }, [])
+  }, [measure])
 
   return (
     <div
@@ -99,7 +83,7 @@ export const StackingAgentCards = () => {
               style={{
                 transform: `scale(${scale}) translateY(${translateY}px)`,
                 transformOrigin: 'top center',
-                transition: 'transform 0.3s cubic-bezier(0.16,1,0.3,1)',
+                transition: `transform 0.3s ${EASE}`,
                 willChange: 'transform',
               }}
             >
