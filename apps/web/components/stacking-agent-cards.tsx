@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
 import { Tag } from '@/components/tag'
@@ -14,6 +15,35 @@ import { EASE, stackDepths, useFrameCallback } from '@/lib/motion'
 //
 // No per-card figures. The club has run no projects, so any number on this card
 // would be invented, and CONTEXT.md forbids that.
+
+/**
+ * A department's wide banner, behind the text on a stacking card. Its own
+ * pictures, cut for this card: the Groups bento cards carry the same four
+ * departments in 16:9, and object-cover on those would keep 27% of the image
+ * height here — and print the same four pictures twice within two screens.
+ *
+ * Anchored right, not centre. The card is 1152 wide inside `max-w-6xl`, and
+ * narrower below that, so object-cover crops the width away from whichever edge
+ * it is given. These files are 1152x177 with the subject in the right third and
+ * the left two thirds empty, so cropping from the left is free and cropping from
+ * the right would cut the subject off. No mask: the empty side is already
+ * transparent. Decorative — alt is empty, the department name is beside it.
+ *
+ * Hidden below md. The `md:max-w-[70%]` that leaves the artwork its column only
+ * applies from md up; narrower than that the text runs the full width of the
+ * card and prints straight over the subject. The card is also taller there, so
+ * there is no room to move the artwork to instead.
+ */
+const DepartmentBanner = ({ src }: { src: string }) => (
+  <Image
+    alt=""
+    aria-hidden="true"
+    className="pointer-events-none absolute inset-0 hidden object-cover object-right md:block"
+    fill
+    sizes="(min-width: 1024px) 1152px, 100vw"
+    src={src}
+  />
+)
 
 const STICKY_TOP = 80
 // each card stacks 16px lower
@@ -88,13 +118,8 @@ export const StackingAgentCards = () => {
               }}
             >
               <div className="group relative cursor-pointer overflow-hidden rounded-2xl border border-black/[0.07] bg-[#faf9f7]">
-                {/* Text only, while the Groups cards carry the department
-                    artwork. This card is 1152x177, a ratio of 6.5:1, and the
-                    artwork is 16:9 — object-cover would keep 27% of the image
-                    height, and the same four pictures would appear twice
-                    within two screens. The stock agent portraits that used to
-                    sit here were never the club's. Give this its own wide
-                    images before adding a backdrop. */}
+                <DepartmentBanner src={dept.banner} />
+
                 <div className="relative z-10 p-8">
                   <div className="md:max-w-[70%]">
                     <div className="mb-6 flex items-start justify-between">
