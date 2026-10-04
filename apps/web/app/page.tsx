@@ -79,18 +79,6 @@ const MARQUEE_REPEATS = 3
 // inside the CTA below are page voice and stay written out.
 const NUMERALS: Record<number, string> = { 8: 'Eight' }
 
-// ─── Project card titles ─────────────────────────────────────────────────────
-// Page voice: the four headings the five quoted §11 items are grouped into. The
-// items themselves are quoted and live in lib/club; these are the titles this
-// page gives them, and they are not the source's own wording.
-
-const PROJECT_TITLES = [
-  'Purpose and owner',
-  'Deliverable and acceptance criteria',
-  'Deadline and escalation contact',
-  'Safety, data, and how it ends',
-]
-
 // ─── Main page ────────────────────────────────────────────────────────────────
 const ArisPage = () => (
   <div className="min-h-screen bg-[#F5F4F0] font-sans text-[#111] antialiased">
@@ -235,55 +223,36 @@ const ArisPage = () => (
           title={'Five things every\nproject must name.'}
         />
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-          {PROJECT_REQUIREMENTS.items.slice(0, 3).map((item, i) => (
+        {/* Five quotes, five cells. Two columns, so the fifth spans both: every
+            item gets a cell to itself and none carries two, which is what a
+            four-column grid forced and what made one card read deeper than the
+            other three. At this width no quote wraps, so the five cells are
+            identical boxes. */}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {PROJECT_REQUIREMENTS.items.map((item, i) => (
             <BentoCard
-              className="relative flex min-h-[320px] flex-col overflow-hidden"
+              className={`relative flex min-h-[160px] flex-col overflow-hidden p-7 ${
+                i === PROJECT_REQUIREMENTS.items.length - 1
+                  ? 'md:col-span-2'
+                  : ''
+              }`}
               delay={i * 80}
               key={item}
             >
-              {/* Number top-left */}
-              <div className="relative z-10 p-7">
+              <div className="relative z-10">
                 <span className="font-pixel block text-[11px] tracking-widest text-black/20">
                   {`0${i + 1}`}
                 </span>
               </div>
-              {/* Text pushed further down */}
-              <div className="relative z-10 mt-auto px-7 pt-16 pb-7">
-                <h3 className="mb-3 text-2xl font-light">
-                  {PROJECT_TITLES[i]}
-                </h3>
-                <p className="text-sm leading-relaxed whitespace-pre-line text-black/45">
-                  {item}
-                </p>
-              </div>
+              {/* Top-anchored with the quote pushed down by margin, not
+                  mt-auto: every cell prints one number and one quote, so the
+                  distance between them is the same everywhere and the five
+                  boxes need no stretch to line up. */}
+              <p className="relative z-10 mt-12 max-w-md text-2xl leading-snug font-light">
+                {item}
+              </p>
             </BentoCard>
           ))}
-
-          {/* The grid is four columns and §11 lists five items, so the last two
-              share a card. Both are printed verbatim, built from the quoted list
-              rather than typed as one string, so renumbering cannot leave the
-              card out of step. If the layout is ever opened up, give 05 its own
-              card. */}
-          <BentoCard
-            className="relative flex min-h-[320px] flex-col overflow-hidden"
-            delay={240}
-          >
-            <div className="relative z-10 p-7">
-              <span className="font-pixel block text-[11px] tracking-widest text-black/20">
-                04
-              </span>
-            </div>
-            <div className="relative z-10 mt-auto px-7 pt-16 pb-7">
-              <h3 className="mb-3 text-2xl font-light">{PROJECT_TITLES[3]}</h3>
-              <p className="text-sm leading-relaxed whitespace-pre-line text-black/45">
-                {PROJECT_REQUIREMENTS.items
-                  .slice(3)
-                  .map((item, i) => `0${i + 4} — ${item}`)
-                  .join('\n')}
-              </p>
-            </div>
-          </BentoCard>
         </div>
       </div>
     </section>
