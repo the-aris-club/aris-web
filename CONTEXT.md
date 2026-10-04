@@ -38,6 +38,10 @@ Glossary for this repository. This is the public web page for The Aris Club, a s
 
 **Technical department**: Autonomous Systems, Robotics, IoT or Software. Four, never five. _Avoid_: department for Operations and Development.
 
+**Primary department**: the one technical department a member belongs to. A member has exactly one, and it is one of the four. Quoted from Community Terms §11. _Avoid_: home department, main department, first department.
+
+**Support assignment**: an explicit assignment to support a second department alongside the primary one. It neither replaces the primary department nor adds a second one, and it is explicit rather than implied. Quoted from Community Terms §11. _Avoid_: secondary department, second department, also a member of.
+
 **Capability group**: Operations and Development. A pool of non-technical capabilities, explicitly not a fifth technical department. The page names it in the marquee and does not give it a department card. _Avoid_: technical department, marketing department, admin.
 
 **Community Terms of Use**: the club's participation terms, version 0.1-draft. Published on this site as a copy of the document held in the club repository. _Avoid_: legal contract, privacy policy, university policy.

@@ -54,9 +54,17 @@ export const MAILBOX_NOTE = `${CONTACT_EMAIL} is a transitional service mailbox,
 // because the two are always printed together, and because it used to be typed
 // twice — once here and once in the stacking cards — where a copy edit had two
 // landing zones and could leave the two sections describing different clubs.
+//
+// Two artworks per department, not one. `artwork` is 16:9 and belongs to the
+// Groups bento cards; `banner` is 6.5:1 and belongs to the stacking cards in
+// #departments. They are separate files because one crop cannot serve both: the
+// stacking card is 1152x177, so object-cover on a 16:9 picture keeps 27% of its
+// height. They are separate fields rather than a shared one because the same
+// four pictures two screens apart is the thing that was being avoided.
 
 export interface TechnicalDepartment {
   artwork: string
+  banner: string
   label: string
   name: string
   scope: string
@@ -65,24 +73,28 @@ export interface TechnicalDepartment {
 export const TECHNICAL_DEPARTMENTS: readonly TechnicalDepartment[] = [
   {
     artwork: '/brand/dept-01.webp',
+    banner: '/brand/dept-01-wide.webp',
     label: '01',
     name: 'Autonomous Systems',
     scope: 'Systems that decide and act under their own control.',
   },
   {
     artwork: '/brand/dept-02.webp',
+    banner: '/brand/dept-02-wide.webp',
     label: '02',
     name: 'Robotics',
     scope: 'Hardware you can put on a table and make move.',
   },
   {
     artwork: '/brand/dept-03.webp',
+    banner: '/brand/dept-03-wide.webp',
     label: '03',
     name: 'IoT',
     scope: 'Devices that report what they sense, and take instruction.',
   },
   {
     artwork: '/brand/dept-04.webp',
+    banner: '/brand/dept-04-wide.webp',
     label: '04',
     name: 'Software',
     scope: 'The part that holds the other three together.',
